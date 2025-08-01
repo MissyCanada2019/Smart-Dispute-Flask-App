@@ -3,8 +3,6 @@ import json
 import logging
 from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
-import openai
-import anthropic
 from models.case import CaseType
 from models.evidence import Evidence
 
@@ -68,21 +66,29 @@ class AIServiceManager:
     def _initialize_clients(self):
         """Initialize AI service clients with API keys"""
         try:
-            # OpenAI client
+            # OpenAI client (disabled for free deployment)
             openai_api_key = os.getenv('OPENAI_API_KEY')
             if openai_api_key:
-                self.openai_client = openai.OpenAI(api_key=openai_api_key)
-                logger.info("OpenAI client initialized successfully")
+                try:
+                    import openai
+                    self.openai_client = openai.OpenAI(api_key=openai_api_key)
+                    logger.info("OpenAI client initialized successfully")
+                except ImportError:
+                    logger.warning("OpenAI package not installed - using fallback mode")
             else:
-                logger.warning("OpenAI API key not found in environment variables")
+                logger.info("OpenAI API key not found - using fallback mode")
 
-            # Anthropic client
+            # Anthropic client (disabled for free deployment)
             anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
             if anthropic_api_key:
-                self.anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
-                logger.info("Anthropic client initialized successfully")
+                try:
+                    import anthropic
+                    self.anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
+                    logger.info("Anthropic client initialized successfully")
+                except ImportError:
+                    logger.warning("Anthropic package not installed - using fallback mode")
             else:
-                logger.warning("Anthropic API key not found in environment variables")
+                logger.info("Anthropic API key not found - using fallback mode")
 
         except Exception as e:
             logger.error(f"Error initializing AI clients: {str(e)}")
@@ -122,10 +128,8 @@ class AIServiceManager:
                 elif self.is_service_available('openai'):
                     service = 'openai'
                 else:
-                    return {
-                        'success': False,
-                        'error': 'No AI services available'
-                    }
+                    # Fallback analysis without AI
+                    return self._fallback_evidence_analysis(evidence, case_context)
 
             # Get case context
             case = evidence.case
@@ -175,10 +179,8 @@ class AIServiceManager:
                 elif self.is_service_available('openai'):
                     service = 'openai'
                 else:
-                    return {
-                        'success': False,
-                        'error': 'No AI services available'
-                    }
+                    # Fallback merit scoring without AI
+                    return self._fallback_merit_scoring(case, evidence_list)
 
             # Build comprehensive case summary
             case_summary = self._build_comprehensive_case_summary(case, evidence_list)
@@ -234,10 +236,8 @@ class AIServiceManager:
                 elif self.is_service_available('anthropic'):
                     service = 'anthropic'
                 else:
-                    return {
-                        'success': False,
-                        'error': 'No AI services available'
-                    }
+                    # Fallback form suggestions without AI
+                    return self._fallback_form_suggestions(form_fields, case_data)
 
             # Create form filling prompt
             prompt = self._create_form_filling_prompt(form_fields, case_data)
@@ -491,6 +491,141 @@ Please format your response as structured JSON mapping field names to suggestion
 
         # Fallback - return empty suggestions
         return {}
+
+    def _fallback_evidence_analysis(self, evidence: Evidence, case_context: Dict[str, Any]) -> Dict[str, Any]:
+        """Provide basic evidence analysis without AI"""
+        text = evidence.extracted_text or ""
+        
+        # Basic text analysis
+        word_count = len(text.split())
+        relevance_score = min(10, max(1, word_count // 100))  # Basic scoring based on content length
+        
+        # Look for key legal terms
+        legal_terms = ['court', 'judge', 'legal', 'case', 'evidence', 'document', 'agreement', 'contract', 'witness']
+        legal_term_count = sum(1 for term in legal_terms if term.lower() in text.lower())
+        relevance_score = min(10, relevance_score + legal_term_count)
+        
+        # Basic key information extraction
+        key_info = []
+        if any(term in text.lower() for term in ['date', 'deadline']):
+            key_info.append("Contains date-related information")
+        if any(term in text.lower() for term in ['$', 'dollar', 'payment', 'cost']):
+            key_info.append("Contains financial information")
+        if any(term in text.lower() for term in ['name', 'party', 'person']):
+            key_info.append("Contains party information")
+            
+        return {
+            'success': True,
+            'service_used': 'fallback',
+            'analysis_result': {
+                'relevance_score': relevance_score,
+                'key_information': key_info,
+                'legal_significance': f"This {evidence.evidence_type.value if evidence.evidence_type else 'document'} appears relevant to your {case_context['case_type']} case.",
+                'recommendations': [
+                    "Review this document carefully for important details",
+                    "Ensure all dates and deadlines are noted",
+                    "Consider how this supports your case arguments"
+                ],
+                'summary': f"Document analysis: {word_count} words, {legal_term_count} legal terms found"
+            },
+            'analyzed_at': datetime.utcnow().isoformat()
+        }
+
+    def _fallback_merit_scoring(self, case, evidence_list: List[Evidence]) -> Dict[str, Any]:
+        """Provide basic case merit scoring without AI"""
+        # Basic scoring based on available evidence
+        evidence_count = len(evidence_list)
+        base_score = min(70, 30 + (evidence_count * 5))  # More evidence = higher score
+        
+        # Adjust based on case type
+        case_type_scores = {
+            'child_protection': 65,
+            'family_court': 60,
+            'parental_rights': 70,
+            'tribunal': 55,
+            'other': 50
+        }
+        
+        case_type = case.case_type.value if case.case_type else 'other'
+        type_adjustment = case_type_scores.get(case_type, 50)
+        final_score = int((base_score + type_adjustment) / 2)
+        
+        return {
+            'success': True,
+            'service_used': 'fallback',
+            'merit_score': final_score,
+            'strength_factors': [
+                f"You have {evidence_count} pieces of evidence" if evidence_count > 0 else "Case has been documented",
+                f"This is a {case_type.replace('_', ' ')} case with established procedures",
+                "You are taking proactive steps to gather documentation"
+            ],
+            'weakness_factors': [
+                "AI analysis not available - manual review recommended" if evidence_count < 3 else "Consider gathering additional supporting evidence",
+                "Legal advice from a qualified professional is recommended",
+                "Deadlines and procedural requirements should be carefully reviewed"
+            ],
+            'recommendations': [
+                "Gather additional supporting documentation",
+                "Research relevant legal precedents for your case type",
+                "Consider consulting with a legal professional",
+                "Ensure all filing deadlines are met",
+                "Organize evidence chronologically"
+            ],
+            'confidence_level': 3,
+            'analyzed_at': datetime.utcnow().isoformat()
+        }
+
+    def _fallback_form_suggestions(self, form_fields: List[Dict], case_data: Dict) -> Dict[str, Any]:
+        """Provide basic form field suggestions without AI"""
+        suggestions = {}
+        
+        for field in form_fields:
+            field_name = field.get('name', '')
+            field_type = field.get('type', '')
+            
+            suggestion = {
+                'suggested_value': '',
+                'confidence_level': 2,
+                'source': 'case_data',
+                'notes': 'Manual completion required - AI assistance not available'
+            }
+            
+            # Basic field mapping
+            if 'name' in field_name.lower():
+                if 'applicant' in field_name.lower() or 'plaintiff' in field_name.lower():
+                    suggestion['suggested_value'] = case_data.get('applicant_name', 'INCOMPLETE')
+                    suggestion['notes'] = 'Enter your full legal name'
+                elif 'respondent' in field_name.lower() or 'defendant' in field_name.lower():
+                    suggestion['suggested_value'] = case_data.get('respondent_name', 'INCOMPLETE')
+                    suggestion['notes'] = 'Enter the other party\'s full legal name'
+                    
+            elif 'address' in field_name.lower():
+                suggestion['suggested_value'] = case_data.get('address', 'INCOMPLETE')
+                suggestion['notes'] = 'Enter your current mailing address'
+                
+            elif 'date' in field_name.lower():
+                if 'birth' in field_name.lower():
+                    suggestion['suggested_value'] = case_data.get('birth_date', 'INCOMPLETE')
+                elif 'incident' in field_name.lower():
+                    suggestion['suggested_value'] = case_data.get('incident_date', 'INCOMPLETE')
+                suggestion['notes'] = 'Use format: DD/MM/YYYY'
+                
+            elif 'phone' in field_name.lower():
+                suggestion['suggested_value'] = case_data.get('phone', 'INCOMPLETE')
+                suggestion['notes'] = 'Include area code'
+                
+            elif 'email' in field_name.lower():
+                suggestion['suggested_value'] = case_data.get('email', 'INCOMPLETE')
+                suggestion['notes'] = 'Use an email you check regularly'
+                
+            suggestions[field_name] = suggestion
+            
+        return {
+            'success': True,
+            'service_used': 'fallback',
+            'field_suggestions': suggestions,
+            'generated_at': datetime.utcnow().isoformat()
+        }
 
 
 # Global instance
