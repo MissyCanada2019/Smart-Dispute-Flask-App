@@ -10,7 +10,7 @@
 2. Repository name: `smart-dispute-legal` (or your preferred name)
 3. Description: `Canadian Legal Self-Advocacy Platform with AI`
 4. Set to **Public** (required for free deployment)
-5. Click **"Create repository"**
+5. Click **"Crea.  6661; te repository"**
 
 ### Push Your Code:
 ```bash
