@@ -1,0 +1,14 @@
+<h1>Admin Dashboard</h1>
+<ul id="userList"></ul>
+<script>
+fetch('/admin/users')
+  .then(res => res.json())
+  .then(users => {
+    const list = document.getElementById('userList');
+    users.forEach(user => {
+      const li = document.createElement('li');
+      li.textContent = `${user.email} (${user.is_admin ? "Admin" : "User"})`;
+      list.appendChild(li);
+    });
+  });
+</script>
