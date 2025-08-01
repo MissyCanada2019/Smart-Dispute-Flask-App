@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Unauthorized - Smart Dispute Canada{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-page">
+                <h1 class="display-1 text-warning">401</h1>
+                <h2 class="mb-4">Unauthorized Access</h2>
+                <p class="lead mb-4">You need to log in to access this page.</p>
+                <div class="mt-4">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary me-3">
+                        <i class="fas fa-sign-in-alt"></i> Log In
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Go Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

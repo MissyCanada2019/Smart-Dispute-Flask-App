@@ -21,8 +21,19 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    
+    # Use environment variable for secret key, with fallback
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+    
+    # Database configuration with Railway support
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        # Railway PostgreSQL
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    else:
+        # Local SQLite fallback
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # File upload configuration
