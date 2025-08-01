@@ -1,0 +1,456 @@
+{% extends "base.html" %}
+
+{% block title %}{{ template.name if template else 'Form Submission' }} - Smart Dispute{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-field {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+    .field-label {
+        font-weight: bold;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    .field-value {
+        color: #212529;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    .field-value.empty {
+        color: #6c757d;
+        font-style: italic;
+    }
+    .form-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    .export-panel {
+        background-color: #e8f5e8;
+        border: 1px solid #c3e6c3;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .metadata-card {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    .action-buttons {
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Form Header -->
+            <div class="form-header">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="mb-2">{{ template.name if template else 'Form Submission' }}</h1>
+                        {% if template and template.description %}
+                        <p class="mb-3 opacity-75">{{ template.description }}</p>
+                        {% endif %}
+                        <div class="d-flex align-items-center">
+                            <span class="status-badge badge badge-{% if submission.status.value == 'completed' %}success{% elif submission.status.value == 'draft' %}warning{% else %}info{% endif %} me-3">
+                                {{ submission.status.value.replace('_', ' ').title() }}
+                            </span>
+                            {% if template and template.province %}
+                            <span class="badge badge-light">{{ template.province }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        {% if submission.case %}
+                        <div class="mb-2">
+                            <small class="opacity-75">Case:</small><br>
+                            <strong>{{ submission.case.title }}</strong>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <small class="opacity-75">Form ID: {{ submission.id }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Export Panel -->
+            {% if submission.status.value in ['completed', 'submitted'] %}
+            <div class="export-panel">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-2">
+                            <i class="fas fa-file-pdf text-danger me-2"></i>
+                            Export to PDF
+                        </h5>
+                        <p class="mb-0">
+                            Your completed form is ready for export. Generate a professional PDF document
+                            for court filing or record keeping.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button type="button" class="btn btn-success btn-lg" onclick="exportFormPDF()">
+                            <i class="fas fa-download me-2"></i>
+                            Download PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Form Content -->
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Form Content
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if fields %}
+                        {% for field in fields %}
+                            {% set field_value = form_data.get(field.name, '') %}
+                            {% if field.conditional_field %}
+                                {% set condition_value = form_data.get(field.conditional_field) %}
+                                {% if condition_value != field.conditional_value %}
+                                    {% continue %}
+                                {% endif %}
+                            {% endif %}
+                            
+                            <div class="form-field">
+                                <div class="field-label">{{ field.label }}</div>
+                                <div class="field-value {% if not field_value or field_value|string|trim == '' %}empty{% endif %}">
+                                    {% if field_value and field_value|string|trim != '' %}
+                                        {% if field.field_type.value == 'textarea' %}
+                                            {{ field_value|nl2br }}
+                                        {% elif field.field_type.value == 'date' %}
+                                            {% set date_obj = field_value|strptime('%Y-%m-%d') %}
+                                            {{ date_obj.strftime('%B %d, %Y') if date_obj else field_value }}
+                                        {% else %}
+                                            {{ field_value }}
+                                        {% endif %}
+                                    {% else %}
+                                        Not provided
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
+                            <h5>No Form Fields Found</h5>
+                            <p class="text-muted">Unable to display form fields for this submission.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Action Panel -->
+            <div class="action-buttons">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            {% if submission.status.value == 'draft' %}
+                            <a href="{{ url_for('forms.edit_submission', submission_id=submission.id) }}" 
+                               class="btn btn-warning">
+                                <i class="fas fa-edit me-2"></i>Edit Draft
+                            </a>
+                            <button type="button" class="btn btn-success" onclick="finalizeForm()">
+                                <i class="fas fa-check me-2"></i>Finalize Form
+                            </button>
+                            {% endif %}
+                            
+                            {% if submission.status.value in ['completed', 'submitted'] %}
+                            <button type="button" class="btn btn-primary" onclick="previewPDF()">
+                                <i class="fas fa-eye me-2"></i>Preview PDF
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="exportFormPDF()">
+                                <i class="fas fa-file-pdf me-2"></i>Export PDF
+                            </button>
+                            {% endif %}
+                            
+                            <hr>
+                            
+                            <a href="{{ url_for('forms.my_submissions') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-list me-2"></i>My Submissions
+                            </a>
+                            
+                            {% if submission.case %}
+                            <a href="{{ url_for('forms.forms_for_case', case_id=submission.case.id) }}" 
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-folder me-2"></i>Case Forms
+                            </a>
+                            {% endif %}
+                            
+                            <button type="button" class="btn btn-outline-danger" onclick="deleteForm()">
+                                <i class="fas fa-trash me-2"></i>Delete Form
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Metadata -->
+                <div class="metadata-card mb-3">
+                    <h6 class="mb-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Form Information
+                    </h6>
+                    
+                    <div class="mb-2">
+                        <strong>Created:</strong><br>
+                        <small>{{ submission.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    
+                    {% if submission.updated_at and submission.updated_at != submission.created_at %}
+                    <div class="mb-2">
+                        <strong>Last Updated:</strong><br>
+                        <small>{{ submission.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    {% endif %}
+                    
+                    {% if submission.submitted_at %}
+                    <div class="mb-2">
+                        <strong>Finalized:</strong><br>
+                        <small>{{ submission.submitted_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-2">
+                        <strong>Province:</strong><br>
+                        {{ template.province if template else 'N/A' }}
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong>Form Category:</strong><br>
+                        {{ template.category.replace('_', ' ').title() if template else 'N/A' }}
+                    </div>
+                    
+                    {% if submission.case %}
+                    <div class="mt-3 pt-3 border-top">
+                        <strong>Associated Case:</strong><br>
+                        <a href="{{ url_for('cases.view_case', case_id=submission.case.id) }}" 
+                           class="text-decoration-none">
+                            {{ submission.case.title }}
+                        </a>
+                        {% if submission.case.case_number %}
+                        <br><small class="text-muted">{{ submission.case.case_number }}</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- PDF Export Tips -->
+                {% if submission.status.value in ['completed', 'submitted'] %}
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            PDF Export Tips
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <small>Review all information before filing</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <small>Print or save multiple copies</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <small>Check court filing requirements</small>
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <small>Keep digital and physical copies</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function exportFormPDF() {
+    const submissionId = {{ submission.id }};
+    
+    // Show loading state
+    const loadingToast = showToast('Generating PDF...', 'info', 0);
+    
+    // Create download link
+    const link = document.createElement('a');
+    link.href = `/forms/submission/${submissionId}/export-pdf`;
+    link.download = '';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    
+    // Trigger download
+    link.click();
+    document.body.removeChild(link);
+    
+    // Hide loading and show success
+    setTimeout(() => {
+        hideToast(loadingToast);
+        showToast('PDF download started successfully', 'success');
+    }, 1000);
+}
+
+function previewPDF() {
+    const submissionId = {{ submission.id }};
+    
+    fetch(`/forms/api/submission/${submissionId}/pdf-preview`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showToast(data.error, 'error');
+                return;
+            }
+            
+            // Show preview modal or information
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">PDF Export Preview</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Form Information</h6>
+                                    <p><strong>Form:</strong> ${data.form_name}</p>
+                                    <p><strong>Status:</strong> ${data.status}</p>
+                                    <p><strong>Created:</strong> ${data.created_date}</p>
+                                    ${data.case_title ? `<p><strong>Case:</strong> ${data.case_title}</p>` : ''}
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Export Details</h6>
+                                    <p><strong>Filename:</strong> ${data.filename}</p>
+                                    <p><strong>Fields:</strong> ${data.completed_fields}/${data.field_count} completed</p>
+                                    <p><strong>Format:</strong> Professional PDF</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success" onclick="exportFormPDF(); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
+                                <i class="fas fa-download me-2"></i>Download PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            
+            // Remove modal after hiding
+            modal.addEventListener('hidden.bs.modal', () => {
+                document.body.removeChild(modal);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error loading PDF preview', 'error');
+        });
+}
+
+function finalizeForm() {
+    if (!confirm('Finalize this form? You will not be able to edit it after finalizing.')) {
+        return;
+    }
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/forms/submission/{{ submission.id }}/finalize`;
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    
+    form.submit();
+}
+
+function deleteForm() {
+    if (!confirm('Are you sure you want to delete this form? This action cannot be undone.')) {
+        return;
+    }
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/forms/submission/{{ submission.id }}/delete`;
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    
+    form.submit();
+}
+
+function showToast(message, type, duration = 5000) {
+    const toastId = 'toast-' + Date.now();
+    const toastColors = {
+        'success': 'alert-success',
+        'error': 'alert-danger',
+        'warning': 'alert-warning',
+        'info': 'alert-info'
+    };
+    
+    const toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = `alert ${toastColors[type] || 'alert-info'} alert-dismissible position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="hideToast('${toastId}')"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    if (duration > 0) {
+        setTimeout(() => hideToast(toastId), duration);
+    }
+    
+    return toastId;
+}
+
+function hideToast(toastId) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+        toast.remove();
+    }
+}
+</script>
+{% endblock %}

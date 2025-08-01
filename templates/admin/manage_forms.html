@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Forms - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">
+                    <i class="fas fa-file-alt"></i> Manage Form Templates
+                </h1>
+                <div>
+                    <form method="POST" action="{{ url_for('admin.initialize_templates') }}" class="d-inline">
+                        <button type="submit" class="btn btn-primary" onclick="return confirm('This will create default templates for all provinces. Continue?')">
+                            <i class="fas fa-plus"></i> Initialize Templates
+                        </button>
+                    </form>
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if templates_by_province %}
+        {% for province, templates in templates_by_province.items() %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-map-marker-alt"></i> {{ province }} Templates
+                    <span class="badge badge-secondary ml-2">{{ templates|length }}</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Case Type</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for template in templates %}
+                            <tr>
+                                <td>
+                                    <strong>{{ template.name }}</strong>
+                                    {% if template.description %}
+                                        <br>
+                                        <small class="text-muted">{{ template.description[:100] }}{% if template.description|length > 100 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-info">{{ template.category }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-secondary">{{ template.case_type }}</span>
+                                </td>
+                                <td>
+                                    {% if template.is_active %}
+                                        <span class="badge badge-success">Active</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ template.created_at.strftime('%Y-%m-%d') if template.created_at else 'N/A' }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('admin.edit_template', template_id=template.id) }}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form method="POST" action="{{ url_for('admin.toggle_template', template_id=template.id) }}" class="d-inline">
+                                            <button type="submit"
+                                                    class="btn btn-outline-{{ 'warning' if template.is_active else 'success' }}"
+                                                    onclick="return confirm('Are you sure you want to {% if template.is_active %}deactivate{% else %}activate{% endif %} this template?')">
+                                                <i class="fas fa-{{ 'pause' if template.is_active else 'play' }}"></i>
+                                                {{ 'Deactivate' if template.is_active else 'Activate' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <h4>No Form Templates Found</h4>
+                <p class="text-muted">Get started by initializing the default Canadian court form templates.</p>
+                <form method="POST" action="{{ url_for('admin.initialize_templates') }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Initialize Default Templates
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

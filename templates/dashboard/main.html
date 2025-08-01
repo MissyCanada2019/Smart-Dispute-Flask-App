@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Dispute Canada{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p class="text-muted">Welcome back, {{ current_user.email }}. Here's your case overview.</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('dashboard.analytics_dashboard') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                    <a href="{{ url_for('dashboard.quick_actions') }}" class="btn btn-primary">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </a>
+                </div>
+            </div>
+
+            <!-- Metrics Overview -->
+            {% if data.success %}
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="h4 mb-0">{{ data.metrics.total_cases }}</div>
+                                    <div class="small">Total Cases</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-briefcase fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="h4 mb-0">{{ data.metrics.active_cases }}</div>
+                                    <div class="small">Active Cases</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-play-circle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="h4 mb-0">{{ data.metrics.average_merit_score }}%</div>
+                                    <div class="small">Avg Merit Score</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-chart-line fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="h4 mb-0">{{ data.metrics.completion_rate }}%</div>
+                                    <div class="small">Completion Rate</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Priority Cases -->
+                    {% if data.priority_cases %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-exclamation-triangle"></i> Priority Cases
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% for priority_case in data.priority_cases %}
+                            <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded {% if not loop.last %}mb-3{% endif %}">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a href="{{ url_for('cases.view_case', case_id=priority_case.case.id) }}" class="text-decoration-none">
+                                            {{ priority_case.case.title }}
+                                        </a>
+                                    </h6>
+                                    <div class="mb-2">
+                                        {% for reason in priority_case.reasons %}
+                                        <span class="badge badge-danger badge-sm mr-1">{{ reason }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ priority_case.case.case_type.value.replace('_', ' ').title() }} - {{ priority_case.case.province }}
+                                    </small>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('cases.view_case', case_id=priority_case.case.id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-arrow-right"></i> View Case
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Cases Overview -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-folder"></i> Your Cases
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if data.cases %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Case</th>
+                                            <th>Progress</th>
+                                            <th>Evidence</th>
+                                            <th>Forms</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for case_summary in data.cases %}
+                                        {% set case = case_summary.case %}
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <strong>
+                                                        <a href="{{ url_for('cases.view_case', case_id=case.id) }}" class="text-decoration-none">
+                                                            {{ case.title }}
+                                                        </a>
+                                                    </strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ case.case_number }}</small>
+                                                    <br>
+                                                    <span class="badge badge-{% if case.priority.value == 'high' %}danger{% elif case.priority.value == 'medium' %}warning{% else %}info{% endif %} badge-sm">
+                                                        {{ case.priority.value.title() }}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="progress mb-1" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" 
+                                                         style="width: {{ case_summary.journey_progress }}%"
+                                                         aria-valuenow="{{ case_summary.journey_progress }}" 
+                                                         aria-valuemin="0" aria-valuemax="100">
+                                                        {{ case_summary.journey_progress }}%
+                                                    </div>
+                                                </div>
+                                                {% if case_summary.current_stage %}
+                                                <small class="text-muted">{{ case_summary.current_stage }}</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="text-center">
+                                                    <div class="h6 mb-0">{{ case_summary.processed_evidence }}/{{ case_summary.evidence_count }}</div>
+                                                    <small class="text-muted">Processed</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="text-center">
+                                                    <div class="h6 mb-0">{{ case_summary.completed_forms }}/{{ case_summary.form_count }}</div>
+                                                    <small class="text-muted">Completed</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('cases.view_case', case_id=case.id) }}" class="btn btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                    <a href="{{ url_for('journey.view_case_journey', case_id=case.id) }}" class="btn btn-outline-info">
+                                                        <i class="fas fa-route"></i> Journey
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                                <h5>No Cases Yet</h5>
+                                <p class="text-muted">Get started by creating your first case.</p>
+                                <a href="{{ url_for('cases.create_case') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Create Your First Case
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    {% if data.recent_activity %}
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-history"></i> Recent Activity
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% for activity in data.recent_activity %}
+                            <div class="d-flex align-items-start mb-3 {% if not loop.last %}pb-3 border-bottom{% endif %}">
+                                <div class="mr-3">
+                                    <i class="{{ activity.icon }} text-{{ activity.color }}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ activity.title }}</h6>
+                                    <p class="text-muted mb-1">{{ activity.description }}</p>
+                                    <small class="text-muted">{{ format_time_ago(activity.timestamp) }}</small>
+                                </div>
+                                {% if activity.case_id %}
+                                <div>
+                                    <a href="{{ url_for('cases.view_case', case_id=activity.case_id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Upcoming Deadlines -->
+                    {% if data.upcoming_deadlines %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-clock"></i> Upcoming Deadlines
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% for deadline in data.upcoming_deadlines %}
+                            <div class="d-flex justify-content-between align-items-center mb-3 p-2 border-left border-{{ get_urgency_class(deadline.urgency) }} {% if not loop.last %}pb-3 border-bottom{% endif %}">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 text-{{ get_urgency_class(deadline.urgency) }}">{{ deadline.title }}</h6>
+                                    <p class="mb-1">{{ deadline.case_title }}</p>
+                                    <small class="text-muted">
+                                        {{ deadline.date.strftime('%B %d, %Y') }}
+                                        {% if deadline.time %}
+                                        at {{ deadline.time.strftime('%I:%M %p') }}
+                                        {% endif %}
+                                        <br>
+                                        {% if deadline.days_until == 0 %}
+                                        <span class="text-danger font-weight-bold">TODAY</span>
+                                        {% elif deadline.days_until == 1 %}
+                                        <span class="text-danger font-weight-bold">TOMORROW</span>
+                                        {% else %}
+                                        {{ deadline.days_until }} days away
+                                        {% endif %}
+                                    </small>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('cases.view_case', case_id=deadline.case_id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Actionable Items -->
+                    {% if data.actionable_items %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-tasks"></i> Action Items
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% for item in data.actionable_items[:5] %}
+                            <div class="d-flex align-items-start mb-3 {% if not loop.last %}pb-3 border-bottom{% endif %}">
+                                <div class="mr-2">
+                                    <i class="{{ item.icon }} text-{% if item.priority == 'high' %}danger{% elif item.priority == 'medium' %}warning{% else %}info{% endif %}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ item.title }}</h6>
+                                    <p class="text-muted mb-1">{{ item.description }}</p>
+                                    <small class="text-muted">{{ item.case_title }}</small>
+                                </div>
+                                <div>
+                                    <a href="{{ item.action_url }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if data.actionable_items|length > 5 %}
+                            <div class="text-center">
+                                <a href="{{ url_for('dashboard.quick_actions') }}" class="btn btn-outline-primary btn-sm">
+                                    View All {{ data.actionable_items|length }} Items
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Quick Links -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-rocket"></i> Quick Actions
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('cases.create_case') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Create New Case
+                                </a>
+                                <a href="{{ url_for('forms.list_forms') }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-file-alt"></i> Browse Court Forms
+                                </a>
+                                <a href="{{ url_for('journey.dashboard') }}" class="btn btn-outline-info">
+                                    <i class="fas fa-route"></i> Legal Journey Guide
+                                </a>
+                                {% if data.cases %}
+                                <a href="{{ url_for('cases.list_cases') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-list"></i> View All Cases
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Error State -->
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Dashboard Error</h4>
+                <p>{{ data.error }}</p>
+                <hr>
+                <p class="mb-0">Please try refreshing the page or contact support if the problem persists.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Auto-refresh Dashboard -->
+<script>
+// Auto-refresh dashboard every 2 minutes
+setInterval(function() {
+    fetch('/dashboard/api/refresh')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update counters if changed
+                console.log('Dashboard refreshed:', data.last_updated);
+                // Could update specific metrics here without full page reload
+            }
+        })
+        .catch(error => console.log('Auto-refresh error:', error));
+}, 120000); // 2 minutes
+
+// Add tooltips to progress bars
+document.addEventListener('DOMContentLoaded', function() {
+    var progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(function(bar) {
+        bar.setAttribute('title', bar.getAttribute('aria-valuenow') + '% complete');
+    });
+});
+</script>
+{% endblock %}

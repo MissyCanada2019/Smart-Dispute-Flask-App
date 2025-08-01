@@ -1,0 +1,552 @@
+{% extends "base.html" %}
+
+{% block title %}{{ evidence.title }} - Evidence Details{% endblock %}
+
+{% block head %}
+<style>
+.evidence-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.relevance-score {
+    font-size: 3em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.relevance-meter {
+    width: 100%;
+    height: 20px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.relevance-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
+    transition: width 0.5s ease;
+}
+
+.info-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.info-card h5 {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.extracted-text {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+.keyword-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.keyword {
+    background: #e9ecef;
+    color: #495057;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.keyword.legal {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.identified-items {
+    background: #f8f9ff;
+    border-left: 4px solid #007bff;
+    padding: 15px 20px;
+    margin: 15px 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.action-buttons {
+    position: sticky;
+    top: 20px;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.file-preview {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background: #f8f9fa;
+    margin-bottom: 20px;
+}
+
+.file-icon {
+    font-size: 4em;
+    color: #007bff;
+    margin-bottom: 15px;
+}
+
+.analysis-timeline {
+    border-left: 3px solid #007bff;
+    padding-left: 20px;
+    margin: 20px 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -27px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #007bff;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .evidence-header {
+        padding: 20px;
+    }
+    
+    .relevance-score {
+        font-size: 2em;
+    }
+    
+    .action-buttons {
+        position: static;
+        margin-bottom: 20px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.list_cases') }}">Cases</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.view_case', case_id=case.id) }}">{{ case.title }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('evidence.review_evidence', case_id=case.id) }}">Evidence</a></li>
+                    <li class="breadcrumb-item active">{{ evidence.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Evidence Header -->
+            <div class="evidence-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-2">{{ evidence.title }}</h2>
+                        <p class="mb-3 opacity-75">{{ evidence.description or 'No description provided' }}</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <span><i class="fas fa-file me-1"></i> {{ evidence.original_filename }}</span>
+                            <span><i class="fas fa-calendar me-1"></i> {{ evidence.uploaded_at.strftime('%Y-%m-%d %H:%M') if evidence.uploaded_at else 'Unknown' }}</span>
+                            <span><i class="fas fa-weight me-1"></i> {{ ((evidence.file_size or 0) / 1024 / 1024)|round(1) }} MB</span>
+                        </div>
+                    </div>
+                    {% if evidence.ai_relevance_score is not none %}
+                    <div class="col-md-4 text-center">
+                        <div class="relevance-score">{{ (evidence.ai_relevance_score * 100)|round|int }}%</div>
+                        <div class="relevance-meter">
+                            <div class="relevance-fill" style="width: {{ (evidence.ai_relevance_score * 100)|round|int }}%"></div>
+                        </div>
+                        <small class="opacity-75">AI Relevance Score</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- File Preview -->
+            <div class="info-card">
+                <h5><i class="fas fa-file-alt me-2"></i>File Information</h5>
+                <div class="file-preview">
+                    <div class="file-icon">
+                        {% if evidence.mime_type %}
+                            {% if evidence.mime_type.startswith('image/') %}
+                                <i class="fas fa-image"></i>
+                            {% elif evidence.mime_type == 'application/pdf' %}
+                                <i class="fas fa-file-pdf"></i>
+                            {% elif 'word' in evidence.mime_type %}
+                                <i class="fas fa-file-word"></i>
+                            {% elif evidence.mime_type.startswith('audio/') %}
+                                <i class="fas fa-file-audio"></i>
+                            {% elif evidence.mime_type.startswith('video/') %}
+                                <i class="fas fa-file-video"></i>
+                            {% else %}
+                                <i class="fas fa-file"></i>
+                            {% endif %}
+                        {% else %}
+                            <i class="fas fa-file"></i>
+                        {% endif %}
+                    </div>
+                    <h5>{{ evidence.original_filename }}</h5>
+                    <p class="text-muted">{{ evidence.mime_type or 'Unknown type' }}</p>
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <a href="{{ url_for('secure_files.view_file', evidence_id=evidence.id) }}" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-eye me-1"></i> View File
+                        </a>
+                        <a href="{{ url_for('secure_files.download_file', evidence_id=evidence.id) }}" class="btn btn-success">
+                            <i class="fas fa-download me-1"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Summary -->
+            {% if evidence.ai_summary %}
+            <div class="info-card">
+                <h5><i class="fas fa-brain me-2"></i>AI Summary</h5>
+                <p class="lead">{{ evidence.ai_summary }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Identified Information -->
+            {% if evidence.identified_dates or evidence.identified_names or evidence.identified_locations %}
+            <div class="info-card">
+                <h5><i class="fas fa-search me-2"></i>Identified Information</h5>
+                
+                {% if evidence.identified_dates %}
+                <div class="identified-items">
+                    <h6><i class="fas fa-calendar-alt me-2"></i>Important Dates</h6>
+                    <div class="keyword-cloud">
+                        {% for date in evidence.identified_dates %}
+                        <span class="keyword">{{ date }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if evidence.identified_names %}
+                <div class="identified-items">
+                    <h6><i class="fas fa-user me-2"></i>Names & Parties</h6>
+                    <div class="keyword-cloud">
+                        {% for name in evidence.identified_names %}
+                        <span class="keyword">{{ name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if evidence.identified_locations %}
+                <div class="identified-items">
+                    <h6><i class="fas fa-map-marker-alt me-2"></i>Locations</h6>
+                    <div class="keyword-cloud">
+                        {% for location in evidence.identified_locations %}
+                        <span class="keyword">{{ location }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Legal Keywords -->
+            {% if evidence.legal_keywords %}
+            <div class="info-card">
+                <h5><i class="fas fa-balance-scale me-2"></i>Legal Keywords</h5>
+                <div class="keyword-cloud">
+                    {% for keyword in evidence.legal_keywords %}
+                    <span class="keyword legal">{{ keyword }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Extracted Text -->
+            {% if evidence.extracted_text %}
+            <div class="info-card">
+                <h5><i class="fas fa-file-text me-2"></i>Extracted Text</h5>
+                <div class="extracted-text">
+                    {{ evidence.extracted_text }}
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="copyText()">
+                        <i class="fas fa-copy me-1"></i> Copy Text
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="toggleTextExpansion()">
+                        <i class="fas fa-expand-arrows-alt me-1"></i> Expand
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Detailed Analysis -->
+            {% if evidence.ai_analysis %}
+            <div class="info-card">
+                <h5><i class="fas fa-chart-line me-2"></i>Detailed Analysis</h5>
+                <div class="accordion" id="analysisAccordion">
+                    {% for key, value in evidence.ai_analysis.items() %}
+                    {% if value and key not in ['processing_error', 'source', 'user_relevance_notes', 'evidence_date'] %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading{{ loop.index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse{{ loop.index }}">
+                                {{ key.replace('_', ' ').title() }}
+                            </button>
+                        </h2>
+                        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" 
+                             data-bs-parent="#analysisAccordion">
+                            <div class="accordion-body">
+                                {% if value is string %}
+                                    {{ value }}
+                                {% else %}
+                                    <pre>{{ value | tojson(indent=2) }}</pre>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Processing Timeline -->
+            <div class="info-card">
+                <h5><i class="fas fa-history me-2"></i>Processing Timeline</h5>
+                <div class="analysis-timeline">
+                    <div class="timeline-item">
+                        <strong>Uploaded</strong>
+                        <div class="text-muted">{{ evidence.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') if evidence.uploaded_at else 'Unknown' }}</div>
+                    </div>
+                    {% if evidence.processed_at %}
+                    <div class="timeline-item">
+                        <strong>Content Processed</strong>
+                        <div class="text-muted">{{ evidence.processed_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    </div>
+                    {% endif %}
+                    {% if evidence.analyzed_at %}
+                    <div class="timeline-item">
+                        <strong>AI Analysis Completed</strong>
+                        <div class="text-muted">{{ evidence.analyzed_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    </div>
+                    {% endif %}
+                    {% if evidence.last_accessed_at %}
+                    <div class="timeline-item">
+                        <strong>Last Accessed</strong>
+                        <div class="text-muted">{{ evidence.last_accessed_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Actions -->
+            <div class="action-buttons">
+                <h5 class="mb-3">Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('secure_files.view_file', evidence_id=evidence.id) }}" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-eye me-2"></i> View File
+                    </a>
+                    <a href="{{ url_for('secure_files.download_file', evidence_id=evidence.id) }}" class="btn btn-success">
+                        <i class="fas fa-download me-2"></i> Download File
+                    </a>
+                    <button class="btn btn-info" onclick="reanalyzeEvidence()">
+                        <i class="fas fa-sync me-2"></i> Re-analyze
+                    </button>
+                    <a href="{{ url_for('evidence.review_evidence', case_id=case.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Evidence
+                    </a>
+                </div>
+            </div>
+
+            <!-- Evidence Details -->
+            <div class="info-card">
+                <h5><i class="fas fa-info-circle me-2"></i>Details</h5>
+                <table class="table table-borderless table-sm">
+                    <tr>
+                        <td><strong>Type:</strong></td>
+                        <td>{{ evidence.evidence_type.value.title().replace('_', ' ') if evidence.evidence_type else 'Other' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td>
+                            <span class="badge 
+                                {% if evidence.status.name == 'ANALYZED' %}bg-success
+                                {% elif evidence.status.name == 'PROCESSING' %}bg-warning
+                                {% elif evidence.status.name == 'ERROR' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ evidence.status.value.title() if evidence.status else 'Unknown' }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>File Size:</strong></td>
+                        <td>{{ ((evidence.file_size or 0) / 1024 / 1024)|round(1) }} MB</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MIME Type:</strong></td>
+                        <td>{{ evidence.mime_type or 'Unknown' }}</td>
+                    </tr>
+                    {% if evidence.access_count %}
+                    <tr>
+                        <td><strong>Access Count:</strong></td>
+                        <td>{{ evidence.access_count }} times</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td><strong>Security:</strong></td>
+                        <td>{{ evidence.get_security_level() }}</td>
+                    </tr>
+                </table>
+
+                {% if evidence.is_confidential %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-lock me-2"></i> This evidence is marked as confidential
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Case Context -->
+            <div class="info-card">
+                <h5><i class="fas fa-folder me-2"></i>Case Context</h5>
+                <h6><a href="{{ url_for('cases.view_case', case_id=case.id) }}" class="text-decoration-none">{{ case.title }}</a></h6>
+                <p class="text-muted">{{ case.case_type.value.title().replace('_', ' ') if case.case_type else 'Unknown Type' }} • {{ case.province or 'Unknown Province' }}</p>
+                <p class="small">{{ case.description[:150] }}{% if case.description and case.description|length > 150 %}...{% endif %}</p>
+                
+                <div class="mt-3">
+                    <a href="{{ url_for('evidence.review_evidence', case_id=case.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-list me-1"></i> All Evidence
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Copy extracted text to clipboard
+function copyText() {
+    const textElement = document.querySelector('.extracted-text');
+    if (textElement) {
+        const text = textElement.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            showAlert('Text copied to clipboard', 'success');
+        }).catch(() => {
+            showAlert('Failed to copy text', 'error');
+        });
+    }
+}
+
+// Toggle text expansion
+function toggleTextExpansion() {
+    const textElement = document.querySelector('.extracted-text');
+    const button = event.target.closest('button');
+    
+    if (textElement.style.maxHeight === 'none') {
+        textElement.style.maxHeight = '400px';
+        button.innerHTML = '<i class="fas fa-expand-arrows-alt me-1"></i> Expand';
+    } else {
+        textElement.style.maxHeight = 'none';
+        button.innerHTML = '<i class="fas fa-compress-arrows-alt me-1"></i> Collapse';
+    }
+}
+
+// Re-analyze evidence
+async function reanalyzeEvidence() {
+    if (!confirm('Re-analyze this evidence? This will update the AI analysis results.')) {
+        return;
+    }
+    
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Analyzing...';
+    
+    try {
+        const response = await fetch(`/evidence/reanalyze/{{ evidence.id }}`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('Evidence re-analyzed successfully', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert(result.error || 'Error re-analyzing evidence', 'error');
+        }
+    } catch (error) {
+        console.error('Error re-analyzing evidence:', error);
+        showAlert('Error re-analyzing evidence', 'error');
+    } finally {
+        button.disabled = false;
+        button.innerHTML = originalText;
+    }
+}
+
+// Show alert
+function showAlert(message, type) {
+    const alertClass = {
+        'success': 'alert-success',
+        'error': 'alert-danger',
+        'warning': 'alert-warning',
+        'info': 'alert-info'
+    }[type] || 'alert-info';
+    
+    const alert = document.createElement('div');
+    alert.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.parentNode.removeChild(alert);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,643 @@
+{% extends "base.html" %}
+
+{% block title %}Progress Tracking - {{ case.title }}{% endblock %}
+
+{% block head %}
+<style>
+.progress-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.overall-progress {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.progress-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-inner {
+    width: 90px;
+    height: 90px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.stage-progress {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.stage-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+}
+
+.stage-item:last-child {
+    border-bottom: none;
+}
+
+.stage-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    font-size: 1.2em;
+    position: relative;
+    z-index: 2;
+}
+
+.stage-active {
+    background: #007bff;
+    color: white;
+}
+
+.stage-completed {
+    background: #28a745;
+    color: white;
+}
+
+.stage-pending {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.stage-content {
+    flex: 1;
+}
+
+.stage-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stage-description {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.stage-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.stage-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #28a745);
+    transition: width 0.5s ease;
+}
+
+.milestones-timeline {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 30px;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #28a745;
+}
+
+.timeline-marker.pending {
+    border-color: #dee2e6;
+    background: #f8f9fa;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+}
+
+.timeline-content.pending {
+    border-left-color: #dee2e6;
+}
+
+.next-actions {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.action-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-priority {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.priority-urgent { background: #dc3545; }
+.priority-high { background: #fd7e14; }
+.priority-medium { background: #ffc107; }
+.priority-low { background: #28a745; }
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.blocking-issues {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.issue-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ffeaa7;
+}
+
+.issue-item:last-child {
+    border-bottom: none;
+}
+
+.issue-severity {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.severity-high { background: #dc3545; }
+.severity-medium { background: #ffc107; }
+.severity-low { background: #28a745; }
+
+@media (max-width: 768px) {
+    .progress-header {
+        padding: 20px;
+    }
+    
+    .overall-progress {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .progress-circle {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .progress-inner {
+        width: 80px;
+        height: 80px;
+        font-size: 1.2em;
+    }
+    
+    .statistics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-chart-line"></i> Progress Tracking</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ url_for('cases.list_cases') }}">Cases</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('cases.view_case', case_id=case.id) }}">{{ case.title }}</a></li>
+                            <li class="breadcrumb-item active">Progress</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a href="{{ url_for('tracking.export_progress_report', case_id=case.id) }}" class="btn btn-outline-secondary" target="_blank">
+                        <i class="fas fa-download"></i> Export Report
+                    </a>
+                    <a href="{{ url_for('tracking.progress_overview') }}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> All Cases
+                    </a>
+                </div>
+            </div>
+
+            <!-- Progress Header -->
+            <div class="progress-header">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        <div class="overall-progress">
+                            <div class="progress-circle">
+                                <div class="progress-inner">
+                                    {{ progress.overall_progress }}%
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="mt-3 mb-0">Overall Progress</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>{{ case.title }}</h3>
+                        <p class="mb-2 opacity-75">{{ case.case_type.value.title().replace('_', ' ') if case.case_type else 'Unknown Type' }} • {{ case.province or 'Unknown Province' }}</p>
+                        <p class="mb-2">
+                            <strong>Current Stage:</strong> 
+                            {{ progress.current_stage.title().replace('_', ' ') }}
+                        </p>
+                        {% if progress.estimated_completion %}
+                        <p class="mb-0">
+                            <strong>Estimated Completion:</strong> 
+                            {{ progress.estimated_completion[:10] }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="mb-2">
+                                <strong>Progress Trend</strong>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center">
+                                {% if progress.progress_trend.trend == 'increasing' %}
+                                    <i class="fas fa-trending-up text-success fa-2x me-2"></i>
+                                    <span class="text-success">{{ progress.progress_trend.trend.title() }}</span>
+                                {% elif progress.progress_trend.trend == 'steady' %}
+                                    <i class="fas fa-minus text-warning fa-2x me-2"></i>
+                                    <span class="text-warning">{{ progress.progress_trend.trend.title() }}</span>
+                                {% else %}
+                                    <i class="fas fa-trending-down text-danger fa-2x me-2"></i>
+                                    <span class="text-danger">{{ progress.progress_trend.trend.title() }}</span>
+                                {% endif %}
+                            </div>
+                            <small class="opacity-75">{{ progress.progress_trend.description }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blocking Issues -->
+            {% if progress.blocking_issues %}
+            <div class="blocking-issues">
+                <h5 class="mb-3"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Issues Requiring Attention</h5>
+                {% for issue in progress.blocking_issues %}
+                <div class="issue-item">
+                    <div class="issue-severity severity-{{ issue.severity }}"></div>
+                    <div class="flex-grow-1">
+                        <strong>{{ issue.title }}</strong>
+                        <div class="text-muted">{{ issue.description }}</div>
+                    </div>
+                    {% if issue.action_url %}
+                    <a href="{{ issue.action_url }}" class="btn btn-sm btn-outline-warning">
+                        <i class="fas fa-external-link-alt"></i> Fix
+                    </a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Statistics -->
+            <div class="statistics-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ progress.milestones|length }}</div>
+                    <div class="stat-label">Milestones</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ progress.next_actions|length }}</div>
+                    <div class="stat-label">Next Actions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ progress.progress_trend.recent_activity }}</div>
+                    <div class="stat-label">Recent Activity</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">
+                        {% if progress.estimated_completion %}
+                            {{ ((progress.estimated_completion | regex_replace(r'(\d{4}-\d{2}-\d{2}).*', '\\1') | strptime('%Y-%m-%d') - now().date()).days) }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Days to Complete</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Stage Progress -->
+                    <div class="stage-progress">
+                        <h4 class="mb-4"><i class="fas fa-tasks me-2"></i>Stage Progress</h4>
+                        
+                        {% set stage_names = {
+                            'preparation': 'Case Preparation',
+                            'evidence_gathering': 'Evidence Gathering',
+                            'form_completion': 'Form Completion',
+                            'review_submission': 'Review & Submission',
+                            'court_process': 'Court Process',
+                            'resolution': 'Resolution'
+                        } %}
+                        
+                        {% set stage_descriptions = {
+                            'preparation': 'Setting up case details and legal journey',
+                            'evidence_gathering': 'Collecting and analyzing evidence',
+                            'form_completion': 'Completing required court forms', 
+                            'review_submission': 'Reviewing and submitting documents',
+                            'court_process': 'Court hearings and proceedings',
+                            'resolution': 'Final outcome and case closure'
+                        } %}
+                        
+                        {% for stage, progress_value in progress.stage_progress.items() %}
+                        <div class="stage-item">
+                            <div class="stage-icon 
+                                {% if stage == progress.current_stage %}stage-active
+                                {% elif progress_value >= 100 %}stage-completed
+                                {% else %}stage-pending{% endif %}">
+                                {% if stage == 'preparation' %}
+                                    <i class="fas fa-clipboard-list"></i>
+                                {% elif stage == 'evidence_gathering' %}
+                                    <i class="fas fa-search"></i>
+                                {% elif stage == 'form_completion' %}
+                                    <i class="fas fa-file-alt"></i>
+                                {% elif stage == 'review_submission' %}
+                                    <i class="fas fa-paper-plane"></i>
+                                {% elif stage == 'court_process' %}
+                                    <i class="fas fa-gavel"></i>
+                                {% else %}
+                                    <i class="fas fa-flag-checkered"></i>
+                                {% endif %}
+                            </div>
+                            <div class="stage-content">
+                                <div class="stage-title">{{ stage_names.get(stage, stage.title().replace('_', ' ')) }}</div>
+                                <div class="stage-description">{{ stage_descriptions.get(stage, '') }}</div>
+                                <div class="stage-progress-bar">
+                                    <div class="stage-progress-fill" style="width: {{ progress_value }}%"></div>
+                                </div>
+                                <small class="text-muted">{{ progress_value }}% complete</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="milestones-timeline">
+                        <h4 class="mb-4"><i class="fas fa-history me-2"></i>Case Timeline</h4>
+                        <div class="timeline">
+                            {% for milestone in progress.milestones %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker {% if not milestone.completed %}pending{% endif %}"></div>
+                                <div class="timeline-content {% if not milestone.completed %}pending{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ milestone.title }}</h6>
+                                            <p class="mb-1">{{ milestone.description }}</p>
+                                            {% if milestone.date %}
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {{ milestone.date[:10] }}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                        {% if milestone.icon %}
+                                        <i class="{{ milestone.icon }} text-{{ milestone.color or 'muted' }}"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Next Actions -->
+                    <div class="next-actions">
+                        <h4 class="mb-3"><i class="fas fa-tasks me-2"></i>Next Actions</h4>
+                        {% if progress.next_actions %}
+                            {% for action in progress.next_actions %}
+                            <a href="{{ action.url or '#' }}" class="action-item">
+                                <div class="action-priority priority-{{ action.priority or 'medium' }}"></div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">{{ action.title }}</div>
+                                    <small class="text-muted">{{ action.description }}</small>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-check-circle fa-3x mb-3"></i>
+                                <p>No immediate actions required!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="next-actions">
+                        <h4 class="mb-3"><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                        <a href="{{ url_for('evidence.upload_page', case_id=case.id) }}" class="action-item">
+                            <div class="action-priority priority-medium"></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">Upload Evidence</div>
+                                <small class="text-muted">Add supporting documents</small>
+                            </div>
+                            <i class="fas fa-upload text-muted"></i>
+                        </a>
+                        
+                        <a href="{{ url_for('forms.list_case_forms', case_id=case.id) }}" class="action-item">
+                            <div class="action-priority priority-medium"></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">Manage Forms</div>
+                                <small class="text-muted">Work on court forms</small>
+                            </div>
+                            <i class="fas fa-file-alt text-muted"></i>
+                        </a>
+                        
+                        <a href="{{ url_for('journey.view_case_journey', case_id=case.id) }}" class="action-item">
+                            <div class="action-priority priority-low"></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">Legal Journey</div>
+                                <small class="text-muted">Continue guided process</small>
+                            </div>
+                            <i class="fas fa-route text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh progress data every 30 seconds
+setInterval(function() {
+    fetch(`/tracking/api/case/{{ case.id }}/progress`)
+        .then(response => response.json())
+        .then(data => {
+            // Update progress indicators without full page reload
+            updateProgressIndicators(data);
+        })
+        .catch(error => console.log('Progress update failed:', error));
+}, 30000);
+
+function updateProgressIndicators(data) {
+    // Update overall progress circle
+    const progressInner = document.querySelector('.progress-inner');
+    if (progressInner) {
+        progressInner.textContent = Math.round(data.overall_progress) + '%';
+    }
+    
+    // Update stage progress bars
+    Object.entries(data.stage_progress).forEach(([stage, progress]) => {
+        const progressBar = document.querySelector(`[data-stage="${stage}"] .stage-progress-fill`);
+        if (progressBar) {
+            progressBar.style.width = progress + '%';
+        }
+    });
+}
+
+// Add milestone functionality
+function showAddMilestone() {
+    const modal = new bootstrap.Modal(document.getElementById('addMilestoneModal'));
+    modal.show();
+}
+
+async function addCustomMilestone() {
+    const title = document.getElementById('milestoneTitle').value.trim();
+    const description = document.getElementById('milestoneDescription').value.trim();
+    const date = document.getElementById('milestoneDate').value;
+    
+    if (!title) {
+        alert('Please enter a milestone title');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/tracking/milestone/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                case_id: {{ case.id }},
+                title: title,
+                description: description,
+                date: date
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            location.reload();
+        } else {
+            alert('Error adding milestone: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error adding milestone: ' + error.message);
+    }
+}
+</script>
+{% endblock %}

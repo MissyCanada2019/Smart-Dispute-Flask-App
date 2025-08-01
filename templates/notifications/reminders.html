@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block title %}Reminders & Deadlines - Smart Dispute{% endblock %}
+
+{% block extra_css %}
+<style>
+    .deadline-card {
+        border-left: 4px solid #28a745;
+        transition: all 0.2s ease;
+    }
+    .deadline-card.overdue {
+        border-left-color: #dc3545;
+        background-color: #f8d7da;
+    }
+    .deadline-card.urgent {
+        border-left-color: #fd7e14;
+        background-color: #fff3cd;
+    }
+    .deadline-card.upcoming {
+        border-left-color: #17a2b8;
+    }
+    .deadline-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .deadline-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        color: white;
+    }
+    .deadline-icon.overdue {
+        background-color: #dc3545;
+    }
+    .deadline-icon.urgent {
+        background-color: #fd7e14;
+    }
+    .deadline-icon.upcoming {
+        background-color: #17a2b8;
+    }
+    .deadline-icon.completed {
+        background-color: #28a745;
+    }
+    .deadline-counter {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+    .deadline-counter.overdue {
+        color: #dc3545;
+    }
+    .deadline-counter.urgent {
+        color: #fd7e14;
+    }
+    .deadline-counter.upcoming {
+        color: #17a2b8;
+    }
+    .section-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .empty-section {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .deadline-actions {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .deadline-card:hover .deadline-actions {
+        opacity: 1;
+    }
+    .reminder-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    .summary-item {
+        text-align: center;
+        padding: 1rem;
+    }
+    .summary-item h3 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .summary-item p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-clock mr-2"></i>Reminders & Deadlines</h1>
+                <div class="btn-group">
+                    <a href="{{ url_for('notifications.create_reminder') }}" class="btn btn-primary">
+                        <i class="fas fa-plus mr-1"></i>Create Reminder
+                    </a>
+                    <a href="{{ url_for('notifications.list_notifications') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-bell mr-1"></i>All Notifications
+                    </a>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="reminder-summary">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="summary-item">
+                            <h3>{{ overdue_deadlines|length }}</h3>
+                            <p>Overdue</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="summary-item">
+                            <h3>{{ urgent_deadlines|length }}</h3>
+                            <p>Urgent (≤3 days)</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="summary-item">
+                            <h3>{{ upcoming_deadlines|length }}</h3>
+                            <p>Upcoming</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="summary-item">
+                            <h3>{{ (overdue_deadlines|length + urgent_deadlines|length + upcoming_deadlines|length) }}</h3>
+                            <p>Total Active</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overdue Deadlines -->
+            <div class="section-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Overdue Deadlines ({{ overdue_deadlines|length }})
+                </h3>
+            </div>
+            
+            {% if overdue_deadlines %}
+                {% for deadline in overdue_deadlines %}
+                <div class="deadline-card card mb-3 overdue">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="deadline-header">
+                                    <div class="deadline-icon overdue">
+                                        <i class="fas fa-exclamation"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">{{ deadline.title }}</h5>
+                                        <div class="deadline-counter overdue">
+                                            {{ deadline.days_overdue }} day{{ 's' if deadline.days_overdue != 1 else '' }} overdue
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="mb-2">{{ deadline.description }}</p>
+                                <div class="d-flex align-items-center text-muted">
+                                    <small class="mr-3">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Due: {{ deadline.due_date.strftime('%Y-%m-%d') }}
+                                    </small>
+                                    <small class="mr-3">
+                                        <i class="fas fa-folder mr-1"></i>
+                                        {{ deadline.case_title }}
+                                    </small>
+                                    <small>
+                                        <i class="fas fa-tag mr-1"></i>
+                                        {{ deadline.deadline_type.replace('_', ' ').title() }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="deadline-actions">
+                                {% if deadline.action_url %}
+                                <a href="{{ deadline.action_url }}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-external-link-alt mr-1"></i>Take Action
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-section">
+                    <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                    <h4>No Overdue Deadlines</h4>
+                    <p>Great! You're staying on top of your deadlines.</p>
+                </div>
+            {% endif %}
+
+            <!-- Urgent Deadlines -->
+            <div class="section-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-fire mr-2"></i>
+                    Urgent Deadlines - Next 3 Days ({{ urgent_deadlines|length }})
+                </h3>
+            </div>
+            
+            {% if urgent_deadlines %}
+                {% for deadline in urgent_deadlines %}
+                <div class="deadline-card card mb-3 urgent">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="deadline-header">
+                                    <div class="deadline-icon urgent">
+                                        <i class="fas fa-fire"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">{{ deadline.title }}</h5>
+                                        <div class="deadline-counter urgent">
+                                            {{ deadline.days_until }} day{{ 's' if deadline.days_until != 1 else '' }} remaining
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="mb-2">{{ deadline.description }}</p>
+                                <div class="d-flex align-items-center text-muted">
+                                    <small class="mr-3">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Due: {{ deadline.due_date.strftime('%Y-%m-%d') }}
+                                    </small>
+                                    <small class="mr-3">
+                                        <i class="fas fa-folder mr-1"></i>
+                                        {{ deadline.case_title }}
+                                    </small>
+                                    <small>
+                                        <i class="fas fa-tag mr-1"></i>
+                                        {{ deadline.deadline_type.replace('_', ' ').title() }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="deadline-actions">
+                                {% if deadline.action_url %}
+                                <a href="{{ deadline.action_url }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-external-link-alt mr-1"></i>Take Action
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-section">
+                    <i class="fas fa-clock fa-3x mb-3 text-warning"></i>
+                    <h4>No Urgent Deadlines</h4>
+                    <p>You have some breathing room - no deadlines in the next 3 days.</p>
+                </div>
+            {% endif %}
+
+            <!-- Upcoming Deadlines -->
+            <div class="section-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    Upcoming Deadlines ({{ upcoming_deadlines|length }})
+                </h3>
+            </div>
+            
+            {% if upcoming_deadlines %}
+                {% for deadline in upcoming_deadlines %}
+                <div class="deadline-card card mb-3 upcoming">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="deadline-header">
+                                    <div class="deadline-icon upcoming">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">{{ deadline.title }}</h5>
+                                        <div class="deadline-counter upcoming">
+                                            {{ deadline.days_until }} day{{ 's' if deadline.days_until != 1 else '' }} remaining
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="mb-2">{{ deadline.description }}</p>
+                                <div class="d-flex align-items-center text-muted">
+                                    <small class="mr-3">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Due: {{ deadline.due_date.strftime('%Y-%m-%d') }}
+                                    </small>
+                                    <small class="mr-3">
+                                        <i class="fas fa-folder mr-1"></i>
+                                        {{ deadline.case_title }}
+                                    </small>
+                                    <small>
+                                        <i class="fas fa-tag mr-1"></i>
+                                        {{ deadline.deadline_type.replace('_', ' ').title() }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="deadline-actions">
+                                {% if deadline.action_url %}
+                                <a href="{{ deadline.action_url }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-external-link-alt mr-1"></i>View Details
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-section">
+                    <i class="fas fa-calendar-check fa-3x mb-3 text-info"></i>
+                    <h4>No Upcoming Deadlines</h4>
+                    <p>Your schedule looks clear for the coming weeks.</p>
+                </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-plus mr-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <a href="{{ url_for('notifications.create_reminder') }}" class="btn btn-primary btn-block mb-2">
+                                <i class="fas fa-bell mr-2"></i>Create Custom Reminder
+                            </a>
+                            <a href="{{ url_for('journey.case_journey') }}" class="btn btn-outline-primary btn-block mb-2">
+                                <i class="fas fa-route mr-2"></i>View Legal Journey
+                            </a>
+                            <a href="{{ url_for('dashboard.main') }}" class="btn btn-outline-secondary btn-block">
+                                <i class="fas fa-tachometer-alt mr-2"></i>Go to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb mr-2"></i>Tips</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    Set reminders 1-2 weeks before important deadlines
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    Court filing deadlines are typically strict - plan ahead
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    Upload evidence early to allow time for analysis
+                                </li>
+                                <li class="mb-0">
+                                    <i class="fas fa-check text-success mr-2"></i>
+                                    Check notifications daily for updates
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-refresh the page every 5 minutes to keep deadlines current
+setInterval(function() {
+    location.reload();
+}, 300000); // 5 minutes
+
+// Add countdown timers for urgent deadlines
+document.addEventListener('DOMContentLoaded', function() {
+    const urgentDeadlines = document.querySelectorAll('.deadline-card.urgent');
+    
+    urgentDeadlines.forEach(function(card) {
+        const counterElement = card.querySelector('.deadline-counter');
+        const text = counterElement.textContent;
+        const daysMatch = text.match(/(\d+) day/);
+        
+        if (daysMatch) {
+            const days = parseInt(daysMatch[1]);
+            if (days <= 1) {
+                // Add pulsing animation for deadlines within 1 day
+                card.style.animation = 'pulse 2s infinite';
+            }
+        }
+    });
+});
+
+// Add CSS animation for pulsing effect
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(253, 126, 20, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(253, 126, 20, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(253, 126, 20, 0); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

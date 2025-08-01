@@ -1,0 +1,252 @@
+<!-- Notification Widget for embedding in other pages -->
+<div class="notification-widget">
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle position-relative" type="button" 
+                id="notificationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            {% if summary.unread_count > 0 %}
+            <span class="badge badge-danger badge-pill position-absolute" 
+                  style="top: -5px; right: -5px; font-size: 0.7rem;">
+                {{ summary.unread_count if summary.unread_count <= 99 else '99+' }}
+            </span>
+            {% endif %}
+        </button>
+        
+        <div class="dropdown-menu dropdown-menu-right notification-dropdown" aria-labelledby="notificationDropdown">
+            <div class="dropdown-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Notifications</h6>
+                {% if summary.unread_count > 0 %}
+                <small>
+                    <a href="#" onclick="markAllAsRead()" class="text-primary">Mark all read</a>
+                </small>
+                {% endif %}
+            </div>
+            
+            {% if notifications %}
+                {% for notification in notifications %}
+                <div class="dropdown-item notification-item {% if not notification.is_read %}unread{% endif %}" 
+                     data-notification-id="{{ notification.id }}">
+                    <div class="d-flex align-items-start">
+                        <div class="mr-2">
+                            {% if notification.notification_type.value == 'deadline' %}
+                                <i class="fas fa-clock text-danger"></i>
+                            {% elif notification.notification_type.value == 'case_update' %}
+                                <i class="fas fa-folder text-primary"></i>
+                            {% elif notification.notification_type.value == 'evidence_update' %}
+                                <i class="fas fa-file-upload text-success"></i>
+                            {% elif notification.notification_type.value == 'form_update' %}
+                                <i class="fas fa-file-alt text-info"></i>
+                            {% elif notification.notification_type.value == 'progress_update' %}
+                                <i class="fas fa-chart-line text-warning"></i>
+                            {% else %}
+                                <i class="fas fa-bell text-secondary"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="dropdown-item-title mb-1">{{ notification.title }}</h6>
+                                {% if not notification.is_read %}
+                                    <span class="badge badge-primary badge-sm">New</span>
+                                {% endif %}
+                            </div>
+                            <p class="dropdown-item-text mb-1">
+                                {{ notification.message[:80] }}{% if notification.message|length > 80 %}...{% endif %}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    {{ notification.created_at.strftime('%m/%d %H:%M') }}
+                                </small>
+                                {% if notification.case %}
+                                <small class="text-muted">
+                                    {{ notification.case.title[:20] }}{% if notification.case.title|length > 20 %}...{% endif %}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if not notification.is_read %}
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-success" onclick="markAsRead({{ notification.id }}, event)">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if not loop.last %}
+                <div class="dropdown-divider"></div>
+                {% endif %}
+                {% endfor %}
+                
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item text-center">
+                    <a href="{{ url_for('notifications.list_notifications') }}" class="btn btn-sm btn-primary">
+                        View All Notifications
+                    </a>
+                </div>
+            {% else %}
+                <div class="dropdown-item text-center text-muted">
+                    <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                    <p class="mb-2">No new notifications</p>
+                    <a href="{{ url_for('notifications.create_reminder') }}" class="btn btn-sm btn-outline-primary">
+                        Create Reminder
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.notification-widget .dropdown-menu {
+    width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-widget .dropdown-item {
+    white-space: normal;
+    padding: 0.75rem;
+    border: none;
+    position: relative;
+}
+
+.notification-widget .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-widget .dropdown-item.unread {
+    background-color: #e3f2fd;
+    border-left: 3px solid #007bff;
+}
+
+.notification-widget .dropdown-item-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.notification-widget .dropdown-item-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.notification-widget .notification-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.notification-widget .dropdown-item:hover .notification-actions {
+    opacity: 1;
+}
+
+.notification-widget .badge-sm {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+}
+
+.notification-widget .dropdown-header {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.notification-widget .btn {
+    font-size: 0.875rem;
+}
+</style>
+
+<script>
+function markAsRead(notificationId, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    
+    fetch(`/notifications/api/mark-read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            if (notification) {
+                notification.classList.remove('unread');
+                notification.querySelector('.badge-primary')?.remove();
+                notification.querySelector('.notification-actions')?.remove();
+            }
+            updateNotificationBadge();
+        }
+    })
+    .catch(error => {
+        console.error('Error marking notification as read:', error);
+    });
+}
+
+function markAllAsRead() {
+    fetch('/notifications/api/mark-all-read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('unread');
+                item.querySelector('.badge-primary')?.remove();
+                item.querySelector('.notification-actions')?.remove();
+            });
+            updateNotificationBadge();
+        }
+    })
+    .catch(error => {
+        console.error('Error marking all notifications as read:', error);
+    });
+}
+
+function updateNotificationBadge() {
+    fetch('/notifications/api/summary')
+    .then(response => response.json())
+    .then(data => {
+        const badge = document.querySelector('#notificationDropdown .badge');
+        if (data.unread_count > 0) {
+            if (badge) {
+                badge.textContent = data.unread_count <= 99 ? data.unread_count : '99+';
+            } else {
+                const button = document.getElementById('notificationDropdown');
+                const newBadge = document.createElement('span');
+                newBadge.className = 'badge badge-danger badge-pill position-absolute';
+                newBadge.style.cssText = 'top: -5px; right: -5px; font-size: 0.7rem;';
+                newBadge.textContent = data.unread_count <= 99 ? data.unread_count : '99+';
+                button.appendChild(newBadge);
+            }
+        } else if (badge) {
+            badge.remove();
+        }
+    })
+    .catch(error => {
+        console.error('Error updating notification badge:', error);
+    });
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+
+// Auto-refresh notifications every 2 minutes
+setInterval(function() {
+    updateNotificationBadge();
+}, 120000);
+</script>

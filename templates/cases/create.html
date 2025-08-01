@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Case - Smart Dispute Canada{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-plus me-2"></i>Create New Case</h4>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data">
+                    <!-- Basic Information -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">Basic Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label required">Case Title</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="Brief description of your legal matter" required>
+                            <div class="form-text">Give your case a clear, descriptive title</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4"
+                                      placeholder="Provide more details about your case, key events, and what you're seeking to achieve..."></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="case_type" class="form-label required">Case Type</label>
+                                <select class="form-select" id="case_type" name="case_type" required>
+                                    <option value="">Select case type...</option>
+                                    <option value="child_protection">Child Protection</option>
+                                    <option value="family_court">Family Court</option>
+                                    <option value="parental_rights">Parental Rights</option>
+                                    <option value="tribunal">Tribunal</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="priority" class="form-label">Priority Level</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Location and Jurisdiction -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">Location & Jurisdiction</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="province" class="form-label required">Province/Territory</label>
+                                <select class="form-select" id="province" name="province" required>
+                                    <option value="">Select province...</option>
+                                    <option value="AB">Alberta</option>
+                                    <option value="BC">British Columbia</option>
+                                    <option value="MB">Manitoba</option>
+                                    <option value="NB">New Brunswick</option>
+                                    <option value="NL">Newfoundland and Labrador</option>
+                                    <option value="NS">Nova Scotia</option>
+                                    <option value="ON">Ontario</option>
+                                    <option value="PE">Prince Edward Island</option>
+                                    <option value="QC">Quebec</option>
+                                    <option value="SK">Saskatchewan</option>
+                                    <option value="NT">Northwest Territories</option>
+                                    <option value="NU">Nunavut</option>
+                                    <option value="YT">Yukon</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="jurisdiction" class="form-label">Jurisdiction</label>
+                                <input type="text" class="form-control" id="jurisdiction" name="jurisdiction"
+                                       placeholder="e.g., Superior Court, Provincial Court">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="court_name" class="form-label">Court Name</label>
+                            <input type="text" class="form-control" id="court_name" name="court_name"
+                                   placeholder="Specific court or location if known">
+                        </div>
+                    </div>
+                    
+                    <!-- Important Dates -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">Important Dates</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="incident_date" class="form-label">Incident Date</label>
+                                <input type="date" class="form-control" id="incident_date" name="incident_date">
+                                <div class="form-text">Date when the legal issue occurred</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="filing_deadline" class="form-label">Filing Deadline</label>
+                                <input type="date" class="form-control" id="filing_deadline" name="filing_deadline">
+                                <div class="form-text">If you have a deadline to file documents</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('cases.list_cases') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Create Case
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Help Section -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h6 class="text-primary mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Getting Started Tips
+                </h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Start with a clear, descriptive case title that summarizes your legal matter
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Include key details in the description - you can always update this later
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        After creating your case, you'll be able to upload evidence and get AI-powered analysis
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-success me-2"></i>
+                        We'll guide you through each step and help you prepare the necessary court forms
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.required::after {
+    content: " *";
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-set filing deadline based on case type and province
+document.getElementById('case_type').addEventListener('change', function() {
+    const caseType = this.value;
+    const province = document.getElementById('province').value;
+    
+    // Add logic here to suggest filing deadlines based on case type and province
+    // This would be populated with real legal deadlines
+});
+</script>
+{% endblock %}

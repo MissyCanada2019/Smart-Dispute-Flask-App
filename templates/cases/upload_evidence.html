@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Evidence - {{ case.title }} - Smart Dispute Canada{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('cases.list_cases') }}">My Cases</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('cases.view_case', case_id=case.id) }}">{{ case.title }}</a></li>
+        <li class="breadcrumb-item active">Upload Evidence</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-cloud-upload-alt me-2"></i>Upload Evidence
+                </h4>
+                <small>Case: {{ case.case_number }} - {{ case.title }}</small>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data" id="evidenceUploadForm">
+                    <!-- File Upload Area -->
+                    <div class="mb-4">
+                        <label for="evidence_file" class="form-label required">Select File</label>
+                        <div class="upload-area border rounded p-4 text-center" id="uploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Drop your file here or click to browse</h5>
+                                <p class="text-muted small mb-0">
+                                    Supported formats: PDF, JPG, PNG, GIF, BMP, TIFF, WebP<br>
+                                    Maximum size: 50MB for PDFs, 20MB for images
+                                </p>
+                            </div>
+                            <input type="file" class="form-control d-none" id="evidence_file" name="evidence_file" 
+                                   accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.tif,.webp" required>
+                        </div>
+                        
+                        <!-- File Preview -->
+                        <div id="filePreview" class="mt-3" style="display: none;">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="file-icon me-3">
+                                            <i class="fas fa-file fa-2x text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" id="fileName"></h6>
+                                            <small class="text-muted" id="fileSize"></small>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" id="removeFile">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Evidence Details -->
+                    <div class="mb-4">
+                        <h5 class="text-success mb-3">Evidence Details</h5>
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title/Name</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="Brief description of this evidence">
+                            <div class="form-text">If left blank, we'll use the filename</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="Describe what this evidence shows, why it's relevant to your case, and any important context..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="evidence_type" class="form-label">Evidence Type</label>
+                            <select class="form-select" id="evidence_type" name="evidence_type">
+                                <option value="document">Document</option>
+                                <option value="image">Image/Photo</option>
+                                <option value="email">Email</option>
+                                <option value="text">Text/Note</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Progress -->
+                    <div id="uploadProgress" style="display: none;">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Uploading...</span>
+                                <span class="text-muted" id="progressPercent">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     id="progressBar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('cases.view_evidence', case_id=case.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Evidence
+                        </a>
+                        <button type="submit" class="btn btn-success" id="uploadBtn">
+                            <i class="fas fa-upload me-2"></i>Upload Evidence
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- AI Analysis Info -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h6 class="text-primary mb-3">
+                    <i class="fas fa-robot me-2"></i>What Happens After Upload?
+                </h6>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-eye fa-2x text-info mb-2"></i>
+                            <h6>Content Analysis</h6>
+                            <small class="text-muted">We'll extract text and analyze the content for relevant information</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                            <h6>Relevance Scoring</h6>
+                            <small class="text-muted">AI will rate how relevant this evidence is to your case type</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-lightbulb fa-2x text-success mb-2"></i>
+                            <h6>Smart Insights</h6>
+                            <small class="text-muted">Get recommendations on how to use this evidence effectively</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: #28a745;
+    background-color: #f0fff4;
+}
+
+.upload-area.dragover {
+    border-color: #28a745;
+    background-color: #f0fff4;
+    transform: scale(1.02);
+}
+
+.required::after {
+    content: " *";
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('evidence_file');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFileBtn = document.getElementById('removeFile');
+    const uploadForm = document.getElementById('evidenceUploadForm');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+
+    // Click to browse
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect();
+        }
+    });
+
+    // File selection
+    fileInput.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect() {
+        const file = fileInput.files[0];
+        if (file) {
+            // Show file preview
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            filePreview.style.display = 'block';
+            
+            // Update file icon based on type
+            const icon = document.querySelector('#filePreview .file-icon i');
+            if (file.type.includes('pdf')) {
+                icon.className = 'fas fa-file-pdf fa-2x text-danger';
+            } else if (file.type.includes('image')) {
+                icon.className = 'fas fa-file-image fa-2x text-info';
+            } else {
+                icon.className = 'fas fa-file fa-2x text-primary';
+            }
+            
+            // Auto-populate title if empty
+            const titleInput = document.getElementById('title');
+            if (!titleInput.value) {
+                titleInput.value = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+            }
+        }
+    }
+
+    // Remove file
+    removeFileBtn.addEventListener('click', () => {
+        fileInput.value = '';
+        filePreview.style.display = 'none';
+        document.getElementById('title').value = '';
+    });
+
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Form submission with progress
+    uploadForm.addEventListener('submit', function(e) {
+        if (!fileInput.files[0]) {
+            e.preventDefault();
+            alert('Please select a file to upload.');
+            return;
+        }
+
+        // Show upload progress
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+        uploadProgress.style.display = 'block';
+
+        // Simulate progress (in real implementation, you'd use XMLHttpRequest for real progress)
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 30;
+            if (progress > 90) progress = 90;
+            
+            progressBar.style.width = progress + '%';
+            progressPercent.textContent = Math.round(progress) + '%';
+        }, 200);
+
+        // Clean up on form submission
+        setTimeout(() => {
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            progressPercent.textContent = '100%';
+        }, 1000);
+    });
+});
+</script>
+{% endblock %}

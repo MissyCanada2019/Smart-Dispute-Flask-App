@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Smart Dispute{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">
+                <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+            </h1>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ stats.total_users }}</h4>
+                            <p class="card-text">Total Users</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                    <small>{{ stats.active_users }} active</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ stats.total_cases }}</h4>
+                            <p class="card-text">Total Cases</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-folder fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ stats.total_forms }}</h4>
+                            <p class="card-text">Form Submissions</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                    </div>
+                    <small>{{ stats.completed_forms }} completed</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ stats.total_evidence }}</h4>
+                            <p class="card-text">Evidence Items</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-paperclip fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-outline-primary btn-block mb-2">
+                                <i class="fas fa-users"></i> Manage Users
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin.manage_forms') }}" class="btn btn-outline-success btn-block mb-2">
+                                <i class="fas fa-file-alt"></i> Manage Forms
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin.manage_notifications') }}" class="btn btn-outline-info btn-block mb-2">
+                                <i class="fas fa-bell"></i> Notifications
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin.system_settings') }}" class="btn btn-outline-warning btn-block mb-2">
+                                <i class="fas fa-cog"></i> System Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Users</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_users %}
+                        <div class="list-group list-group-flush">
+                            {% for user in recent_users %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ user.email }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </div>
+                                    <span class="badge badge-{{ 'success' if user.is_active else 'secondary' }}">
+                                        {{ 'Active' if user.is_active else 'Inactive' }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent users</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Cases</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_cases %}
+                        <div class="list-group list-group-flush">
+                            {% for case in recent_cases %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ case.title }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ case.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </div>
+                                    <span class="badge badge-{{ 'primary' if case.status == 'active' else 'success' if case.status == 'completed' else 'secondary' }}">
+                                        {{ case.status.title() }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent cases</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Forms</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_forms %}
+                        <div class="list-group list-group-flush">
+                            {% for form in recent_forms %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ form.template.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ form.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </div>
+                                    <span class="badge badge-{{ 'success' if form.status == 'completed' else 'warning' if form.status == 'draft' else 'info' }}">
+                                        {{ form.status.title() }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent forms</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh statistics every 30 seconds
+setInterval(function() {
+    fetch('{{ url_for("admin.api_system_stats") }}')
+        .then(response => response.json())
+        .then(data => {
+            // Update stats cards with new data
+            console.log('Stats updated:', data);
+        })
+        .catch(error => console.error('Error updating stats:', error));
+}, 30000);
+</script>
+{% endblock %}

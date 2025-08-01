@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - Smart Dispute{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-item {
+        border-left: 4px solid #007bff;
+        transition: all 0.2s ease;
+    }
+    .notification-item.unread {
+        background-color: #f8f9fa;
+        border-left-color: #007bff;
+    }
+    .notification-item.read {
+        background-color: white;
+        border-left-color: #dee2e6;
+        opacity: 0.8;
+    }
+    .notification-item.priority-urgent {
+        border-left-color: #dc3545;
+    }
+    .notification-item.priority-high {
+        border-left-color: #fd7e14;
+    }
+    .notification-item.priority-medium {
+        border-left-color: #17a2b8;
+    }
+    .notification-item.priority-low {
+        border-left-color: #6c757d;
+    }
+    .notification-header {
+        cursor: pointer;
+    }
+    .notification-actions {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .notification-item:hover .notification-actions {
+        opacity: 1;
+    }
+    .notification-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    .summary-stat {
+        text-align: center;
+        padding: 1rem;
+    }
+    .summary-stat h3 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .summary-stat p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    .filter-tabs {
+        margin-bottom: 2rem;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6c757d;
+    }
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-bell mr-2"></i>Notifications</h1>
+                <div class="btn-group">
+                    <a href="{{ url_for('notifications.create_reminder') }}" class="btn btn-primary">
+                        <i class="fas fa-plus mr-1"></i>Create Reminder
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary" onclick="markAllAsRead()">
+                        <i class="fas fa-check-double mr-1"></i>Mark All Read
+                    </button>
+                    <a href="{{ url_for('notifications.notification_settings') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog mr-1"></i>Settings
+                    </a>
+                </div>
+            </div>
+
+            <!-- Notification Summary -->
+            {% if summary %}
+            <div class="notification-summary">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="summary-stat">
+                            <h3>{{ summary.total_count }}</h3>
+                            <p>Total Notifications</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="summary-stat">
+                            <h3>{{ summary.unread_count }}</h3>
+                            <p>Unread</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="summary-stat">
+                            <h3>{{ summary.urgent_count }}</h3>
+                            <p>Urgent</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="summary-stat">
+                            <h3>{{ summary.deadline_count }}</h3>
+                            <p>Upcoming Deadlines</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <ul class="nav nav-pills" id="notification-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="all-tab" data-toggle="pill" href="#all-notifications">
+                            All <span class="badge badge-secondary ml-1">{{ summary.total_count if summary else 0 }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="unread-tab" data-toggle="pill" href="#unread-notifications">
+                            Unread <span class="badge badge-primary ml-1">{{ summary.unread_count if summary else 0 }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="urgent-tab" data-toggle="pill" href="#urgent-notifications">
+                            Urgent <span class="badge badge-danger ml-1">{{ summary.urgent_count if summary else 0 }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="deadlines-tab" data-toggle="pill" href="#deadline-notifications">
+                            Deadlines <span class="badge badge-warning ml-1">{{ summary.deadline_count if summary else 0 }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="tab-content" id="notification-content">
+                <div class="tab-pane fade show active" id="all-notifications">
+                    <div id="notifications-container">
+                        {% if notifications.items %}
+                            {% for notification in notifications.items %}
+                            <div class="notification-item card mb-3 {{ 'unread' if not notification.is_read else 'read' }} priority-{{ notification.priority.value }}" 
+                                 data-notification-id="{{ notification.id }}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="notification-header d-flex align-items-center mb-2" onclick="toggleNotification({{ notification.id }})">
+                                                <i class="{{ get_notification_icon(notification.notification_type) }} mr-2 text-{{ get_notification_color(notification.priority) }}"></i>
+                                                <h5 class="mb-0 mr-2">{{ notification.title }}</h5>
+                                                {% if not notification.is_read %}
+                                                    <span class="badge badge-primary">New</span>
+                                                {% endif %}
+                                                {% if notification.priority.value == 'urgent' %}
+                                                    <span class="badge badge-danger ml-1">Urgent</span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-muted mb-1">{{ notification.message }}</p>
+                                            <div class="d-flex align-items-center text-muted">
+                                                <small class="mr-3">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    {{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                                </small>
+                                                {% if notification.case %}
+                                                <small class="mr-3">
+                                                    <i class="fas fa-folder mr-1"></i>
+                                                    {{ notification.case.title }}
+                                                </small>
+                                                {% endif %}
+                                                <small>
+                                                    <i class="fas fa-tag mr-1"></i>
+                                                    {{ notification.notification_type.value.replace('_', ' ').title() }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="notification-actions">
+                                            {% if notification.action_url %}
+                                            <a href="{{ notification.action_url }}" class="btn btn-sm btn-outline-primary mr-2">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                            {% endif %}
+                                            {% if not notification.is_read %}
+                                            <button class="btn btn-sm btn-outline-success mr-2" onclick="markAsRead({{ notification.id }})">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteNotification({{ notification.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <!-- Pagination -->
+                            {% if notifications.pages > 1 %}
+                            <nav aria-label="Notifications pagination">
+                                <ul class="pagination justify-content-center">
+                                    {% if notifications.has_prev %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('notifications.list_notifications', page=notifications.prev_num) }}">Previous</a>
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% for page_num in notifications.iter_pages() %}
+                                        {% if page_num %}
+                                            {% if page_num != notifications.page %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('notifications.list_notifications', page=page_num) }}">{{ page_num }}</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ page_num }}</span>
+                                            </li>
+                                            {% endif %}
+                                        {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">…</span>
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if notifications.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('notifications.list_notifications', page=notifications.next_num) }}">Next</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                            {% endif %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-bell-slash"></i>
+                                <h3>No Notifications</h3>
+                                <p>You don't have any notifications yet. When there are updates to your cases or upcoming deadlines, they'll appear here.</p>
+                                <a href="{{ url_for('notifications.create_reminder') }}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-plus mr-1"></i>Create Your First Reminder
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function markAsRead(notificationId) {
+    fetch(`/notifications/api/mark-read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            notification.classList.remove('unread');
+            notification.classList.add('read');
+            notification.querySelector('.badge-primary')?.remove();
+            updateNotificationCounts();
+            showToast('Notification marked as read', 'success');
+        } else {
+            showToast('Failed to mark notification as read', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An error occurred', 'error');
+    });
+}
+
+function markAllAsRead() {
+    if (!confirm('Mark all notifications as read?')) return;
+    
+    fetch('/notifications/api/mark-all-read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('unread');
+                item.classList.add('read');
+                item.querySelector('.badge-primary')?.remove();
+            });
+            updateNotificationCounts();
+            showToast('All notifications marked as read', 'success');
+        } else {
+            showToast('Failed to mark notifications as read', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An error occurred', 'error');
+    });
+}
+
+function deleteNotification(notificationId) {
+    if (!confirm('Delete this notification?')) return;
+    
+    fetch(`/notifications/api/delete/${notificationId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            notification.remove();
+            updateNotificationCounts();
+            showToast('Notification deleted', 'success');
+        } else {
+            showToast('Failed to delete notification', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An error occurred', 'error');
+    });
+}
+
+function toggleNotification(notificationId) {
+    const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+    if (notification.classList.contains('unread')) {
+        markAsRead(notificationId);
+    }
+}
+
+function updateNotificationCounts() {
+    // Update badge counts in tabs
+    fetch('/notifications/api/summary')
+    .then(response => response.json())
+    .then(data => {
+        document.querySelector('#all-tab .badge').textContent = data.total_count;
+        document.querySelector('#unread-tab .badge').textContent = data.unread_count;
+        document.querySelector('#urgent-tab .badge').textContent = data.urgent_count;
+        document.querySelector('#deadlines-tab .badge').textContent = data.deadline_count;
+    })
+    .catch(error => console.error('Error updating counts:', error));
+}
+
+function loadFilteredNotifications(filter) {
+    let url = '/notifications/api/list';
+    const params = new URLSearchParams();
+    
+    switch(filter) {
+        case 'unread':
+            params.append('unread_only', 'true');
+            break;
+        case 'urgent':
+            params.append('priority', 'urgent');
+            break;
+        case 'deadlines':
+            params.append('type', 'deadline');
+            break;
+    }
+    
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        renderNotifications(data.notifications);
+    })
+    .catch(error => {
+        console.error('Error loading notifications:', error);
+        showToast('Failed to load notifications', 'error');
+    });
+}
+
+function renderNotifications(notifications) {
+    const container = document.getElementById('notifications-container');
+    
+    if (notifications.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-bell-slash"></i>
+                <h3>No Notifications</h3>
+                <p>No notifications match the current filter.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = notifications.map(notification => `
+        <div class="notification-item card mb-3 ${notification.is_read ? 'read' : 'unread'} priority-${notification.priority}" 
+             data-notification-id="${notification.id}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="notification-header d-flex align-items-center mb-2" onclick="toggleNotification(${notification.id})">
+                            <i class="${notification.icon} mr-2 text-${notification.color}"></i>
+                            <h5 class="mb-0 mr-2">${notification.title}</h5>
+                            ${!notification.is_read ? '<span class="badge badge-primary">New</span>' : ''}
+                            ${notification.priority === 'urgent' ? '<span class="badge badge-danger ml-1">Urgent</span>' : ''}
+                        </div>
+                        <p class="text-muted mb-1">${notification.message}</p>
+                        <div class="d-flex align-items-center text-muted">
+                            <small class="mr-3">
+                                <i class="fas fa-clock mr-1"></i>
+                                ${new Date(notification.created_at).toLocaleString()}
+                            </small>
+                            ${notification.case_title ? `<small class="mr-3"><i class="fas fa-folder mr-1"></i>${notification.case_title}</small>` : ''}
+                            <small>
+                                <i class="fas fa-tag mr-1"></i>
+                                ${notification.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        ${notification.action_url ? `<a href="${notification.action_url}" class="btn btn-sm btn-outline-primary mr-2"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        ${!notification.is_read ? `<button class="btn btn-sm btn-outline-success mr-2" onclick="markAsRead(${notification.id})"><i class="fas fa-check"></i></button>` : ''}
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteNotification(${notification.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Tab click handlers
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('unread-tab').addEventListener('click', () => loadFilteredNotifications('unread'));
+    document.getElementById('urgent-tab').addEventListener('click', () => loadFilteredNotifications('urgent'));
+    document.getElementById('deadlines-tab').addEventListener('click', () => loadFilteredNotifications('deadlines'));
+    document.getElementById('all-tab').addEventListener('click', () => location.reload());
+});
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+
+function showToast(message, type) {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="close" onclick="this.parentElement.remove()">
+            <span>&times;</span>
+        </button>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+</script>
+{% endblock %}

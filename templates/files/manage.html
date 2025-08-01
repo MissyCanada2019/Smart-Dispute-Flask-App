@@ -1,0 +1,715 @@
+{% extends "base.html" %}
+
+{% block title %}Secure File Management{% endblock %}
+
+{% block head %}
+<style>
+.file-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.file-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.file-icon {
+    font-size: 2em;
+    margin-right: 15px;
+    color: #007bff;
+}
+
+.security-badge {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: white;
+    margin-left: 10px;
+}
+
+.security-high { background-color: #28a745; }
+.security-medium { background-color: #ffc107; color: #212529; }
+.security-standard { background-color: #6c757d; }
+
+.file-stats {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 10px;
+}
+
+.upload-zone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    background: #f8f9fa;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.upload-zone.dragover {
+    border-color: #007bff;
+    background: #e3f2fd;
+    transform: scale(1.02);
+}
+
+.file-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+}
+
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .file-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .file-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-shield-alt"></i> Secure File Management</h2>
+                <div>
+                    <button class="btn btn-outline-secondary" onclick="refreshFiles()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="fas fa-upload"></i> Upload Files
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary" id="totalFiles">0</h5>
+                            <p class="card-text">Total Files</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-success" id="encryptedFiles">0</h5>
+                            <p class="card-text">Encrypted Files</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-info" id="totalStorage">0 MB</h5>
+                            <p class="card-text">Storage Used</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning" id="encryptionRate">0%</h5>
+                            <p class="card-text">Security Rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Filter -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <select class="form-select" id="caseFilter" onchange="filterByCase()">
+                        <option value="">All Cases</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchFiles" placeholder="Search files...">
+                        <button class="btn btn-outline-secondary" onclick="searchFiles()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Files Grid -->
+            <div id="filesContainer">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading your files...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Secure Files</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="caseSelect" class="form-label">Select Case</label>
+                        <select class="form-select" id="caseSelect" name="case_id" required>
+                            <option value="">Choose a case...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="upload-zone" id="uploadZone">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <h5>Drag & Drop Files Here</h5>
+                        <p class="text-muted">or click to browse</p>
+                        <input type="file" id="fileInput" name="file" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp3,.wav,.mp4" style="display: none;">
+                    </div>
+                    
+                    <div id="fileList" class="mt-3"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fileTitle" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="fileTitle" name="title" placeholder="Enter file title">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Security Level</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="confidentialFile" name="is_confidential">
+                                    <label class="form-check-label" for="confidentialFile">
+                                        Mark as Confidential
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="fileDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="fileDescription" name="description" rows="3" placeholder="Describe this evidence..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="uploadFiles()">
+                    <i class="fas fa-upload"></i> Upload Files
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Details Modal -->
+<div class="modal fade" id="fileDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">File Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="fileDetailsContent">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allFiles = [];
+let currentCase = '';
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadCases();
+    loadFiles();
+    loadStorageStats();
+    setupUploadZone();
+    setupSearch();
+});
+
+// Load user's cases
+async function loadCases() {
+    try {
+        const response = await fetch('/cases/api/list');
+        const data = await response.json();
+        
+        const caseSelect = document.getElementById('caseSelect');
+        const caseFilter = document.getElementById('caseFilter');
+        
+        caseSelect.innerHTML = '<option value="">Choose a case...</option>';
+        caseFilter.innerHTML = '<option value="">All Cases</option>';
+        
+        data.cases.forEach(case_ => {
+            const option1 = new Option(case_.title, case_.id);
+            const option2 = new Option(case_.title, case_.id);
+            caseSelect.add(option1);
+            caseFilter.add(option2);
+        });
+    } catch (error) {
+        console.error('Error loading cases:', error);
+        showAlert('Error loading cases', 'error');
+    }
+}
+
+// Load storage statistics
+async function loadStorageStats() {
+    try {
+        const response = await fetch('/secure-files/storage-stats');
+        const stats = await response.json();
+        
+        document.getElementById('totalFiles').textContent = stats.total_files;
+        document.getElementById('encryptedFiles').textContent = stats.encrypted_files;
+        document.getElementById('totalStorage').textContent = stats.total_storage_mb + ' MB';
+        document.getElementById('encryptionRate').textContent = stats.encryption_rate + '%';
+    } catch (error) {
+        console.error('Error loading storage stats:', error);
+    }
+}
+
+// Load files for current user
+async function loadFiles() {
+    try {
+        const caseId = currentCase || '';
+        const response = await fetch('/secure-files/list/' + (caseId || '0'));
+        
+        if (caseId) {
+            const data = await response.json();
+            allFiles = data.files || [];
+        } else {
+            // Load files from all cases
+            const casesResponse = await fetch('/cases/api/list');
+            const casesData = await casesResponse.json();
+            
+            allFiles = [];
+            for (const case_ of casesData.cases) {
+                try {
+                    const caseFilesResponse = await fetch(`/secure-files/list/${case_.id}`);
+                    const caseFilesData = await caseFilesResponse.json();
+                    if (caseFilesData.files) {
+                        caseFilesData.files.forEach(file => {
+                            file.case_title = case_.title;
+                            allFiles.push(file);
+                        });
+                    }
+                } catch (error) {
+                    console.warn(`Error loading files for case ${case_.id}:`, error);
+                }
+            }
+        }
+        
+        displayFiles(allFiles);
+    } catch (error) {
+        console.error('Error loading files:', error);
+        showAlert('Error loading files', 'error');
+    }
+}
+
+// Display files in grid
+function displayFiles(files) {
+    const container = document.getElementById('filesContainer');
+    
+    if (files.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-5x text-muted mb-3"></i>
+                <h4 class="text-muted">No Files Found</h4>
+                <p class="text-muted">Upload some files to get started</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                    <i class="fas fa-upload"></i> Upload Files
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    const filesHtml = files.map(file => {
+        const icon = getFileIcon(file.mime_type);
+        const securityLevel = getSecurityLevel(file);
+        const securityBadge = getSecurityBadge(securityLevel);
+        
+        return `
+            <div class="file-card">
+                <div class="d-flex align-items-start">
+                    <div class="file-icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">
+                            ${file.title || file.original_filename}
+                            ${securityBadge}
+                        </h6>
+                        <p class="text-muted mb-1">${file.original_filename}</p>
+                        ${file.case_title ? `<p class="text-info mb-1"><i class="fas fa-folder"></i> ${file.case_title}</p>` : ''}
+                        <div class="file-stats">
+                            <span><i class="fas fa-weight"></i> ${formatFileSize(file.file_size)}</span>
+                            <span class="ms-3"><i class="fas fa-calendar"></i> ${formatDate(file.uploaded_at)}</span>
+                            ${file.access_count ? `<span class="ms-3"><i class="fas fa-eye"></i> ${file.access_count} views</span>` : ''}
+                        </div>
+                        <div class="file-actions mt-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewFile(${file.id})">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="downloadFile(${file.id})">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="showFileDetails(${file.id})">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteFile(${file.id}, '${file.title || file.original_filename}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = `<div class="file-grid">${filesHtml}</div>`;
+}
+
+// Get file icon based on MIME type
+function getFileIcon(mimeType) {
+    if (mimeType.startsWith('image/')) return 'fas fa-image';
+    if (mimeType === 'application/pdf') return 'fas fa-file-pdf';
+    if (mimeType.includes('word') || mimeType.includes('document')) return 'fas fa-file-word';
+    if (mimeType.startsWith('audio/')) return 'fas fa-file-audio';
+    if (mimeType.startsWith('video/')) return 'fas fa-file-video';
+    if (mimeType.startsWith('text/')) return 'fas fa-file-alt';
+    return 'fas fa-file';
+}
+
+// Get security level
+function getSecurityLevel(file) {
+    if (file.storage_encrypted && file.is_confidential) return 'High Security';
+    if (file.storage_encrypted || file.is_confidential) return 'Medium Security';
+    return 'Standard Security';
+}
+
+// Get security badge HTML
+function getSecurityBadge(level) {
+    const classes = {
+        'High Security': 'security-badge security-high',
+        'Medium Security': 'security-badge security-medium',
+        'Standard Security': 'security-badge security-standard'
+    };
+    
+    const icons = {
+        'High Security': 'fas fa-shield-alt',
+        'Medium Security': 'fas fa-shield-halved',
+        'Standard Security': 'fas fa-shield'
+    };
+    
+    return `<span class="${classes[level]}"><i class="${icons[level]}"></i> ${level}</span>`;
+}
+
+// Format file size
+function formatFileSize(bytes) {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+// Format date
+function formatDate(dateString) {
+    if (!dateString) return 'Unknown';
+    return new Date(dateString).toLocaleDateString('en-CA');
+}
+
+// Setup drag and drop upload zone
+function setupUploadZone() {
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    
+    uploadZone.addEventListener('click', () => fileInput.click());
+    
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        fileInput.files = e.dataTransfer.files;
+        displaySelectedFiles();
+    });
+    
+    fileInput.addEventListener('change', displaySelectedFiles);
+}
+
+// Display selected files for upload
+function displaySelectedFiles() {
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    
+    if (fileInput.files.length === 0) {
+        fileList.innerHTML = '';
+        return;
+    }
+    
+    const filesHtml = Array.from(fileInput.files).map(file => `
+        <div class="d-flex align-items-center p-2 border rounded mb-2">
+            <i class="${getFileIcon(file.type)} me-2"></i>
+            <div class="flex-grow-1">
+                <div class="fw-bold">${file.name}</div>
+                <small class="text-muted">${formatFileSize(file.size)}</small>
+            </div>
+        </div>
+    `).join('');
+    
+    fileList.innerHTML = `<h6>Selected Files:</h6>${filesHtml}`;
+}
+
+// Upload files
+async function uploadFiles() {
+    const form = document.getElementById('uploadForm');
+    const formData = new FormData(form);
+    const fileInput = document.getElementById('fileInput');
+    
+    if (fileInput.files.length === 0) {
+        showAlert('Please select files to upload', 'warning');
+        return;
+    }
+    
+    if (!formData.get('case_id')) {
+        showAlert('Please select a case for the files', 'warning');
+        return;
+    }
+    
+    try {
+        const uploadButton = document.querySelector('#uploadModal .btn-primary');
+        uploadButton.disabled = true;
+        uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        
+        // Upload each file individually
+        for (const file of fileInput.files) {
+            const singleFormData = new FormData();
+            singleFormData.append('file', file);
+            singleFormData.append('case_id', formData.get('case_id'));
+            singleFormData.append('title', formData.get('title') || file.name);
+            singleFormData.append('description', formData.get('description') || '');
+            
+            const response = await fetch('/secure-files/upload', {
+                method: 'POST',
+                body: singleFormData
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                throw new Error(result.error || 'Upload failed');
+            }
+        }
+        
+        showAlert('Files uploaded successfully', 'success');
+        
+        // Reset form and close modal
+        form.reset();
+        document.getElementById('fileList').innerHTML = '';
+        bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+        
+        // Reload files and stats
+        loadFiles();
+        loadStorageStats();
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        showAlert('Error uploading files: ' + error.message, 'error');
+    } finally {
+        const uploadButton = document.querySelector('#uploadModal .btn-primary');
+        uploadButton.disabled = false;
+        uploadButton.innerHTML = '<i class="fas fa-upload"></i> Upload Files';
+    }
+}
+
+// View file
+function viewFile(fileId) {
+    window.open(`/secure-files/view/${fileId}`, '_blank');
+}
+
+// Download file
+function downloadFile(fileId) {
+    window.location.href = `/secure-files/download/${fileId}`;
+}
+
+// Show file details
+async function showFileDetails(fileId) {
+    try {
+        const response = await fetch(`/secure-files/info/${fileId}`);
+        const file = await response.json();
+        
+        if (file.error) {
+            showAlert(file.error, 'error');
+            return;
+        }
+        
+        const detailsHtml = `
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <tr><th width="30%">Title:</th><td>${file.title || 'N/A'}</td></tr>
+                    <tr><th>Original Filename:</th><td>${file.original_filename}</td></tr>
+                    <tr><th>File Size:</th><td>${formatFileSize(file.file_size)}</td></tr>
+                    <tr><th>MIME Type:</th><td>${file.mime_type}</td></tr>
+                    <tr><th>Security Level:</th><td>${getSecurityBadge(file.is_encrypted && file.is_confidential ? 'High Security' : file.is_encrypted || file.is_confidential ? 'Medium Security' : 'Standard Security')}</td></tr>
+                    <tr><th>Uploaded:</th><td>${formatDate(file.uploaded_at)}</td></tr>
+                    <tr><th>Access Level:</th><td><span class="badge bg-info">${file.access_level}</span></td></tr>
+                    ${file.description ? `<tr><th>Description:</th><td>${file.description}</td></tr>` : ''}
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('fileDetailsContent').innerHTML = detailsHtml;
+        new bootstrap.Modal(document.getElementById('fileDetailsModal')).show();
+        
+    } catch (error) {
+        console.error('Error loading file details:', error);
+        showAlert('Error loading file details', 'error');
+    }
+}
+
+// Delete file
+async function deleteFile(fileId, fileName) {
+    if (!confirm(`Are you sure you want to permanently delete "${fileName}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/secure-files/delete/${fileId}`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            showAlert('File deleted successfully', 'success');
+            loadFiles();
+            loadStorageStats();
+        } else {
+            const error = await response.json();
+            showAlert(error.error || 'Error deleting file', 'error');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        showAlert('Error deleting file', 'error');
+    }
+}
+
+// Filter by case
+function filterByCase() {
+    currentCase = document.getElementById('caseFilter').value;
+    loadFiles();
+}
+
+// Setup search
+function setupSearch() {
+    const searchInput = document.getElementById('searchFiles');
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const filteredFiles = allFiles.filter(file =>
+            (file.title || '').toLowerCase().includes(query) ||
+            file.original_filename.toLowerCase().includes(query) ||
+            (file.description || '').toLowerCase().includes(query) ||
+            (file.case_title || '').toLowerCase().includes(query)
+        );
+        displayFiles(filteredFiles);
+    });
+}
+
+// Search files
+function searchFiles() {
+    const query = document.getElementById('searchFiles').value;
+    // Trigger input event
+    document.getElementById('searchFiles').dispatchEvent(new Event('input'));
+}
+
+// Refresh files
+function refreshFiles() {
+    loadFiles();
+    loadStorageStats();
+    showAlert('Files refreshed', 'info');
+}
+
+// Show alert
+function showAlert(message, type) {
+    const alertClass = {
+        'success': 'alert-success',
+        'error': 'alert-danger',
+        'warning': 'alert-warning',
+        'info': 'alert-info'
+    }[type] || 'alert-info';
+    
+    const alert = document.createElement('div');
+    alert.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.parentNode.removeChild(alert);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

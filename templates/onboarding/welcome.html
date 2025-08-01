@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Smart Dispute - Canadian Legal Self-Advocacy{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4 text-primary">Welcome to Smart Dispute</h1>
+                <p class="lead">Your AI-powered assistant for Canadian legal self-advocacy</p>
+                <p class="text-muted">Navigate family court, tribunal proceedings, and parental rights with confidence</p>
+            </div>
+
+            <!-- Getting Started Steps -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-rocket"></i> Getting Started in 4 Easy Steps</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="text-center">
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <h4 class="mb-0">1</h4>
+                                </div>
+                                <h5>Create Your Case</h5>
+                                <p>Start by creating a new case and describing your legal situation</p>
+                                <a href="{{ url_for('case.create') }}" class="btn btn-outline-primary btn-sm">Create Case</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="text-center">
+                                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <h4 class="mb-0">2</h4>
+                                </div>
+                                <h5>Upload Evidence</h5>
+                                <p>Upload documents, photos, and files related to your case</p>
+                                <a href="{{ url_for('evidence.upload') }}" class="btn btn-outline-success btn-sm">Upload Evidence</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="text-center">
+                                <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <h4 class="mb-0">3</h4>
+                                </div>
+                                <h5>Get AI Analysis</h5>
+                                <p>Our AI analyzes your evidence and provides merit scoring</p>
+                                <a href="{{ url_for('dashboard.main') }}" class="btn btn-outline-info btn-sm">View Dashboard</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="text-center">
+                                <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <h4 class="mb-0">4</h4>
+                                </div>
+                                <h5>Complete Forms</h5>
+                                <p>AI helps pre-fill Canadian court forms based on your case</p>
+                                <a href="{{ url_for('form.available') }}" class="btn btn-outline-warning btn-sm">Browse Forms</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Overview -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                            <h5>AI-Powered Analysis</h5>
+                            <p>Advanced AI analyzes your evidence and provides merit scoring to help assess your case strength</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                            <h5>Canadian Court Forms</h5>
+                            <p>Access templates for all provinces and territories, with AI-powered pre-filling capabilities</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shield-alt fa-3x text-info mb-3"></i>
+                            <h5>Secure & Private</h5>
+                            <p>End-to-end encryption ensures your sensitive legal documents remain completely private</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provincial Coverage -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-map-marker-alt"></i> Canadian Provincial Coverage</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> <strong>Ontario (ON)</strong> - Family Court, Superior Court</li>
+                                <li><i class="fas fa-check text-success"></i> <strong>British Columbia (BC)</strong> - Provincial Court, Supreme Court</li>
+                                <li><i class="fas fa-check text-success"></i> <strong>Alberta (AB)</strong> - Provincial Court, Court of Queen's Bench</li>
+                                <li><i class="fas fa-check text-success"></i> <strong>Quebec (QC)</strong> - Superior Court, Court of Quebec</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> <strong>Manitoba (MB)</strong> - Provincial Court, Court of Queen's Bench</li>
+                                <li><i class="fas fa-check text-success"></i> <strong>Saskatchewan (SK)</strong> - Provincial Court, Court of Queen's Bench</li>
+                                <li><i class="fas fa-check text-success"></i> <strong>Nova Scotia (NS)</strong> - Family Court, Supreme Court</li>
+                                <li><i class="fas text-muted"></i> <em>All other provinces and territories supported</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="card mb-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-credit-card"></i> Transparent Pricing</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Service Pricing (CAD)</h5>
+                            <ul>
+                                <li><strong>Case Analysis:</strong> $49.99</li>
+                                <li><strong>Form Assistance:</strong> $29.99</li>
+                                <li><strong>Document Review:</strong> $39.99</li>
+                                <li><strong>Full Service Package:</strong> $149.99</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Payment via E-Transfer</h5>
+                            <p>Send Interac e-Transfer to:</p>
+                            <p class="lead"><strong>admin@justice-bot.command</strong></p>
+                            <p><small class="text-muted">You'll receive detailed payment instructions after selecting a service</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legal Disclaimer -->
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Important Legal Notice</h5>
+                <p class="mb-1"><strong>This platform provides self-advocacy assistance and is not legal advice.</strong> While our AI provides analysis and form assistance, it does not replace qualified legal counsel. For complex matters, consider consulting with a licensed lawyer.</p>
+                <p class="mb-0"><em>Smart Dispute helps you organize your case and understand court procedures, but final legal decisions should be made with appropriate professional guidance.</em></p>
+            </div>
+
+            <!-- Get Started Button -->
+            <div class="text-center">
+                <a href="{{ url_for('case.create') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-play"></i> Start Your First Case
+                </a>
+                <a href="{{ url_for('dashboard.main') }}" class="btn btn-outline-secondary btn-lg ml-2">
+                    <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

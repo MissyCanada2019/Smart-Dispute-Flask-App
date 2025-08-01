@@ -1,0 +1,701 @@
+{% extends "base.html" %}
+
+{% block title %}Notification Settings - Smart Dispute{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .settings-section {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .settings-section h4 {
+        margin-bottom: 1rem;
+        color: #495057;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+    .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    .setting-item:last-child {
+        border-bottom: none;
+    }
+    .setting-info {
+        flex-grow: 1;
+        margin-right: 1rem;
+    }
+    .setting-info h6 {
+        margin-bottom: 0.25rem;
+        color: #495057;
+    }
+    .setting-info p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    .setting-control {
+        flex-shrink: 0;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #007bff;
+    }
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    .notification-preview {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    .frequency-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .frequency-option {
+        padding: 0.5rem 0.75rem;
+        border: 2px solid #dee2e6;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+    }
+    .frequency-option:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .frequency-option.active {
+        border-color: #007bff;
+        background-color: #e3f2fd;
+        color: #007bff;
+    }
+    .time-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .time-option {
+        padding: 0.4rem 0.6rem;
+        border: 2px solid #dee2e6;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.8rem;
+    }
+    .time-option:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .time-option.active {
+        border-color: #007bff;
+        background-color: #e3f2fd;
+        color: #007bff;
+    }
+    .priority-filter {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+    .priority-chip {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.8rem;
+    }
+    .priority-chip.low {
+        background-color: #6c757d;
+        color: white;
+    }
+    .priority-chip.medium {
+        background-color: #17a2b8;
+        color: white;
+    }
+    .priority-chip.high {
+        background-color: #fd7e14;
+        color: white;
+    }
+    .priority-chip.urgent {
+        background-color: #dc3545;
+        color: white;
+    }
+    .priority-chip.active {
+        border-color: #333;
+        transform: scale(1.05);
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .stat-card h3 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+    .stat-card p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="settings-container">
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-cog mr-2"></i>Notification Settings</h1>
+                    <a href="{{ url_for('notifications.list_notifications') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i>Back to Notifications
+                    </a>
+                </div>
+
+                <!-- Notification Statistics -->
+                <div class="settings-section">
+                    <h4><i class="fas fa-chart-bar mr-2"></i>Your Notification Activity</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>12</h3>
+                            <p>This Week</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>3</h3>
+                            <p>Unread</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>5</h3>
+                            <p>Upcoming Deadlines</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>2</h3>
+                            <p>Urgent Items</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General Notification Settings -->
+                <div class="settings-section">
+                    <h4><i class="fas fa-bell mr-2"></i>General Notifications</h4>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Enable Notifications</h6>
+                            <p>Receive notifications for case updates, deadlines, and reminders</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notifications-enabled" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Desktop Notifications</h6>
+                            <p>Show browser notifications when new alerts arrive</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="desktop-notifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Sound Notifications</h6>
+                            <p>Play sound when receiving high priority notifications</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="sound-notifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deadline & Reminder Settings -->
+                <div class="settings-section">
+                    <h4><i class="fas fa-clock mr-2"></i>Deadlines & Reminders</h4>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Deadline Reminders</h6>
+                            <p>Automatic reminders for upcoming court deadlines and important dates</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="deadline-reminders" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Advance Notice Period</h6>
+                            <p>How far in advance to remind you about deadlines</p>
+                            <div class="frequency-selector">
+                                <div class="frequency-option" data-value="3">3 Days</div>
+                                <div class="frequency-option" data-value="7">1 Week</div>
+                                <div class="frequency-option active" data-value="14">2 Weeks</div>
+                                <div class="frequency-option" data-value="30">1 Month</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Daily Digest</h6>
+                            <p>Receive a daily summary of upcoming deadlines and tasks</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="daily-digest" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Daily Digest Time</h6>
+                            <p>What time to send your daily notification summary</p>
+                            <div class="time-selector">
+                                <div class="time-option" data-value="07:00">7:00 AM</div>
+                                <div class="time-option" data-value="08:00">8:00 AM</div>
+                                <div class="time-option active" data-value="09:00">9:00 AM</div>
+                                <div class="time-option" data-value="10:00">10:00 AM</div>
+                                <div class="time-option" data-value="18:00">6:00 PM</div>
+                                <div class="time-option" data-value="19:00">7:00 PM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priority & Filtering -->
+                <div class="settings-section">
+                    <h4><i class="fas fa-filter mr-2"></i>Priority & Filtering</h4>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Minimum Priority Level</h6>
+                            <p>Only show notifications at or above this priority level</p>
+                            <div class="priority-filter">
+                                <div class="priority-chip low" data-priority="low">Low</div>
+                                <div class="priority-chip medium active" data-priority="medium">Medium</div>
+                                <div class="priority-chip high" data-priority="high">High</div>
+                                <div class="priority-chip urgent" data-priority="urgent">Urgent</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Auto-Archive Old Notifications</h6>
+                            <p>Automatically archive read notifications after 30 days</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="auto-archive" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Case-Specific Settings -->
+                <div class="settings-section">
+                    <h4><i class="fas fa-folder mr-2"></i>Case-Specific Notifications</h4>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Evidence Updates</h6>
+                            <p>Notifications when evidence is processed or analysis is complete</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="evidence-updates" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Form Updates</h6>
+                            <p>Notifications about court form completion and submission status</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="form-updates" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Progress Milestones</h6>
+                            <p>Notifications when your case reaches important milestones</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="progress-updates" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Journey Guidance</h6>
+                            <p>Notifications with next steps and legal journey recommendations</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="journey-updates" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email & Communication -->
+                <div class="settings-section">
+                    <h4><i class="fas fa-envelope mr-2"></i>Email & Communication</h4>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Email Notifications</h6>
+                            <p>Receive important notifications via email (coming soon)</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="email-notifications" disabled>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>SMS Alerts</h6>
+                            <p>Receive urgent notifications via text message (coming soon)</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="sms-notifications" disabled>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="settings-section">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-danger" onclick="resetToDefaults()">
+                            <i class="fas fa-undo mr-1"></i>Reset to Defaults
+                        </button>
+                        <div>
+                            <button type="button" class="btn btn-secondary mr-2" onclick="testNotification()">
+                                <i class="fas fa-test mr-1"></i>Test Notification
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="saveSettings()">
+                                <i class="fas fa-save mr-1"></i>Save Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="notification-preview">
+                    <h6><i class="fas fa-eye mr-2"></i>Notification Preview</h6>
+                    <div class="d-flex align-items-start">
+                        <div class="mr-3">
+                            <i class="fas fa-bell fa-2x text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">Example Notification</h6>
+                            <p class="text-muted mb-1">This is how your notifications will appear with current settings.</p>
+                            <div class="d-flex align-items-center text-muted">
+                                <small class="mr-3">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    2 minutes ago
+                                </small>
+                                <small class="mr-3">
+                                    <i class="fas fa-folder mr-1"></i>
+                                    Family Court Case
+                                </small>
+                                <small>
+                                    <i class="fas fa-flag mr-1"></i>
+                                    Medium priority
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Frequency selector functionality
+document.querySelectorAll('.frequency-option').forEach(option => {
+    option.addEventListener('click', function() {
+        const parent = this.parentElement;
+        parent.querySelectorAll('.frequency-option').forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Time selector functionality
+document.querySelectorAll('.time-option').forEach(option => {
+    option.addEventListener('click', function() {
+        const parent = this.parentElement;
+        parent.querySelectorAll('.time-option').forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Priority selector functionality
+document.querySelectorAll('.priority-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        const parent = this.parentElement;
+        parent.querySelectorAll('.priority-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Desktop notification permission
+document.getElementById('desktop-notifications').addEventListener('change', function() {
+    if (this.checked && 'Notification' in window) {
+        if (Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                if (permission !== 'granted') {
+                    this.checked = false;
+                    alert('Desktop notifications permission was denied. Please enable in your browser settings.');
+                }
+            });
+        } else if (Notification.permission === 'denied') {
+            this.checked = false;
+            alert('Desktop notifications are blocked. Please enable in your browser settings.');
+        }
+    }
+});
+
+function saveSettings() {
+    // Collect all settings
+    const settings = {
+        notifications_enabled: document.getElementById('notifications-enabled').checked,
+        desktop_notifications: document.getElementById('desktop-notifications').checked,
+        sound_notifications: document.getElementById('sound-notifications').checked,
+        deadline_reminders: document.getElementById('deadline-reminders').checked,
+        daily_digest: document.getElementById('daily-digest').checked,
+        auto_archive: document.getElementById('auto-archive').checked,
+        evidence_updates: document.getElementById('evidence-updates').checked,
+        form_updates: document.getElementById('form-updates').checked,
+        progress_updates: document.getElementById('progress-updates').checked,
+        journey_updates: document.getElementById('journey-updates').checked,
+        advance_notice: document.querySelector('.frequency-option.active').dataset.value,
+        digest_time: document.querySelector('.time-option.active').dataset.value,
+        min_priority: document.querySelector('.priority-chip.active').dataset.priority
+    };
+    
+    // Save to localStorage for now (in a real app, this would be saved to the server)
+    localStorage.setItem('notification_settings', JSON.stringify(settings));
+    
+    showToast('Settings saved successfully!', 'success');
+}
+
+function resetToDefaults() {
+    if (!confirm('Reset all notification settings to defaults? This cannot be undone.')) {
+        return;
+    }
+    
+    // Reset all toggles to default states
+    document.getElementById('notifications-enabled').checked = true;
+    document.getElementById('desktop-notifications').checked = false;
+    document.getElementById('sound-notifications').checked = false;
+    document.getElementById('deadline-reminders').checked = true;
+    document.getElementById('daily-digest').checked = true;
+    document.getElementById('auto-archive').checked = true;
+    document.getElementById('evidence-updates').checked = true;
+    document.getElementById('form-updates').checked = true;
+    document.getElementById('progress-updates').checked = true;
+    document.getElementById('journey-updates').checked = true;
+    
+    // Reset frequency options
+    document.querySelectorAll('.frequency-option').forEach(opt => opt.classList.remove('active'));
+    document.querySelector('.frequency-option[data-value="14"]').classList.add('active');
+    
+    // Reset time options
+    document.querySelectorAll('.time-option').forEach(opt => opt.classList.remove('active'));
+    document.querySelector('.time-option[data-value="09:00"]').classList.add('active');
+    
+    // Reset priority options
+    document.querySelectorAll('.priority-chip').forEach(chip => chip.classList.remove('active'));
+    document.querySelector('.priority-chip[data-priority="medium"]').classList.add('active');
+    
+    showToast('Settings reset to defaults', 'info');
+}
+
+function testNotification() {
+    if (document.getElementById('desktop-notifications').checked && 'Notification' in window && Notification.permission === 'granted') {
+        new Notification('Smart Dispute Test', {
+            body: 'This is a test notification to verify your settings are working correctly.',
+            icon: '/static/images/logo.png'
+        });
+    }
+    
+    // Also show an in-app notification
+    showToast('Test notification sent! Check your notifications panel.', 'info');
+    
+    // Create a test notification via API (if admin)
+    fetch('/notifications/test-notification', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Test notification created successfully!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error creating test notification:', error);
+    });
+}
+
+function loadSettings() {
+    const saved = localStorage.getItem('notification_settings');
+    if (saved) {
+        try {
+            const settings = JSON.parse(saved);
+            
+            // Apply saved settings
+            Object.keys(settings).forEach(key => {
+                const element = document.getElementById(key.replace('_', '-'));
+                if (element && element.type === 'checkbox') {
+                    element.checked = settings[key];
+                }
+            });
+            
+            // Apply complex settings
+            if (settings.advance_notice) {
+                document.querySelectorAll('.frequency-option').forEach(opt => opt.classList.remove('active'));
+                document.querySelector(`.frequency-option[data-value="${settings.advance_notice}"]`)?.classList.add('active');
+            }
+            
+            if (settings.digest_time) {
+                document.querySelectorAll('.time-option').forEach(opt => opt.classList.remove('active'));
+                document.querySelector(`.time-option[data-value="${settings.digest_time}"]`)?.classList.add('active');
+            }
+            
+            if (settings.min_priority) {
+                document.querySelectorAll('.priority-chip').forEach(chip => chip.classList.remove('active'));
+                document.querySelector(`.priority-chip[data-priority="${settings.min_priority}"]`)?.classList.add('active');
+            }
+            
+        } catch (error) {
+            console.error('Error loading settings:', error);
+        }
+    }
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : type === 'info' ? 'info' : 'success'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="close" onclick="this.parentElement.remove()">
+            <span>&times;</span>
+        </button>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+
+// Load settings on page load
+document.addEventListener('DOMContentLoaded', loadSettings);
+</script>
+{% endblock %}

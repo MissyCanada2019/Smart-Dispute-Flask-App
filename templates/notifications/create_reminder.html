@@ -1,0 +1,516 @@
+{% extends "base.html" %}
+
+{% block title %}Create Reminder - Smart Dispute{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .reminder-preview {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    .deadline-type-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .deadline-type-card {
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+    .deadline-type-card:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .deadline-type-card.selected {
+        border-color: #007bff;
+        background-color: #e3f2fd;
+    }
+    .deadline-type-card i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #007bff;
+    }
+    .datetime-inputs {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1rem;
+    }
+    .form-section {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-section h4 {
+        margin-bottom: 1rem;
+        color: #495057;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+    .case-info {
+        background-color: #e3f2fd;
+        border-radius: 4px;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+    }
+    .priority-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .priority-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+    .priority-badge.low {
+        background-color: #6c757d;
+        color: white;
+    }
+    .priority-badge.medium {
+        background-color: #17a2b8;
+        color: white;
+    }
+    .priority-badge.high {
+        background-color: #fd7e14;
+        color: white;
+    }
+    .priority-badge.urgent {
+        background-color: #dc3545;
+        color: white;
+    }
+    .priority-badge.selected {
+        border-color: #333;
+        transform: scale(1.05);
+    }
+    .tips-sidebar {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        height: fit-content;
+    }
+    .tips-sidebar h5 {
+        color: #495057;
+        margin-bottom: 1rem;
+    }
+    .tips-sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+    .tips-sidebar li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .tips-sidebar li:last-child {
+        border-bottom: none;
+    }
+    .tips-sidebar i {
+        color: #28a745;
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-bell mr-2"></i>Create Reminder</h1>
+                    <a href="{{ url_for('notifications.list_reminders') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i>Back to Reminders
+                    </a>
+                </div>
+
+                <form method="POST" id="reminder-form">
+                    <!-- Case Selection -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-folder mr-2"></i>Select Case</h4>
+                        <div class="form-group">
+                            <label for="case_id">Choose the case this reminder relates to:</label>
+                            <select class="form-control" id="case_id" name="case_id" required onchange="updateCaseInfo()">
+                                <option value="">Select a case...</option>
+                                {% for case in cases %}
+                                <option value="{{ case.id }}" 
+                                        data-title="{{ case.title }}"
+                                        data-type="{{ case.case_type }}"
+                                        data-status="{{ case.status }}"
+                                        data-created="{{ case.created_at.strftime('%Y-%m-%d') }}">
+                                    {{ case.title }} ({{ case.case_type }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div id="case-info" class="case-info" style="display: none;">
+                                <strong>Case Details:</strong>
+                                <div id="case-details"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reminder Type -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-tag mr-2"></i>Reminder Type</h4>
+                        <div class="deadline-type-cards">
+                            <div class="deadline-type-card" data-type="court_filing">
+                                <i class="fas fa-gavel"></i>
+                                <h6>Court Filing</h6>
+                                <small>Document submission deadline</small>
+                            </div>
+                            <div class="deadline-type-card" data-type="hearing_date">
+                                <i class="fas fa-calendar-check"></i>
+                                <h6>Hearing/Court Date</h6>
+                                <small>Scheduled court appearance</small>
+                            </div>
+                            <div class="deadline-type-card" data-type="evidence_submission">
+                                <i class="fas fa-file-upload"></i>
+                                <h6>Evidence Deadline</h6>
+                                <small>Evidence submission cutoff</small>
+                            </div>
+                            <div class="deadline-type-card" data-type="response_deadline">
+                                <i class="fas fa-reply"></i>
+                                <h6>Response Due</h6>
+                                <small>Reply to court or opposing party</small>
+                            </div>
+                            <div class="deadline-type-card" data-type="consultation">
+                                <i class="fas fa-user-tie"></i>
+                                <h6>Consultation</h6>
+                                <small>Meeting with lawyer/mediator</small>
+                            </div>
+                            <div class="deadline-type-card" data-type="custom" selected>
+                                <i class="fas fa-bell"></i>
+                                <h6>Custom Reminder</h6>
+                                <small>Personal reminder or task</small>
+                            </div>
+                        </div>
+                        <input type="hidden" id="deadline_type" name="deadline_type" value="custom" required>
+                    </div>
+
+                    <!-- Reminder Details -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-edit mr-2"></i>Reminder Details</h4>
+                        <div class="form-group">
+                            <label for="title">Reminder Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="e.g., Submit court filing documents" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Description</label>
+                            <textarea class="form-control" id="message" name="message" rows="3"
+                                      placeholder="Add any additional details or instructions..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- DateTime Selection -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-clock mr-2"></i>When to Remind</h4>
+                        <div class="datetime-inputs">
+                            <div class="form-group">
+                                <label for="remind_date">Date *</label>
+                                <input type="date" class="form-control" id="remind_date" name="remind_date" 
+                                       min="{{ (moment().add(1, 'day')).format('YYYY-MM-DD') }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="remind_time">Time</label>
+                                <input type="time" class="form-control" id="remind_time" name="remind_time" value="09:00">
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">
+                            Choose when you want to be reminded. For important deadlines, set the reminder 1-2 weeks in advance.
+                        </small>
+                    </div>
+
+                    <!-- Priority Selection -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-flag mr-2"></i>Priority Level</h4>
+                        <div class="priority-badges">
+                            <div class="priority-badge low" data-priority="low">
+                                <i class="fas fa-flag mr-1"></i>Low
+                            </div>
+                            <div class="priority-badge medium selected" data-priority="medium">
+                                <i class="fas fa-flag mr-1"></i>Medium
+                            </div>
+                            <div class="priority-badge high" data-priority="high">
+                                <i class="fas fa-flag mr-1"></i>High
+                            </div>
+                            <div class="priority-badge urgent" data-priority="urgent">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>Urgent
+                            </div>
+                        </div>
+                        <input type="hidden" id="priority" name="priority" value="medium">
+                        <small class="form-text text-muted mt-2">
+                            Priority affects how prominently the reminder appears in your notifications.
+                        </small>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-eye mr-2"></i>Preview</h4>
+                        <div class="reminder-preview">
+                            <div class="d-flex align-items-start">
+                                <div class="mr-3">
+                                    <i id="preview-icon" class="fas fa-bell fa-2x text-info"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 id="preview-title" class="mb-1">Your reminder title will appear here</h5>
+                                    <p id="preview-message" class="text-muted mb-1">Description will appear here</p>
+                                    <div class="d-flex align-items-center text-muted">
+                                        <small class="mr-3">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            <span id="preview-date">Select date and time</span>
+                                        </small>
+                                        <small class="mr-3">
+                                            <i class="fas fa-folder mr-1"></i>
+                                            <span id="preview-case">Select case</span>
+                                        </small>
+                                        <small>
+                                            <i class="fas fa-flag mr-1"></i>
+                                            <span id="preview-priority">Medium priority</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="form-section">
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('notifications.list_reminders') }}" class="btn btn-secondary">
+                                <i class="fas fa-times mr-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-bell mr-1"></i>Create Reminder
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tips Sidebar -->
+        <div class="col-lg-4">
+            <div class="tips-sidebar">
+                <h5><i class="fas fa-lightbulb mr-2"></i>Reminder Tips</h5>
+                <ul>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        Set reminders 1-2 weeks before important court deadlines
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        Use descriptive titles to quickly identify what action is needed
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        Include specific details in the description (court address, required documents, etc.)
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        Set multiple reminders for critical deadlines (2 weeks, 1 week, 3 days before)
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        Use urgent priority sparingly - only for truly time-sensitive items
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        Morning reminders (9 AM) work best for most people
+                    </li>
+                </ul>
+
+                <div class="mt-4">
+                    <h6>Common Reminder Types:</h6>
+                    <ul class="list-unstyled mt-2">
+                        <li class="text-muted"><small><i class="fas fa-gavel mr-1"></i> Court filing deadlines</small></li>
+                        <li class="text-muted"><small><i class="fas fa-calendar mr-1"></i> Hearing dates</small></li>
+                        <li class="text-muted"><small><i class="fas fa-file mr-1"></i> Evidence submission</small></li>
+                        <li class="text-muted"><small><i class="fas fa-reply mr-1"></i> Response deadlines</small></li>
+                        <li class="text-muted"><small><i class="fas fa-user-tie mr-1"></i> Legal consultations</small></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Deadline type selection
+document.querySelectorAll('.deadline-type-card').forEach(card => {
+    card.addEventListener('click', function() {
+        // Remove selected class from all cards
+        document.querySelectorAll('.deadline-type-card').forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        this.classList.add('selected');
+        
+        // Update hidden input
+        const type = this.dataset.type;
+        document.getElementById('deadline_type').value = type;
+        
+        // Update preview
+        updatePreview();
+    });
+});
+
+// Priority selection
+document.querySelectorAll('.priority-badge').forEach(badge => {
+    badge.addEventListener('click', function() {
+        // Remove selected class from all badges
+        document.querySelectorAll('.priority-badge').forEach(b => b.classList.remove('selected'));
+        
+        // Add selected class to clicked badge
+        this.classList.add('selected');
+        
+        // Update hidden input
+        const priority = this.dataset.priority;
+        document.getElementById('priority').value = priority;
+        
+        // Update preview
+        updatePreview();
+    });
+});
+
+// Form input listeners for live preview
+document.getElementById('title').addEventListener('input', updatePreview);
+document.getElementById('message').addEventListener('input', updatePreview);
+document.getElementById('remind_date').addEventListener('change', updatePreview);
+document.getElementById('remind_time').addEventListener('change', updatePreview);
+document.getElementById('case_id').addEventListener('change', updatePreview);
+
+function updateCaseInfo() {
+    const select = document.getElementById('case_id');
+    const selectedOption = select.options[select.selectedIndex];
+    const caseInfo = document.getElementById('case-info');
+    const caseDetails = document.getElementById('case-details');
+    
+    if (selectedOption.value) {
+        const title = selectedOption.dataset.title;
+        const type = selectedOption.dataset.type;
+        const status = selectedOption.dataset.status;
+        const created = selectedOption.dataset.created;
+        
+        caseDetails.innerHTML = `
+            <div><strong>Type:</strong> ${type}</div>
+            <div><strong>Status:</strong> ${status}</div>
+            <div><strong>Created:</strong> ${created}</div>
+        `;
+        caseInfo.style.display = 'block';
+    } else {
+        caseInfo.style.display = 'none';
+    }
+    
+    updatePreview();
+}
+
+function updatePreview() {
+    const title = document.getElementById('title').value || 'Your reminder title will appear here';
+    const message = document.getElementById('message').value || 'Description will appear here';
+    const date = document.getElementById('remind_date').value;
+    const time = document.getElementById('remind_time').value;
+    const caseSelect = document.getElementById('case_id');
+    const priority = document.getElementById('priority').value;
+    const deadlineType = document.getElementById('deadline_type').value;
+    
+    // Update preview content
+    document.getElementById('preview-title').textContent = title;
+    document.getElementById('preview-message').textContent = message;
+    
+    // Update date display
+    if (date && time) {
+        const dateObj = new Date(date + 'T' + time);
+        document.getElementById('preview-date').textContent = dateObj.toLocaleString();
+    } else if (date) {
+        document.getElementById('preview-date').textContent = new Date(date).toLocaleDateString();
+    } else {
+        document.getElementById('preview-date').textContent = 'Select date and time';
+    }
+    
+    // Update case display
+    if (caseSelect.selectedIndex > 0) {
+        const selectedOption = caseSelect.options[caseSelect.selectedIndex];
+        document.getElementById('preview-case').textContent = selectedOption.dataset.title;
+    } else {
+        document.getElementById('preview-case').textContent = 'Select case';
+    }
+    
+    // Update priority display
+    document.getElementById('preview-priority').textContent = priority.charAt(0).toUpperCase() + priority.slice(1) + ' priority';
+    
+    // Update icon based on deadline type
+    const iconMap = {
+        'court_filing': 'fas fa-gavel',
+        'hearing_date': 'fas fa-calendar-check',
+        'evidence_submission': 'fas fa-file-upload',
+        'response_deadline': 'fas fa-reply',
+        'consultation': 'fas fa-user-tie',
+        'custom': 'fas fa-bell'
+    };
+    
+    const colorMap = {
+        'low': 'text-secondary',
+        'medium': 'text-info',
+        'high': 'text-warning',
+        'urgent': 'text-danger'
+    };
+    
+    const icon = document.getElementById('preview-icon');
+    icon.className = `${iconMap[deadlineType] || 'fas fa-bell'} fa-2x ${colorMap[priority] || 'text-info'}`;
+}
+
+// Set minimum date to tomorrow
+document.addEventListener('DOMContentLoaded', function() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    document.getElementById('remind_date').min = tomorrowStr;
+    
+    // Initialize preview
+    updatePreview();
+});
+
+// Form validation
+document.getElementById('reminder-form').addEventListener('submit', function(e) {
+    const caseId = document.getElementById('case_id').value;
+    const title = document.getElementById('title').value.trim();
+    const date = document.getElementById('remind_date').value;
+    
+    if (!caseId || !title || !date) {
+        e.preventDefault();
+        alert('Please fill in all required fields.');
+        return false;
+    }
+    
+    // Check if date is in the future
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate <= today) {
+        e.preventDefault();
+        alert('Please select a future date for the reminder.');
+        return false;
+    }
+    
+    return true;
+});
+</script>
+{% endblock %}

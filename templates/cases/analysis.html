@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block title %}Case Analysis - {{ case.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Case Analysis</h2>
+                    <p class="text-muted">{{ case.title }} ({{ case.case_number }})</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('cases.view_case', case_id=case.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Case
+                    </a>
+                    <button type="button" class="btn btn-primary" onclick="refreshAnalysis()" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh Analysis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Merit Score Overview -->
+            <div class="row mb-4">
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-balance-scale"></i> Overall Merit Score
+                            </h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <span class="display-4 font-weight-bold text-primary" id="meritScore">
+                                    {{ case.merit_score or 0 }}
+                                </span>
+                                <span class="text-muted">/100</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-primary" role="progressbar" 
+                                     style="width: {{ case.merit_score or 0 }}%" 
+                                     aria-valuenow="{{ case.merit_score or 0 }}" 
+                                     aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            <small class="text-muted" id="scoreInterpretation">
+                                {% if case.merit_score %}
+                                    {% if case.merit_score >= 80 %}
+                                        <span class="text-success">Strong Case</span>
+                                    {% elif case.merit_score >= 60 %}
+                                        <span class="text-warning">Moderate Case</span>
+                                    {% elif case.merit_score >= 40 %}
+                                        <span class="text-info">Developing Case</span>
+                                    {% else %}
+                                        <span class="text-danger">Needs Improvement</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">Not yet analyzed</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-check-circle"></i> Evidence Status
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="h4 mb-0">{{ evidence_list|length }}</div>
+                                    <small class="text-muted">Total Evidence</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="h4 mb-0">
+                                        {{ evidence_list|selectattr('status.value', 'in', ['processed', 'analyzed'])|list|length }}
+                                    </div>
+                                    <small class="text-muted">Processed</small>
+                                </div>
+                            </div>
+                            <div class="progress mt-2">
+                                {% set processed_count = evidence_list|selectattr('status.value', 'in', ['processed', 'analyzed'])|list|length %}
+                                {% set total_count = evidence_list|length %}
+                                {% set progress_pct = (processed_count / total_count * 100)|int if total_count > 0 else 0 %}
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ progress_pct }}%" 
+                                     aria-valuenow="{{ progress_pct }}" 
+                                     aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-info-circle"></i> Case Info
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <strong>Type:</strong> 
+                                <span class="badge badge-secondary">{{ case.case_type.value.replace('_', ' ').title() }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Province:</strong> {{ case.province }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Priority:</strong> 
+                                <span class="badge badge-{% if case.priority.value == 'high' %}danger{% elif case.priority.value == 'medium' %}warning{% else %}info{% endif %}">
+                                    {{ case.priority.value.title() }}
+                                </span>
+                            </div>
+                            <div>
+                                <strong>Status:</strong> 
+                                <span class="badge badge-primary">{{ case.status.value.replace('_', ' ').title() }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="row">
+                <!-- Strengths -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title text-success mb-0">
+                                <i class="fas fa-thumbs-up"></i> Case Strengths
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if case.strength_indicators %}
+                                <ul class="list-unstyled">
+                                    {% for strength in case.strength_indicators %}
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success"></i>
+                                        <span class="ml-2">{{ strength }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">
+                                    <i class="fas fa-info-circle"></i>
+                                    No specific strengths identified yet. Upload more evidence or run analysis to identify case strengths.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weaknesses -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title text-warning mb-0">
+                                <i class="fas fa-exclamation-triangle"></i> Areas for Improvement
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if case.weakness_indicators %}
+                                <ul class="list-unstyled">
+                                    {% for weakness in case.weakness_indicators %}
+                                    <li class="mb-2">
+                                        <i class="fas fa-triangle-exclamation text-warning"></i>
+                                        <span class="ml-2">{{ weakness }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">
+                                    <i class="fas fa-info-circle"></i>
+                                    No specific weaknesses identified yet. This could indicate a strong case or that more analysis is needed.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analysis Details -->
+            {% if case.merit_analysis %}
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-robot"></i> AI Legal Analysis
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if case.merit_analysis.get('legal_strength_summary') %}
+                                <div class="mb-3">
+                                    <h6><i class="fas fa-gavel"></i> Legal Strength Assessment</h6>
+                                    <p>{{ case.merit_analysis.legal_strength_summary }}</p>
+                                </div>
+                            {% endif %}
+
+                            {% if case.merit_analysis.get('evidence_quality_summary') %}
+                                <div class="mb-3">
+                                    <h6><i class="fas fa-file-alt"></i> Evidence Quality Summary</h6>
+                                    <p>{{ case.merit_analysis.evidence_quality_summary }}</p>
+                                </div>
+                            {% endif %}
+
+                            {% if case.merit_analysis.get('recommendations') %}
+                                <div class="mb-3">
+                                    <h6><i class="fas fa-lightbulb"></i> AI Recommendations</h6>
+                                    <ul>
+                                        {% for recommendation in case.merit_analysis.recommendations %}
+                                        <li>{{ recommendation }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            {% if case.merit_analysis.get('score_breakdown') %}
+                                <div class="mb-3">
+                                    <h6><i class="fas fa-chart-bar"></i> Score Breakdown</h6>
+                                    <div class="row">
+                                        {% if case.merit_analysis.score_breakdown.get('evidence_quality') %}
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <div class="h5 text-primary">{{ case.merit_analysis.score_breakdown.evidence_quality }}</div>
+                                                <small class="text-muted">Evidence Quality</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% if case.merit_analysis.score_breakdown.get('legal_strength') %}
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <div class="h5 text-success">{{ case.merit_analysis.score_breakdown.legal_strength }}</div>
+                                                <small class="text-muted">Legal Strength</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% if case.merit_analysis.score_breakdown.get('case_completeness') %}
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <div class="h5 text-info">{{ case.merit_analysis.score_breakdown.case_completeness }}</div>
+                                                <small class="text-muted">Case Completeness</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Evidence List -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-folder-open"></i> Evidence Files
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if evidence_list %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>File</th>
+                                                <th>Type</th>
+                                                <th>Status</th>
+                                                <th>Upload Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for evidence in evidence_list %}
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <strong>{{ evidence.title or evidence.original_filename }}</strong>
+                                                        {% if evidence.description %}
+                                                        <br><small class="text-muted">{{ evidence.description }}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-secondary">
+                                                        {{ evidence.evidence_type.value.title() }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-{% if evidence.status.value == 'analyzed' %}success{% elif evidence.status.value == 'processed' %}info{% elif evidence.status.value == 'processing' %}warning{% else %}secondary{% endif %}">
+                                                        {{ evidence.status.value.replace('_', ' ').title() }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ evidence.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                                <td>
+                                                    <a href="{{ url_for('cases.view_evidence_detail', case_id=case.id, evidence_id=evidence.id) }}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center">
+                                    <i class="fas fa-folder-open"></i>
+                                    No evidence files uploaded yet.
+                                    <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="btn btn-primary btn-sm ml-2">
+                                        <i class="fas fa-upload"></i> Upload Evidence
+                                    </a>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function refreshAnalysis() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const originalText = refreshBtn.innerHTML;
+    
+    try {
+        // Show loading state
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+        refreshBtn.disabled = true;
+        
+        // Get case ID from URL
+        const caseId = window.location.pathname.split('/')[2];
+        
+        // Call API to recalculate merit analysis
+        const response = await fetch('/cases/api/' + caseId + '/merit-analysis', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Reload the page to show updated analysis
+            window.location.reload();
+        } else {
+            console.error('Analysis failed:', result.error);
+            alert('Analysis failed: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error refreshing analysis:', error);
+        alert('Error refreshing analysis: ' + error.message);
+    } finally {
+        // Restore button state
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+    }
+}
+</script>
+{% endblock %}
