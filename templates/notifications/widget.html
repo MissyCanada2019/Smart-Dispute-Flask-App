@@ -1,18 +1,18 @@
 <!-- Notification Widget for embedding in other pages -->
 <div class="notification-widget">
     <div class="dropdown">
-        <button class="btn btn-outline-secondary dropdown-toggle position-relative" type="button" 
-                id="notificationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button class="btn btn-outline-secondary dropdown-toggle position-relative" type="button"
+                id="notificationDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-bell"></i>
             {% if summary.unread_count > 0 %}
-            <span class="badge badge-danger badge-pill position-absolute" 
+            <span class="badge bg-danger rounded-pill position-absolute"
                   style="top: -5px; right: -5px; font-size: 0.7rem;">
                 {{ summary.unread_count if summary.unread_count <= 99 else '99+' }}
             </span>
             {% endif %}
         </button>
         
-        <div class="dropdown-menu dropdown-menu-right notification-dropdown" aria-labelledby="notificationDropdown">
+        <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
             <div class="dropdown-header d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Notifications</h6>
                 {% if summary.unread_count > 0 %}
@@ -24,10 +24,10 @@
             
             {% if notifications %}
                 {% for notification in notifications %}
-                <div class="dropdown-item notification-item {% if not notification.is_read %}unread{% endif %}" 
+                <div class="dropdown-item notification-item {% if not notification.is_read %}unread{% endif %}"
                      data-notification-id="{{ notification.id }}">
                     <div class="d-flex align-items-start">
-                        <div class="mr-2">
+                        <div class="me-2">
                             {% if notification.notification_type.value == 'deadline' %}
                                 <i class="fas fa-clock text-danger"></i>
                             {% elif notification.notification_type.value == 'case_update' %}
@@ -46,7 +46,7 @@
                             <div class="d-flex justify-content-between align-items-start">
                                 <h6 class="dropdown-item-title mb-1">{{ notification.title }}</h6>
                                 {% if not notification.is_read %}
-                                    <span class="badge badge-primary badge-sm">New</span>
+                                    <span class="badge bg-primary badge-sm">New</span>
                                 {% endif %}
                             </div>
                             <p class="dropdown-item-text mb-1">
@@ -181,7 +181,7 @@ function markAsRead(notificationId, event) {
             const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
             if (notification) {
                 notification.classList.remove('unread');
-                notification.querySelector('.badge-primary')?.remove();
+                notification.querySelector('.bg-primary')?.remove();
                 notification.querySelector('.notification-actions')?.remove();
             }
             updateNotificationBadge();
@@ -205,7 +205,7 @@ function markAllAsRead() {
         if (data.success) {
             document.querySelectorAll('.notification-item.unread').forEach(item => {
                 item.classList.remove('unread');
-                item.querySelector('.badge-primary')?.remove();
+                item.querySelector('.bg-primary')?.remove();
                 item.querySelector('.notification-actions')?.remove();
             });
             updateNotificationBadge();
@@ -227,7 +227,7 @@ function updateNotificationBadge() {
             } else {
                 const button = document.getElementById('notificationDropdown');
                 const newBadge = document.createElement('span');
-                newBadge.className = 'badge badge-danger badge-pill position-absolute';
+                newBadge.className = 'badge bg-danger rounded-pill position-absolute';
                 newBadge.style.cssText = 'top: -5px; right: -5px; font-size: 0.7rem;';
                 newBadge.textContent = data.unread_count <= 99 ? data.unread_count : '99+';
                 button.appendChild(newBadge);
