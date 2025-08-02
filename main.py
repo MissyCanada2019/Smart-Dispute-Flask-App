@@ -74,9 +74,6 @@ def create_app():
     def index():
         return render_template('onboarding/welcome.html')
     
-    # Note: Static file serving removed for security - all file access now goes through secure routes
-    # Files are encrypted and require proper authentication and authorization
-
     # Register error handlers
     register_error_handlers(app)
     
@@ -92,7 +89,7 @@ def create_app():
         try:
             from models.user import User
             if User.query.count() == 0:
-                print("🔧 Auto-initializing database for first deployment...")
+                print("Auto-initializing database for first deployment...")
                 
                 # Create admin user
                 admin_user = User(
@@ -113,11 +110,11 @@ def create_app():
                 db.session.add(test_user)
                 
                 db.session.commit()
-                print("✅ Database auto-initialized with default users")
-                print("👑 Admin: admin@smartdispute.ca / admin123")
-                print("👤 Test: test@smartdispute.ca / test123")
+                print("Database auto-initialized with default users")
+                print("Admin: admin@smartdispute.ca / admin123")
+                print("Test: test@smartdispute.ca / test123")
         except Exception as e:
-            print(f"⚠️ Auto-initialization failed: {str(e)}")
+            print(f"Auto-initialization failed: {str(e)}")
 
     return app
 
