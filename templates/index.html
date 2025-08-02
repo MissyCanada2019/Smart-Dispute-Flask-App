@@ -1,36 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome - Smart Dispute Canada{% endblock %}
+{% block title %}Smart Dispute Canada - Your Charter Rights Defender{% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8 mx-auto text-center">
+    <div class="col-lg-12 mx-auto text-center">
         <div class="hero-section py-5">
-            <h1 class="display-4 fw-bold text-primary mb-4">
-                <i class="fas fa-balance-scale me-3"></i>
-                Smart Dispute Canada
+            <div class="mb-4">
+                <span class="maple-leaf" style="font-size: 3rem;">🍁</span>
+                <i class="fas fa-balance-scale fa-3x text-danger mx-3"></i>
+                <span class="maple-leaf" style="font-size: 3rem;">🍁</span>
+            </div>
+            <h1 class="display-4 fw-bold mb-4">
+                <span class="canada-flag-gradient">Smart Dispute Canada</span>
             </h1>
             <p class="lead mb-4">
-                Navigate the Canadian legal system with confidence. Our AI-powered platform helps you
-                build strong cases with evidence analysis, automated form completion, and step-by-step guidance.
+                Navigate the Canadian legal system with <strong>Charter-informed confidence</strong>. 
+                Our AI-powered platform defends your constitutional rights with evidence analysis, 
+                automated court forms, and step-by-step legal guidance.
             </p>
+            <div class="charter-quote mb-4">
+                "Everyone whose rights or freedoms, as guaranteed by this Charter, have been infringed or denied may apply to a court of competent jurisdiction to obtain such remedy as the court considers appropriate and just in the circumstances."
+                <cite>— Section 24(1), Canadian Charter of Rights and Freedoms</cite>
+            </div>
             
             {% if current_user.is_authenticated %}
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <a href="{{ url_for('cases.list_cases') }}" class="btn btn-primary btn-lg me-md-2">
+                    <a href="{{ url_for('cases.list_cases') }}" class="btn btn-primary btn-lg me-md-2 hover-lift">
                         <i class="fas fa-folder me-2"></i>View My Cases
                     </a>
-                    <a href="{{ url_for('cases.create_case') }}" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-plus me-2"></i>Start New Case
+                    <a href="{{ url_for('cases.create_case') }}" class="btn btn-outline-primary btn-lg hover-lift">
+                        <i class="fas fa-plus me-2"></i>Defend New Rights
                     </a>
                 </div>
             {% else %}
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-md-2">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-md-2 hover-lift">
+                        <i class="fas fa-sign-in-alt me-2"></i>Start Defending Your Rights
                     </a>
-                    <a href="#features" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    <a href="#features" class="btn btn-outline-primary btn-lg hover-lift">
+                        <i class="fas fa-maple-leaf me-2"></i>Learn About Your Charter Rights
                     </a>
                 </div>
             {% endif %}
@@ -41,86 +50,168 @@
 {% if not current_user.is_authenticated %}
 <section id="features" class="py-5">
     <div class="row">
-        <div class="col-12">
-            <h2 class="text-center mb-5">How We Help You Navigate Legal Challenges</h2>
+        <div class="col-12 text-center mb-5">
+            <h2 class="text-danger">
+                <span class="maple-leaf">🍁</span>
+                How We Help Defend Your Charter Rights
+                <span class="maple-leaf">🍁</span>
+            </h2>
+            <p class="lead text-muted">
+                Every Canadian deserves equal protection under the law - We make it accessible
+            </p>
         </div>
     </div>
     
     <div class="row g-4">
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-body text-center p-4">
                     <div class="feature-icon mb-3">
-                        <i class="fas fa-cloud-upload-alt fa-3x text-primary"></i>
+                        <i class="fas fa-cloud-upload-alt fa-4x text-danger"></i>
                     </div>
-                    <h5 class="card-title">Evidence Analysis</h5>
+                    <h5 class="card-title">Charter-Informed Evidence Analysis</h5>
                     <p class="card-text">
-                        Upload documents and images. Our AI extracts key information,
-                        analyzes relevance, and provides merit scoring to strengthen your case.
+                        Upload documents and our AI analyzes them through the lens of your Charter rights,
+                        extracting key information and providing constitutional merit scoring.
                     </p>
+                    <div class="mt-auto">
+                        <small class="text-muted">
+                            <i class="fas fa-balance-scale me-1"></i>
+                            Constitutional Law Trained
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-body text-center p-4">
                     <div class="feature-icon mb-3">
-                        <i class="fas fa-file-alt fa-3x text-success"></i>
+                        <i class="fas fa-file-alt fa-4x text-success"></i>
                     </div>
-                    <h5 class="card-title">Smart Forms</h5>
+                    <h5 class="card-title">Canadian Court Forms</h5>
                     <p class="card-text">
-                        AI-powered form completion for Canadian courts. We pre-fill forms
-                        based on your evidence and guide you through each step.
+                        AI-powered completion of official court forms for all Canadian provinces and territories.
+                        Pre-filled based on your evidence and Charter rights analysis.
                     </p>
+                    <div class="mt-auto">
+                        <small class="text-muted">
+                            <span class="maple-leaf">🍁</span>
+                            All Provinces & Territories
+                            <span class="maple-leaf">🍁</span>
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-body text-center p-4">
                     <div class="feature-icon mb-3">
-                        <i class="fas fa-route fa-3x text-warning"></i>
+                        <i class="fas fa-route fa-4x text-warning"></i>
                     </div>
-                    <h5 class="card-title">Legal Journey</h5>
+                    <h5 class="card-title">Legal Journey Guidance</h5>
                     <p class="card-text">
-                        Step-by-step guidance through your legal process with deadlines,
-                        reminders, and personalized recommendations.
+                        Step-by-step navigation through Canadian court procedures with Charter-based
+                        deadlines, reminders, and personalized constitutional recommendations.
                     </p>
+                    <div class="mt-auto">
+                        <small class="text-muted">
+                            <i class="fas fa-gavel me-1"></i>
+                            Professional Legal Guidance
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="py-5 bg-light">
+<section class="canada-pride py-5">
     <div class="row">
-        <div class="col-md-8 mx-auto text-center">
-            <h3 class="mb-4">Specialized Support for Canadian Legal Matters</h3>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-child text-primary me-3"></i>
-                        <span>Child Protection Cases</span>
+        <div class="col-md-10 mx-auto text-center">
+            <h3 class="mb-4 text-danger">
+                <span class="maple-leaf">🍁</span>
+                Specialized Support for Canadian Legal Matters
+                <span class="maple-leaf">🍁</span>
+            </h3>
+            <div class="charter-quote mb-4">
+                "Everyone is equal before and under the law and has the right to the equal protection and equal benefit of the law without discrimination"
+                <cite>— Section 15(1), Canadian Charter of Rights and Freedoms</cite>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-child text-danger fa-2x me-3"></i>
+                        <div>
+                            <strong>Child Protection Cases</strong>
+                            <br><small class="text-muted">Charter Section 7 Rights</small>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-home text-primary me-3"></i>
-                        <span>Family Court Matters</span>
+                <div class="col-md-6 col-lg-3">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-home text-success fa-2x me-3"></i>
+                        <div>
+                            <strong>Family Court Matters</strong>
+                            <br><small class="text-muted">Security of Person</small>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-users text-primary me-3"></i>
-                        <span>Parental Rights</span>
+                <div class="col-md-6 col-lg-3">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-users text-info fa-2x me-3"></i>
+                        <div>
+                            <strong>Parental Rights</strong>
+                            <br><small class="text-muted">Fundamental Justice</small>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-gavel text-primary me-3"></i>
-                        <span>Tribunal Proceedings</span>
+                <div class="col-md-6 col-lg-3">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-gavel text-warning fa-2x me-3"></i>
+                        <div>
+                            <strong>Tribunal Proceedings</strong>
+                            <br><small class="text-muted">Equal Protection</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-quote-left text-warning me-2"></i>
+                        Your Constitutional Foundation
+                        <i class="fas fa-quote-right text-warning ms-2"></i>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="charter-quote">
+                        "Everyone has the right to life, liberty and security of the person and the right not to be deprived thereof except in accordance with the principles of fundamental justice."
+                        <cite>— Section 7, Canadian Charter of Rights and Freedoms</cite>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p class="mb-3">
+                            <strong class="text-success">These rights are yours by birthright as a Canadian.</strong>
+                        </p>
+                        <p class="text-muted">
+                            Smart Dispute Canada exists to help you understand, assert, and defend these fundamental freedoms
+                            with the dignity and respect every Canadian deserves.
+                        </p>
+                        <div class="mt-4">
+                            <span class="maple-leaf" style="font-size: 2rem;">🍁</span>
+                            <span class="legal-symbol">⚖️</span>
+                            <span class="maple-leaf" style="font-size: 2rem;">🍁</span>
+                        </div>
                     </div>
                 </div>
             </div>

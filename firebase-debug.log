@@ -1,0 +1,28 @@
+[debug] [2025-08-01T11:17:37.449Z] ----------------------------------------------------------------------
+[debug] [2025-08-01T11:17:37.451Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/gv0i9ndcpzjpfi2yr06402kzy90q51ki-firebase-tools-14.10.1/lib/node_modules/firebase-tools/lib/bin/firebase.js init hosting
+[debug] [2025-08-01T11:17:37.452Z] CLI Version:   14.10.1
+[debug] [2025-08-01T11:17:37.452Z] Platform:      linux
+[debug] [2025-08-01T11:17:37.452Z] Node Version:  v20.19.1
+[debug] [2025-08-01T11:17:37.452Z] Time:          Fri Aug 01 2025 11:17:37 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-08-01T11:17:37.452Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-01T11:17:37.456Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-01T11:18:39.068Z] Running auto auth
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/user/smartdisputeflaskapp
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 

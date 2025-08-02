@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Smart Dispute Canada{% endblock %}</title>
+    <title>{% block title %}Smart Dispute Canada - Defending Your Rights{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍁</text></svg>">
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
+                <span class="maple-leaf">🍁</span>
                 <i class="fas fa-balance-scale me-2"></i>
-                Smart Dispute Canada
+                <span class="canada-flag-gradient">Smart Dispute Canada</span>
+                <span class="maple-leaf">🍁</span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -25,32 +28,32 @@
                 <ul class="navbar-nav me-auto">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('dashboard.main_dashboard') }}">
+                            <a class="nav-link hover-lift" href="{{ url_for('dashboard.main_dashboard') }}">
                                 <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('cases.list_cases') }}">
+                            <a class="nav-link hover-lift" href="{{ url_for('cases.list_cases') }}">
                                 <i class="fas fa-folder me-1"></i>My Cases
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('cases.create_case') }}">
+                            <a class="nav-link hover-lift" href="{{ url_for('cases.create_case') }}">
                                 <i class="fas fa-plus me-1"></i>New Case
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('forms.list_forms') }}">
+                            <a class="nav-link hover-lift" href="{{ url_for('forms.list_forms') }}">
                                 <i class="fas fa-file-alt me-1"></i>Court Forms
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('journey.dashboard') }}">
+                            <a class="nav-link hover-lift" href="{{ url_for('journey.dashboard') }}">
                                 <i class="fas fa-route me-1"></i>Legal Journey
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('secure_files.manage_files') }}">
+                            <a class="nav-link hover-lift" href="{{ url_for('secure_files.manage_files') }}">
                                 <i class="fas fa-shield-alt me-1"></i>Secure Files
                             </a>
                         </li>
@@ -60,7 +63,7 @@
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('notifications.list_reminders') }}">
+                            <a class="nav-link hover-lift" href="{{ url_for('notifications.list_reminders') }}">
                                 <i class="fas fa-clock me-1"></i>Reminders
                             </a>
                         </li>
@@ -71,7 +74,7 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user me-1"></i>{{ current_user.email }}
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" href="{{ url_for('notifications.notification_settings') }}"><i class="fas fa-bell me-2"></i>Notifications</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                                 {% if current_user.is_admin %}
@@ -83,13 +86,31 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                            <a class="nav-link btn btn-outline-primary me-2" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
+
+    <!-- Charter Quote Banner (Random rotation) -->
+    <div class="charter-quote mx-3 mt-3">
+        <div class="container">
+            {% set charter_quotes = [
+                ("Everyone has the right to life, liberty and security of the person and the right not to be deprived thereof except in accordance with the principles of fundamental justice.", "Canadian Charter of Rights and Freedoms, Section 7"),
+                ("Everyone is equal before and under the law and has the right to the equal protection and equal benefit of the law without discrimination.", "Canadian Charter of Rights and Freedoms, Section 15(1)"),
+                ("Everyone whose rights or freedoms, as guaranteed by this Charter, have been infringed or denied may apply to a court of competent jurisdiction to obtain such remedy as the court considers appropriate and just in the circumstances.", "Canadian Charter of Rights and Freedoms, Section 24(1)"),
+                ("Everyone has the right to be secure against unreasonable search or seizure.", "Canadian Charter of Rights and Freedoms, Section 8"),
+                ("Any person charged with an offence has the right to be presumed innocent until proven guilty according to law in a fair and public hearing by an independent and impartial tribunal.", "Canadian Charter of Rights and Freedoms, Section 11(d)")
+            ] %}
+            {% set quote = charter_quotes[range(0, charter_quotes|length)|random] %}
+            {{ quote[0] }}
+            <cite>— {{ quote[1] }}</cite>
+        </div>
+    </div>
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -113,28 +134,70 @@
     {% endwith %}
 
     <!-- Main Content -->
-    <main class="container mt-4">
+    <main class="container mt-4 content-wrapper">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Canadian Pride Section -->
+    <div class="canada-pride mt-5">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <span class="maple-leaf" style="font-size: 2rem;">🍁</span>
+                    <strong>Proud to Serve Canada</strong>
+                    <span class="maple-leaf" style="font-size: 2rem;">🍁</span>
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-balance-scale legal-symbol"></i>
+                    <strong>Justice for All Canadians</strong>
+                    <i class="fas fa-gavel legal-symbol"></i>
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-shield-alt legal-symbol"></i>
+                    <strong>Defending Your Rights</strong>
+                    <i class="fas fa-maple-leaf legal-symbol"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
-    <footer class="bg-light mt-5 py-4">
+    <footer class="mt-5 py-4 section-padding">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h6>Smart Dispute Canada</h6>
+                    <h6>
+                        <span class="maple-leaf">🍁</span>
+                        Smart Dispute Canada
+                        <span class="maple-leaf">🍁</span>
+                    </h6>
                     <p class="text-muted small">
-                        Empowering Canadians to navigate the legal system with confidence.
-                        <br>AI-powered legal assistance for self-advocates.
+                        Empowering Canadians to navigate the legal system with confidence and dignity.
+                        <br>
+                        <strong>"Justice delayed is justice denied"</strong> - We're here to help ensure your voice is heard.
+                    </p>
+                    <p class="text-muted small">
+                        <i class="fas fa-maple-leaf me-1 text-danger"></i>
+                        <strong>From sea to sea (A mari usque ad mare)</strong> - Serving all provinces and territories
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p class="text-muted small mb-0">
-                        <i class="fas fa-shield-alt me-1"></i>
-                        Your data is protected and confidential
+                        <i class="fas fa-shield-alt me-1 text-warning"></i>
+                        Your data is protected under Canadian privacy laws
+                    </p>
+                    <p class="text-muted small mb-2">
+                        <i class="fas fa-lock me-1 text-success"></i>
+                        End-to-end encryption for all legal documents
                     </p>
                     <p class="text-muted small">
-                        © 2024 Smart Dispute Canada. All rights reserved.
+                        © 2024 Smart Dispute Canada. 
+                        <span class="maple-leaf">🍁</span>
+                        All rights reserved.
+                        <span class="maple-leaf">🍁</span>
+                    </p>
+                    <p class="text-muted small">
+                        <em>"Everyone has the right to an effective remedy" - Universal Declaration of Human Rights, Article 8</em>
                     </p>
                 </div>
             </div>

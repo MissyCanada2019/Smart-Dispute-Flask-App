@@ -1,1 +1,330 @@
-body { font-family: Arial; background-color: #f8f9fa; padding: 20px; }
+/* Smart Dispute Canada - Professional Canadian Theme */
+:root {
+    --canada-red: #FF0000;
+    --canada-white: #FFFFFF;
+    --dark-bg: #1a1a1a;
+    --dark-secondary: #2d2d2d;
+    --dark-accent: #3a3a3a;
+    --text-light: #f8f9fa;
+    --text-muted: #adb5bd;
+    --gold-accent: #FFD700;
+}
+
+/* Base Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-secondary) 100%);
+    color: var(--text-light);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Canadian Flag Pattern Background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 0, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(255, 0, 0, 0.02) 0%, transparent 50%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Navigation */
+.navbar {
+    background: linear-gradient(90deg, var(--dark-secondary) 0%, var(--canada-red) 50%, var(--dark-secondary) 100%) !important;
+    border-bottom: 3px solid var(--canada-red);
+    box-shadow: 0 2px 20px rgba(255, 0, 0, 0.3);
+}
+
+.navbar-brand {
+    color: var(--canada-white) !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-light) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--gold-accent) !important;
+}
+
+/* Cards and Containers */
+.card {
+    background: var(--dark-secondary);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(255, 0, 0, 0.2);
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--canada-red), #cc0000);
+    color: var(--canada-white);
+    border-bottom: 2px solid var(--gold-accent);
+    font-weight: bold;
+}
+
+.card-body {
+    color: var(--text-light);
+}
+
+.card-title {
+    color: var(--canada-red);
+    font-weight: bold;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(45deg, var(--canada-red), #cc0000);
+    border: 2px solid var(--canada-red);
+    color: var(--canada-white);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #cc0000, var(--canada-red));
+    border-color: var(--gold-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--canada-red);
+    color: var(--canada-red);
+    background: transparent;
+    font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+    background: var(--canada-red);
+    color: var(--canada-white);
+    transform: translateY(-2px);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, 
+        rgba(255, 0, 0, 0.1) 0%, 
+        rgba(26, 26, 26, 0.9) 50%, 
+        rgba(255, 0, 0, 0.1) 100%);
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    border: 2px solid rgba(255, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '🍁';
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 2.5rem;
+    opacity: 0.3;
+}
+
+.hero-section::after {
+    content: '🍁';
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    font-size: 2.5rem;
+    opacity: 0.3;
+}
+
+/* Charter Quote Styling */
+.charter-quote {
+    background: linear-gradient(135deg, 
+        rgba(255, 0, 0, 0.1) 0%, 
+        rgba(45, 45, 45, 0.9) 100%);
+    border-left: 5px solid var(--canada-red);
+    border-radius: 0 10px 10px 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    position: relative;
+    font-style: italic;
+    color: var(--text-light);
+}
+
+.charter-quote::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 4rem;
+    color: var(--canada-red);
+    font-family: serif;
+}
+
+.charter-quote cite {
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+    color: var(--gold-accent);
+    font-size: 0.9rem;
+}
+
+/* Canadian Pride Elements */
+.canada-pride {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 0, 0, 0.1) 25%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 0, 0, 0.1) 75%, 
+        transparent 100%);
+    padding: 2rem 0;
+    border-top: 2px solid rgba(255, 0, 0, 0.3);
+    border-bottom: 2px solid rgba(255, 0, 0, 0.3);
+    margin: 2rem 0;
+}
+
+/* Icons */
+.feature-icon i {
+    color: var(--canada-red);
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 10px;
+    border: 2px solid rgba(255, 0, 0, 0.2);
+}
+
+.alert-info {
+    background: linear-gradient(135deg, 
+        rgba(255, 0, 0, 0.1) 0%, 
+        rgba(45, 45, 45, 0.9) 100%);
+    color: var(--text-light);
+    border-color: var(--canada-red);
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(90deg, var(--dark-secondary) 0%, var(--dark-bg) 100%) !important;
+    border-top: 3px solid var(--canada-red);
+    color: var(--text-light);
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--canada-red) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.display-4 {
+    color: var(--canada-white);
+    text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.3);
+}
+
+/* Form Elements */
+.form-control {
+    background: var(--dark-accent);
+    border: 2px solid rgba(255, 0, 0, 0.2);
+    color: var(--text-light);
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    background: var(--dark-accent);
+    border-color: var(--canada-red);
+    color: var(--text-light);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+/* Legal Symbol Decorations */
+.legal-symbol {
+    color: var(--gold-accent);
+    font-size: 1.2em;
+    margin: 0 0.5rem;
+}
+
+/* Hover Effects */
+.hover-lift {
+    transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+}
+
+/* Professional Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.lead {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+/* Canadian Elements */
+.maple-leaf {
+    color: var(--canada-red);
+    margin: 0 0.25rem;
+}
+
+.canada-flag-gradient {
+    background: linear-gradient(90deg, 
+        var(--canada-red) 0%, 
+        var(--canada-white) 50%, 
+        var(--canada-red) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .charter-quote {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+/* Animation for Canadian Elements */
+@keyframes maple-glow {
+    0%, 100% { text-shadow: 0 0 5px rgba(255, 0, 0, 0.3); }
+    50% { text-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+}
+
+.maple-leaf:hover {
+    animation: maple-glow 2s infinite;
+}
+
+/* Professional Spacing */
+.section-padding {
+    padding: 3rem 0;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
