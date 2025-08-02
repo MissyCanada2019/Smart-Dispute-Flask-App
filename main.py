@@ -87,6 +87,37 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        
+        # Auto-initialize database if empty (fixes Railway deployment)
+        try:
+            from models.user import User
+            if User.query.count() == 0:
+                print("🔧 Auto-initializing database for first deployment...")
+                
+                # Create admin user
+                admin_user = User(
+                    email='admin@smartdispute.ca',
+                    is_admin=True,
+                    is_active=True
+                )
+                admin_user.set_password('admin123')
+                db.session.add(admin_user)
+                
+                # Create test user
+                test_user = User(
+                    email='test@smartdispute.ca',
+                    is_admin=False,
+                    is_active=True
+                )
+                test_user.set_password('test123')
+                db.session.add(test_user)
+                
+                db.session.commit()
+                print("✅ Database auto-initialized with default users")
+                print("👑 Admin: admin@smartdispute.ca / admin123")
+                print("👤 Test: test@smartdispute.ca / test123")
+        except Exception as e:
+            print(f"⚠️ Auto-initialization failed: {str(e)}")
 
     return app
 
