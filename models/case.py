@@ -1,80 +1,63 @@
-from utils.db import db  # Import centralized db instance
-from sqlalchemy import Enum
+from sqlalchemy import Table, Column, Integer, String, Text, DateTime, Date, Float, JSON, MetaData
 from datetime import datetime
-from enum import Enum as PyEnum
 
-class CaseType(PyEnum):
-    CHILD_PROTECTION = "child_protection"
-    FAMILY_COURT = "family_court"
-    PARENTAL_RIGHTS = "parental_rights"
-    TRIBUNAL = "tribunal"
-    OTHER = "other"
+metadata = MetaData()
 
-class CaseStatus(PyEnum):
-    DRAFT = "draft"
-    ACTIVE = "active"
-    UNDER_REVIEW = "under_review"
-    AWAITING_HEARING = "awaiting_hearing"
-    COMPLETED = "completed"
-    CLOSED = "closed"
+cases = Table('cases', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('title', String(200), nullable=False),
+    Column('description', Text),
+    Column('case_number', String(50), unique=True),
+    Column('user_id', Integer, nullable=False),
+    Column('case_type', String(50), nullable=False),
+    Column('status', String(50), default='draft'),
+    Column('priority', String(50), default='medium'),
+    Column('province', String(50), nullable=False),
+    Column('jurisdiction', String(100)),
+    Column('court_name', String(200)),
+    Column('created_at', DateTime, default=datetime.utcnow),
+    Column('updated_at', DateTime, default=datetime.utcnow, onupdate=datetime.utcnow),
+    Column('incident_date', Date),
+    Column('filing_deadline', Date),
+    Column('hearing_date', DateTime),
+    Column('merit_score', Float, default=0.0),
+    Column('merit_analysis', Text),
+    Column('strength_indicators', JSON),
+    Column('weakness_indicators', JSON),
+    Column('case_metadata', JSON),
+    Column('current_stage', String(100)),
+    Column('completion_percentage', Integer, default=0)
+)
 
-class CasePriority(PyEnum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    URGENT = "urgent"
-
-class Case(db.Model):  # Inherit from db.Model
-    __tablename__ = 'cases'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text)
-    case_number = db.Column(db.String(50), unique=True)
-    
-    # User relationship
-    user_id = db.Column(db.Integer, nullable=False)
-    
-    # Case details
-    case_type = db.Column(db.Enum(CaseType), nullable=False)
-    status = db.Column(db.Enum(CaseStatus), default=CaseStatus.DRAFT)
-    priority = db.Column(db.Enum(CasePriority), default=CasePriority.MEDIUM)
-    
-    # Location (Canadian province/territory)
-    province = db.Column(db.String(50), nullable=False)
-    jurisdiction = db.Column(db.String(100))
-    court_name = db.Column(db.String(200))
-    
-    # Dates
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    incident_date = db.Column(db.Date)
-    filing_deadline = db.Column(db.Date)
-    hearing_date = db.Column(db.DateTime)
-    
-    # Merit scoring
-    merit_score = db.Column(db.Float, default=0.0)
-    merit_analysis = db.Column(db.Text)
-    strength_indicators = db.Column(db.JSON)
-    weakness_indicators = db.Column(db.JSON)
-    
-    # Additional case data
-    case_metadata = db.Column(db.JSON)
-    
-    # Legal journey tracking
-    current_stage = db.Column(db.String(100))
-    completion_percentage = db.Column(db.Integer, default=0)
+# Helper class for case operations
+class Case:
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id')
+        self.title = kwargs.get('title')
+        self.description = kwargs.get('description')
+        self.case_number = kwargs.get('case_number')
+        self.user_id = kwargs.get('user_id')
+        self.case_type = kwargs.get('case_type')
+        self.status = kwargs.get('status')
+        self.priority = kwargs.get('priority')
+        self.province = kwargs.get('province')
+        self.jurisdiction = kwargs.get('jurisdiction')
+        self.court_name = kwargs.get('court_name')
+        self.created_at = kwargs.get('created_at')
+        self.updated_at = kwargs.get('updated_at')
+        self.incident_date = kwargs.get('incident_date')
+        self.filing_deadline = kwargs.get('filing_deadline')
+        self.hearing_date = kwargs.get('hearing_date')
+        self.merit_score = kwargs.get('merit_score')
+        self.merit_analysis = kwargs.get('merit_analysis')
+        self.strength_indicators = kwargs.get('strength_indicators')
+        self.weakness_indicators = kwargs.get('weakness_indicators')
+        self.case_metadata = kwargs.get('case_metadata')
+        self.current_stage = kwargs.get('current_stage')
+        self.completion_percentage = kwargs.get('completion_percentage')
     
     def __repr__(self):
         return f'<Case {self.case_number}: {self.title}>'
-    
-    @property
-    def metadata(self):
-        return self.case_metadata
-    
-    @metadata.setter
-    def metadata(self, value):
-        self.case_metadata = value
     
     def to_dict(self):
         return {
@@ -82,9 +65,9 @@ class Case(db.Model):  # Inherit from db.Model
             'title': self.title,
             'description': self.description,
             'case_number': self.case_number,
-            'case_type': self.case_type.value if self.case_type else None,
-            'status': self.status.value if self.status else None,
-            'priority': self.priority.value if self.priority else None,
+            'case_type': self.case_type,
+            'status': self.status,
+            'priority': self.priority,
             'province': self.province,
             'jurisdiction': self.jurisdiction,
             'court_name': self.court_name,

@@ -1,1 +1,1 @@
-from utils.db import db
+# This file is intentionally left empty

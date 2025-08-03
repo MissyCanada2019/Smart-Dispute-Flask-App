@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
-from models import db
+from utils.db import get_session  # Import get_session instead of Session
 from models.user import User
 from flask_login import login_required, current_user
 
@@ -11,7 +11,13 @@ def dashboard():
     if not current_user.is_admin:
         flash('Access denied: Admins only', 'danger')
         return redirect(url_for('dashboard.main'))
-    return render_template('admin/dashboard.html')
+    
+    session = get_session()
+    try:
+        users = session.query(User).all()
+        return render_template('admin/dashboard.html', users=users)
+    finally:
+        session.close()
 
 @admin_bp.route('/manage_users')
 @login_required
@@ -19,5 +25,10 @@ def manage_users():
     if not current_user.is_admin:
         flash('Access denied: Admins only', 'danger')
         return redirect(url_for('dashboard.main'))
-    users = User.query.all()
-    return render_template('admin/manage_users.html', users=users)
+    
+    session = get_session()
+    try:
+        users = session.query(User).all()
+        return render_template('admin/manage_users.html', users=users)
+    finally:
+        session.close()
