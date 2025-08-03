@@ -1,4 +1,5 @@
-from models import db
+from models import Base
+from sqlalchemy import Column, Integer, String, Text, DateTime, Date, Float, JSON, ForeignKey
 from datetime import datetime
 from enum import Enum
 
@@ -23,52 +24,46 @@ class CasePriority(Enum):
     HIGH = "high"
     URGENT = "urgent"
 
-class Case(db.Model):
+class Case(Base):
     __tablename__ = 'cases'
     
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text)
-    case_number = db.Column(db.String(50), unique=True)
+    id = Column(Integer, primary_key=True)
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+    case_number = Column(String(50), unique=True)
     
     # User relationship
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     
     # Case details
-    case_type = db.Column(db.Enum(CaseType), nullable=False)
-    status = db.Column(db.Enum(CaseStatus), default=CaseStatus.DRAFT)
-    priority = db.Column(db.Enum(CasePriority), default=CasePriority.MEDIUM)
+    case_type = Column(String(50), nullable=False)  # Using String instead of Enum for simplicity
+    status = Column(String(50), default=CaseStatus.DRAFT.value)
+    priority = Column(String(50), default=CasePriority.MEDIUM.value)
     
     # Location (Canadian province/territory)
-    province = db.Column(db.String(50), nullable=False)
-    jurisdiction = db.Column(db.String(100))
-    court_name = db.Column(db.String(200))
+    province = Column(String(50), nullable=False)
+    jurisdiction = Column(String(100))
+    court_name = Column(String(200))
     
     # Dates
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    incident_date = db.Column(db.Date)
-    filing_deadline = db.Column(db.Date)
-    hearing_date = db.Column(db.DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    incident_date = Column(Date)
+    filing_deadline = Column(Date)
+    hearing_date = Column(DateTime)
     
     # Merit scoring
-    merit_score = db.Column(db.Float, default=0.0)
-    merit_analysis = db.Column(db.Text)
-    strength_indicators = db.Column(db.JSON)  # Store array of strength factors
-    weakness_indicators = db.Column(db.JSON)  # Store array of weakness factors
+    merit_score = Column(Float, default=0.0)
+    merit_analysis = Column(Text)
+    strength_indicators = Column(JSON)  # Store array of strength factors
+    weakness_indicators = Column(JSON)  # Store array of weakness factors
     
     # Additional case data
-    case_metadata = db.Column(db.JSON)  # Additional case context data (renamed from metadata to avoid SQLAlchemy conflict)
+    case_metadata = Column(JSON)  # Additional case context data
     
     # Legal journey tracking
-    current_stage = db.Column(db.String(100))
-    completion_percentage = db.Column(db.Integer, default=0)
-    
-    # Relationships
-    evidence = db.relationship('Evidence', backref='case', lazy=True, cascade='all, delete-orphan')
-    form_submissions = db.relationship('FormSubmission', backref='case', lazy=True, cascade='all, delete-orphan')
-    legal_journey = db.relationship('LegalJourney', backref='case', uselist=False, cascade='all, delete-orphan')
-    notifications = db.relationship('Notification', backref='case', lazy=True, cascade='all, delete-orphan')
+    current_stage = Column(String(100))
+    completion_percentage = Column(Integer, default=0)
     
     def __repr__(self):
         return f'<Case {self.case_number}: {self.title}>'
@@ -89,9 +84,9 @@ class Case(db.Model):
             'title': self.title,
             'description': self.description,
             'case_number': self.case_number,
-            'case_type': self.case_type.value if self.case_type else None,
-            'status': self.status.value if self.status else None,
-            'priority': self.priority.value if self.priority else None,
+            'case_type': self.case_type,
+            'status': self.status,
+            'priority': self.priority,
             'province': self.province,
             'jurisdiction': self.jurisdiction,
             'court_name': self.court_name,
