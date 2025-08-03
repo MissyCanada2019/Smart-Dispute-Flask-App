@@ -32,7 +32,7 @@ class Case(db.Model):
     case_number = db.Column(db.String(50), unique=True)
     
     # User relationship
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
     # Case details
     case_type = db.Column(db.Enum(CaseType), nullable=False)

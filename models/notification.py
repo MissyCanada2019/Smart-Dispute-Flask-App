@@ -30,7 +30,7 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     # Recipient
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
     # Content
     title = db.Column(db.String(200), nullable=False)
@@ -209,7 +209,7 @@ class NotificationPreference(db.Model):
     __tablename__ = 'notification_preferences'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
     # Notification type preferences
     deadline_reminders = db.Column(db.Boolean, default=True)
