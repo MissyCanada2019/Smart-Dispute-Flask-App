@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, Integer, String, Text, DateTime, JSON, ForeignKey, Float, Boolean, MetaData
 from datetime import datetime
 
-metadata = MetaData()
+evidence_metadata = MetaData()
 
 evidence = Table('evidence', metadata,
     Column('id', Integer, primary_key=True),

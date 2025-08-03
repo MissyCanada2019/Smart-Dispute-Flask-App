@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, Integer, String, Text, DateTime, Date, Float, JSON, MetaData
 from datetime import datetime
 
-metadata = MetaData()
+case_metadata = MetaData()
 
 cases = Table('cases', metadata,
     Column('id', Integer, primary_key=True),

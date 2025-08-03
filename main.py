@@ -14,7 +14,7 @@ from routes.payment_routes import payment_bp
 import os
 from dotenv import load_dotenv
 from utils.error_handling import register_error_handlers, HealthCheck
-from models import init_db, Session
+from utils.db import init_db, Session
 
 # Load environment variables
 load_dotenv()

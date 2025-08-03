@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, Integer, String, Text, Boolean, DateTime, JSON, ForeignKey, MetaData
 from datetime import datetime
 
-metadata = MetaData()
+form_metadata = MetaData()
 
 form_templates = Table('form_templates', metadata,
     Column('id', Integer, primary_key=True),
