@@ -59,8 +59,8 @@ class Notification(db.Model):
     read_at = db.Column(db.DateTime)
     dismissed_at = db.Column(db.DateTime)
     
-    # Metadata
-    metadata = db.Column(db.JSON)  # Additional context data
+    # Additional context data
+    context_data = db.Column(db.JSON)  # Additional context data (renamed from metadata to avoid SQLAlchemy conflict)
     
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -57,6 +57,9 @@ class Case(db.Model):
     strength_indicators = db.Column(db.JSON)  # Store array of strength factors
     weakness_indicators = db.Column(db.JSON)  # Store array of weakness factors
     
+    # Additional case data
+    case_metadata = db.Column(db.JSON)  # Additional case context data (renamed from metadata to avoid SQLAlchemy conflict)
+    
     # Legal journey tracking
     current_stage = db.Column(db.String(100))
     completion_percentage = db.Column(db.Integer, default=0)
@@ -69,6 +72,16 @@ class Case(db.Model):
     
     def __repr__(self):
         return f'<Case {self.case_number}: {self.title}>'
+    
+    @property
+    def metadata(self):
+        """Backwards compatibility property for case_metadata"""
+        return self.case_metadata
+    
+    @metadata.setter
+    def metadata(self, value):
+        """Backwards compatibility setter for case_metadata"""
+        self.case_metadata = value
     
     def to_dict(self):
         return {
