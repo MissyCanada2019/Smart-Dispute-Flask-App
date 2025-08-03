@@ -131,23 +131,23 @@
             <div class="filter-tabs">
                 <ul class="nav nav-pills" id="notification-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" id="all-tab" data-toggle="pill" href="#all-notifications">
-                            All <span class="badge badge-secondary ml-1">{{ summary.total_count if summary else 0 }}</span>
+                        <a class="nav-link active" id="all-tab" data-bs-toggle="pill" href="#all-notifications">
+                            All <span class="badge bg-secondary ms-1">{{ summary.total_count if summary else 0 }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="unread-tab" data-toggle="pill" href="#unread-notifications">
-                            Unread <span class="badge badge-primary ml-1">{{ summary.unread_count if summary else 0 }}</span>
+                        <a class="nav-link" id="unread-tab" data-bs-toggle="pill" href="#unread-notifications">
+                            Unread <span class="badge bg-primary ms-1">{{ summary.unread_count if summary else 0 }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="urgent-tab" data-toggle="pill" href="#urgent-notifications">
-                            Urgent <span class="badge badge-danger ml-1">{{ summary.urgent_count if summary else 0 }}</span>
+                        <a class="nav-link" id="urgent-tab" data-bs-toggle="pill" href="#urgent-notifications">
+                            Urgent <span class="badge bg-danger ms-1">{{ summary.urgent_count if summary else 0 }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="deadlines-tab" data-toggle="pill" href="#deadline-notifications">
-                            Deadlines <span class="badge badge-warning ml-1">{{ summary.deadline_count if summary else 0 }}</span>
+                        <a class="nav-link" id="deadlines-tab" data-bs-toggle="pill" href="#deadline-notifications">
+                            Deadlines <span class="badge bg-warning ms-1">{{ summary.deadline_count if summary else 0 }}</span>
                         </a>
                     </li>
                 </ul>
@@ -168,7 +168,7 @@
                                                 <i class="{{ get_notification_icon(notification.notification_type) }} mr-2 text-{{ get_notification_color(notification.priority) }}"></i>
                                                 <h5 class="mb-0 mr-2">{{ notification.title }}</h5>
                                                 {% if not notification.is_read %}
-                                                    <span class="badge badge-primary">New</span>
+                                                    <span class="badge bg-primary">New</span>
                                                 {% endif %}
                                                 {% if notification.priority.value == 'urgent' %}
                                                     <span class="badge badge-danger ml-1">Urgent</span>
@@ -282,7 +282,7 @@ function markAsRead(notificationId) {
             const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
             notification.classList.remove('unread');
             notification.classList.add('read');
-            notification.querySelector('.badge-primary')?.remove();
+            notification.querySelector('.bg-primary')?.remove();
             updateNotificationCounts();
             showToast('Notification marked as read', 'success');
         } else {
@@ -311,7 +311,7 @@ function markAllAsRead() {
             document.querySelectorAll('.notification-item.unread').forEach(item => {
                 item.classList.remove('unread');
                 item.classList.add('read');
-                item.querySelector('.badge-primary')?.remove();
+                item.querySelector('.bg-primary')?.remove();
             });
             updateNotificationCounts();
             showToast('All notifications marked as read', 'success');
@@ -426,7 +426,7 @@ function renderNotifications(notifications) {
                         <div class="notification-header d-flex align-items-center mb-2" onclick="toggleNotification(${notification.id})">
                             <i class="${notification.icon} mr-2 text-${notification.color}"></i>
                             <h5 class="mb-0 mr-2">${notification.title}</h5>
-                            ${!notification.is_read ? '<span class="badge badge-primary">New</span>' : ''}
+                            ${!notification.is_read ? '<span class="badge bg-primary">New</span>' : ''}
                             ${notification.priority === 'urgent' ? '<span class="badge badge-danger ml-1">Urgent</span>' : ''}
                         </div>
                         <p class="text-muted mb-1">${notification.message}</p>
