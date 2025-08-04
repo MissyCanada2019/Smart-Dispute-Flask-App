@@ -24,7 +24,7 @@ class Case(db.Model):
     merit_analysis = db.Column(db.Text)
     strength_indicators = db.Column(db.JSON)
     weakness_indicators = db.Column(db.JSON)
-    metadata = db.Column(db.JSON)
+    metadata_json = db.Column(db.JSON)
     current_stage = db.Column(db.String(100))
     completion_percentage = db.Column(db.Integer, default=0)
 
@@ -51,5 +51,5 @@ class Case(db.Model):
             'merit_score': self.merit_score,
             'current_stage': self.current_stage,
             'completion_percentage': self.completion_percentage,
-            'metadata': self.metadata
+            'metadata': self.metadata_json
         }
