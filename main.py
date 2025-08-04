@@ -14,7 +14,7 @@ from routes.payment_routes import payment_bp
 import os
 from dotenv import load_dotenv
 from utils.error_handling import register_error_handlers, HealthCheck
-from utils.db import init_db, Session
+from utils.db import db
 
 # Load environment variables
 load_dotenv()
@@ -42,7 +42,10 @@ def create_app():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     # Initialize database
-    db = init_db(app)
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -53,8 +56,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         from models.user import User
-        session = Session()
-        return session.query(User).get(int(user_id))
+        return db.session.query(User).get(int(user_id))
 
     # Register blueprints
     app.register_blueprint(auth_bp)

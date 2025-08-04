@@ -29,7 +29,6 @@ def login():
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
-        name = request.form.get('name')
         password = request.form.get('password')
         
         # Check if user already exists
