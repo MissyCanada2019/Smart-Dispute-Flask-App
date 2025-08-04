@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from utils.db import db
+from utils.db import get_session
 from models.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -14,7 +14,8 @@ def login():
         remember = True if request.form.get('remember') else False
         
         # Get a new session instance
-        user = db.session.query(User).filter_by(email=email).first()
+        session = get_session()
+        user = session.query(User).filter_by(email=email).first()
 
         if not user or not user.check_password(password):
             flash('Please check your login details and try again.')
@@ -32,7 +33,8 @@ def register():
         password = request.form.get('password')
         
         # Check if user already exists
-        user = db.session.query(User).filter_by(email=email).first()
+        session = get_session()
+        user = session.query(User).filter_by(email=email).first()
         if user:
             flash('Email address already exists')
             return redirect(url_for('auth.register'))
@@ -42,8 +44,8 @@ def register():
         new_user.set_password(password)
         
         # Add and commit
-        db.session.add(new_user)
-        db.session.commit()
+        session.add(new_user)
+        session.commit()
         
         flash('Account created successfully!')
         return redirect(url_for('auth.login'))
