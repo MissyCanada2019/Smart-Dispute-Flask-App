@@ -1,6 +1,24 @@
-# Pinning a new version of the Case model
 from utils.db import db
 from datetime import datetime
+from enum import Enum
+
+class CaseType(Enum):
+    CIVIL = 'Civil'
+    CRIMINAL = 'Criminal'
+    FAMILY = 'Family'
+    LABOR = 'Labor'
+    COMMERCIAL = 'Commercial'
+    ADMINISTRATIVE = 'Administrative'
+    CONSTITUTIONAL = 'Constitutional'
+    OTHER = 'Other'
+
+class CaseStatus(Enum):
+    DRAFT = 'draft'
+    FILED = 'filed'
+    IN_PROGRESS = 'in_progress'
+    CLOSED = 'closed'
+    APPEALED = 'appealed'
+    SETTLED = 'settled'
 
 class Case(db.Model):
     __tablename__ = 'cases'
@@ -10,8 +28,8 @@ class Case(db.Model):
     description = db.Column(db.Text)
     case_number = db.Column(db.String(50), unique=True)
     user_id = db.Column(db.Integer, nullable=False)
-    case_type = db.Column(db.String(50), nullable=False)
-    status = db.Column(db.String(50), default='draft')
+    case_type = db.Column(db.Enum(CaseType), nullable=False)
+    status = db.Column(db.Enum(CaseStatus), default=CaseStatus.DRAFT)
     priority = db.Column(db.String(50), default='medium')
     province = db.Column(db.String(50), nullable=False)
     jurisdiction = db.Column(db.String(100))
