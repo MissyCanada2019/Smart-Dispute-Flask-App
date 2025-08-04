@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from utils.db import get_session  # Import get_session instead of Session
-from models.case import cases, Case  # Import the Table and helper class
+from utils.db import db
+from models.case import Case
 from flask_login import login_required, current_user
 
 case_bp = Blueprint('case', __name__)
@@ -25,55 +25,24 @@ def create_case():
         )
         
         # Insert into database
-        session = get_session()
         try:
-            insert_stmt = cases.insert().values(
-                title=new_case.title,
-                description=new_case.description,
-                case_type=new_case.case_type,
-                province=new_case.province,
-                user_id=new_case.user_id
-            )
-            result = session.execute(insert_stmt)
-            new_case.id = result.inserted_primary_key[0]
-            session.commit()
+            db.session.add(new_case)
+            db.session.commit()
             flash('Case created successfully', 'success')
             return redirect(url_for('case.view_case', case_id=new_case.id))
         except Exception as e:
-            session.rollback()
+            db.session.rollback()
             flash(f'Error creating case: {str(e)}', 'danger')
-        finally:
-            session.close()
     return render_template('cases/create.html')
 
 @case_bp.route('/list')
 @login_required
 def list_cases():
-    session = get_session()
-    try:
-        # Query cases for the current user
-        query = cases.select().where(cases.c.user_id == current_user.id)
-        result = session.execute(query)
-        user_cases = [Case(**row) for row in result]
-        return render_template('cases/list.html', cases=user_cases)
-    finally:
-        session.close()
+    user_cases = db.session.query(Case).filter_by(user_id=current_user.id).all()
+    return render_template('cases/list.html', cases=user_cases)
 
 @case_bp.route('/view/<int:case_id>')
 @login_required
 def view_case(case_id):
-    session = get_session()
-    try:
-        # Query case by ID
-        query = cases.select().where(cases.c.id == case_id)
-        result = session.execute(query)
-        case_data = result.fetchone()
-        
-        if not case_data:
-            flash('Case not found', 'danger')
-            return redirect(url_for('case.list_cases'))
-        
-        case = Case(**case_data)
-        return render_template('cases/view.html', case=case)
-    finally:
-        session.close()
+    case = db.session.query(Case).filter_by(id=case_id, user_id=current_user.id).first_or_404()
+    return render_template('cases/view.html', case=case)

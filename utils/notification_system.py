@@ -6,14 +6,14 @@ Manages notifications, reminders, deadlines, and user alerts
 from typing import Dict, List, Any, Optional
 from flask import current_app
 from models.notification import Notification  # Using the helper class
-from utils.db import get_session  # Import get_session instead of Session
+from utils.db import db
 from datetime import datetime, timedelta
 
 class NotificationManager:
     """Main notification management system"""
     
     def __init__(self):
-        self.session = get_session()  # Use get_session to get a session instance
+        self.session = db.session
         self.reminder_intervals = {
             'urgent': [1, 3, 7],  # Days before deadline
             'high': [3, 7, 14],
