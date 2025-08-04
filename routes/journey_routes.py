@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
-from utils.db import db
+from utils.db import db  # Correct import from utils/db.py
 from models.case import Case
 from models.legal_journey import JourneyStage, JourneyStep, StageStatus
 from utils.legal_journey import LegalJourneyManager, get_journey_stage_color, get_step_type_icon
