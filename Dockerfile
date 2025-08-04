@@ -11,7 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python dependencies
 COPY requirements.txt .
+RUN python -m pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip list
 
 # Stage 2: Final stage
 FROM python:3.9-slim
