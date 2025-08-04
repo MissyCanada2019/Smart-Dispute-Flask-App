@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_login import LoginManager
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
 from utils.error_handling import register_error_handlers, HealthCheck
 from utils.db import db
@@ -32,6 +34,17 @@ def create_app():
     
     # Initialize database
     db.init_app(app)
+
+    # Configure logging
+    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, 'app.log')
+    
+    handler = RotatingFileHandler(log_file, maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
 
 
     login_manager = LoginManager()
