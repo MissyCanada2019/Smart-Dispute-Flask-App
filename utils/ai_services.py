@@ -4,7 +4,7 @@ import logging
 from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
 from models.evidence import Evidence
-from utils.db import Session
+from utils.db import db
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -62,18 +62,12 @@ class AIServiceManager:
     
     def _initialize_clients(self):
         """Initialize API clients if API keys are available"""
-        # Implementation would go here
         pass
     
     def analyze_evidence(self, evidence: Evidence) -> Dict[str, Any]:
         """Analyze evidence using AI services"""
-        # Implementation using string-based case types
         return {}
     
-    # Other methods would be implemented similarly
-    # using string-based case types instead of enums
-
 def get_ai_suggestions(case_data, evidence_data, field_definitions):
     """Get AI suggestions for form fields based on case and evidence data"""
-    # Implementation using string-based case types
     return {}
