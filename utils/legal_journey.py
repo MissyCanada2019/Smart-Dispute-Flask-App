@@ -4,7 +4,7 @@ Provides step-by-step workflows and guidance for Canadian legal processes
 """
 
 from typing import Dict, List, Any, Optional, Tuple
-from models.case import Case, CaseType, CaseStatus
+from models.case import Case
 from models.legal_journey import JourneyStage, JourneyStep, StageStatus, StepType
 from models import db
 from utils.ai_services import AIServiceManager
@@ -12,6 +12,9 @@ import json
 from datetime import datetime, timedelta
 
 # Standard legal workflows for Canadian provinces
+# StepType must be defined before this
+from models.legal_journey import StepType
+
 LEGAL_WORKFLOWS = {
     'family_court': {
         'ON': {
@@ -301,6 +304,39 @@ LEGAL_WORKFLOWS = {
     }
 }
 
+def get_journey_stage_color(stage_status: StageStatus) -> str:
+    """Map journey stage status to color code"""
+    color_map = {
+        StageStatus.NOT_STARTED: "gray",
+        StageStatus.IN_PROGRESS: "blue",
+        StageStatus.COMPLETED: "green",
+        StageStatus.SKIPPED: "orange",
+        StageStatus.BLOCKED: "red"
+    }
+    return color_map.get(stage_status, "gray")
+
+def get_step_type_icon(step_type: StepType) -> str:
+    """Map step type to icon name"""
+    icon_map = {
+        StepType.DOCUMENT_COLLECTION: "file-text",
+        StepType.EVIDENCE_GATHERING: "search",
+        StepType.FORM_COMPLETION: "edit",
+        StepType.COURT_FILING: "send",
+        StepType.LEGAL_SERVICE: "user-check",
+        StepType.WAITING_PERIOD: "clock",
+        StepType.COURT_SCHEDULING: "calendar",
+        StepType.COURT_APPEARANCE: "users",
+        StepType.NEGOTIATION: "handshake",
+        StepType.TRIAL_PREPARATION: "book",
+        StepType.LEGAL_RESEARCH: "book-open",
+        StepType.INFORMATION_GATHERING: "info",
+        StepType.DOCUMENT_REVIEW: "file-check",
+        StepType.HEARING_PREPARATION: "mic",
+        StepType.FOLLOW_UP: "refresh-cw",
+        StepType.DEADLINE: "alert-circle"
+    }
+    return icon_map.get(step_type, "help-circle")
+
 class LegalJourneyManager:
     """Manages legal journey workflows and guidance"""
     
@@ -368,7 +404,7 @@ class LegalJourneyManager:
         if not case.case_type or not case.province:
             return None
         
-        case_type = case.case_type.value
+        case_type = case.case_type
         province = case.province
         
         # Check for specific workflow
