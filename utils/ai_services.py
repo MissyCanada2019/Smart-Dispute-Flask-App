@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
 from models.evidence import Evidence
 from utils.db import db
+from utils.retry import retry  # Import the retry decorator
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -12,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 class AIServiceError(Exception):
     """Custom exception for AI service errors"""
+    pass
+
+class ServiceUnavailableError(AIServiceError):
+    """Exception for service unavailable errors"""
     pass
 
 class AIServiceManager:
@@ -50,11 +55,11 @@ class AIServiceManager:
                 'Northwest Territories', 'Nunavut', 'Yukon'
             ],
             'court_types': [
-                'Superior Court', 'Provincial Court', 'Federal Court', 
+                'Superior Court', 'Provincial Court', 'Federal Court',
                 'Supreme Court', 'Tax Court', 'Appeal Court'
             ],
             'common_case_types': [
-                'Family Law', 'Civil Litigation', 'Criminal Law', 
+                'Family Law', 'Civil Litigation', 'Criminal Law',
                 'Personal Injury', 'Employment Law', 'Real Estate',
                 'Child Protection', 'Parental Rights', 'Tribunal'
             ]
@@ -64,10 +69,27 @@ class AIServiceManager:
         """Initialize API clients if API keys are available"""
         pass
     
+    @retry(
+        exceptions=(ServiceUnavailableError,),
+        max_retries=5,
+        initial_delay=1.0,
+        max_delay=30.0,
+        backoff_factor=2.0,
+        jitter=0.2
+    )
     def analyze_evidence(self, evidence: Evidence) -> Dict[str, Any]:
-        """Analyze evidence using AI services"""
+        """Analyze evidence using AI services with retry mechanism"""
+        # Implementation would make API calls here
         return {}
     
+@retry(
+    exceptions=(ServiceUnavailableError,),
+    max_retries=5,
+    initial_delay=1.0,
+    max_delay=30.0,
+    backoff_factor=2.0,
+    jitter=0.2
+)
 def get_ai_suggestions(case_data, evidence_data, field_definitions):
-    """Get AI suggestions for form fields based on case and evidence data"""
+    """Get AI suggestions for form fields with retry mechanism"""
     return {}

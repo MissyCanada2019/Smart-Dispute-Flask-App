@@ -1,6 +1,6 @@
 from utils.db import db
 from datetime import datetime, timedelta
-from enum import Enum
+from enum import Enum, auto
 
 class StageStatus(Enum):
     NOT_STARTED = "not_started"
@@ -9,23 +9,23 @@ class StageStatus(Enum):
     SKIPPED = "skipped"
     BLOCKED = "blocked"
 
-class StepType(Enum):
-    DOCUMENT_COLLECTION = "document_collection"
-    EVIDENCE_GATHERING = "evidence_gathering"
-    FORM_COMPLETION = "form_completion"
-    COURT_FILING = "court_filing"
-    LEGAL_SERVICE = "legal_service"
-    WAITING_PERIOD = "waiting_period"
-    COURT_SCHEDULING = "court_scheduling"
-    COURT_APPEARANCE = "court_appearance"
-    NEGOTIATION = "negotiation"
-    TRIAL_PREPARATION = "trial_preparation"
-    LEGAL_RESEARCH = "legal_research"
-    INFORMATION_GATHERING = "information_gathering"
-    DOCUMENT_REVIEW = "document_review"
-    HEARING_PREPARATION = "hearing_preparation"
-    FOLLOW_UP = "follow_up"
-    DEADLINE = "deadline"
+class StepType(str, Enum):
+    DOCUMENT_COLLECTION = auto()
+    EVIDENCE_GATHERING = auto()
+    FORM_COMPLETION = auto()
+    COURT_FILING = auto()
+    LEGAL_SERVICE = auto()
+    WAITING_PERIOD = auto()
+    COURT_SCHEDULING = auto()
+    COURT_APPEARANCE = auto()
+    NEGOTIATION = auto()
+    TRIAL_PREPARATION = auto()
+    LEGAL_RESEARCH = auto()
+    INFORMATION_GATHERING = auto()
+    DOCUMENT_REVIEW = auto()
+    HEARING_PREPARATION = auto()
+    FOLLOW_UP = auto()
+    DEADLINE = auto()
 
 class UrgencyLevel(Enum):
     LOW = "low"

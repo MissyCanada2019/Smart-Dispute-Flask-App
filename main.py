@@ -7,10 +7,13 @@ from dotenv import load_dotenv
 from utils.error_handling import register_error_handlers, HealthCheck
 from utils.db import db
 
-# Load environment variables
-load_dotenv()
-
 def create_app():
+    # Load environment variables based on deployment environment
+    if os.getenv('RAILWAY_ENVIRONMENT') == 'production':
+        load_dotenv('.env.production')
+    else:
+        load_dotenv('.env.development')
+
     app = Flask(__name__)
     
     # Use environment variable for secret key, with fallback

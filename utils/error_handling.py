@@ -215,14 +215,17 @@ def register_error_handlers(app):
 class HealthCheck:
     """Application health check utilities"""
     
-    @staticmethod
-    def check_database():
-        """Check database connectivity"""
+    @classmethod
+    def check_database(cls):
+        """Check database connectivity using current app context"""
         try:
-            from models import db
-            db.session.execute('SELECT 1')
+            from flask import current_app
+            with current_app.app_context():
+                db = current_app.extensions['sqlalchemy'].db
+                db.session.execute('SELECT 1')
             return True, "Database OK"
         except Exception as e:
+            logging.getLogger('ai_processing').error(f"Database health check failed: {str(e)}")
             return False, f"Database error: {str(e)}"
     
     @staticmethod
