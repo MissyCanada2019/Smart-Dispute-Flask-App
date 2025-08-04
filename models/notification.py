@@ -1,5 +1,5 @@
 from datetime import datetime
-from utils.db import db  # Import db from utils
+from utils.db import db
 
 class Notification(db.Model):
     __tablename__ = 'notifications'

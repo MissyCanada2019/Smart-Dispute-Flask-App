@@ -1,23 +1,18 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from flask_sqlalchemy import SQLAlchemy
 import os
 
-Base = declarative_base()
+db = SQLAlchemy()
 
 def init_db(app):
-    # Create engine
+    # Configure database URI
     database_url = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
-    engine = create_engine(database_url)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     
-    # Create session factory
-    session_factory = sessionmaker(bind=engine)
+    # Initialize SQLAlchemy with app
+    db.init_app(app)
     
     # Create tables
-    Base.metadata.create_all(engine)
-    
-    return session_factory
-
-# Function to get a new session
-def get_session(app):
-    session_factory = init_db(app)
-    return session_factory()
+    with app.app_context():
+        db.create_all()
+        
+    return db

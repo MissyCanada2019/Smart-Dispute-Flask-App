@@ -1,4 +1,4 @@
-from models import db
+from utils.db import Base, db
 from datetime import datetime, timedelta
 from enum import Enum
 
@@ -25,7 +25,7 @@ class UrgencyLevel(Enum):
     HIGH = "high"
     CRITICAL = "critical"
 
-class LegalJourney(db.Model):
+class LegalJourney(Base):
     __tablename__ = 'legal_journeys'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -111,7 +111,7 @@ class LegalJourney(db.Model):
             'next_actions': self.next_actions
         }
 
-class JourneyStage(db.Model):
+class JourneyStage(Base):
     __tablename__ = 'journey_stages'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -185,7 +185,7 @@ class JourneyStage(db.Model):
             'tips': self.tips
         }
 
-class JourneyStep(db.Model):
+class JourneyStep(Base):
     __tablename__ = 'journey_steps'
     
     id = db.Column(db.Integer, primary_key=True)

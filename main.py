@@ -42,7 +42,7 @@ def create_app():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     # Initialize database
-    init_db(app)
+    db = init_db(app)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
