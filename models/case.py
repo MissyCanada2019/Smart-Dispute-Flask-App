@@ -1,3 +1,4 @@
+# Pinning a new version of the Case model
 from utils.db import db
 from datetime import datetime
 
