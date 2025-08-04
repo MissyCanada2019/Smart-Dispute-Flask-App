@@ -8,7 +8,7 @@ from models.case import Case
 from models.evidence import Evidence
 from models.court_form import FormSubmission
 from models.legal_journey import JourneyStage, JourneyStep, StageStatus
-from models.notification import Notification, NotificationType, NotificationPriority
+from models.notification import Notification
 from models import db
 from utils.legal_journey import LegalJourneyManager
 from utils.merit_scoring import calculate_case_merit

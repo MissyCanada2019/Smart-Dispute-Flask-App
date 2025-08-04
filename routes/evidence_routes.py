@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify, render_template, redirect, url_fo
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from models.case import Case
-from models.evidence import Evidence, EvidenceType, EvidenceStatus
+from models.evidence import Evidence
 from models import db
 from utils.secure_storage import SecureFileManager
 from utils.file_upload import process_file, extract_text_content

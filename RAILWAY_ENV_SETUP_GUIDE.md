@@ -28,3 +28,18 @@
 - Database should use PostgreSQL in production (Railway provides this)
 - File uploads are temporary - use cloud storage for persistence
 - After adding variables, Railway will automatically redeploy
+
+## Step 5: Verify Deployment Integrity
+
+To ensure files haven't been corrupted during deployment, run the verification script:
+
+```bash
+bash scripts/verify_deployment.sh
+```
+
+This script will:
+1. Create checksums of critical files
+2. Verify the checksums after deployment
+3. Report any file corruption issues
+
+> Note: If verification fails, check Railway's deployment logs for errors and consider redeploying.

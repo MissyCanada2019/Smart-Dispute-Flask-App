@@ -2,9 +2,9 @@ from typing import Dict, Any, List, Tuple, Optional
 from datetime import datetime, timedelta
 import logging
 from models import db
-from models.case import Case, CaseType, CaseStatus, CasePriority
-from models.evidence import Evidence, EvidenceStatus
-from utils.ai_services import calculate_case_merit_ai, ai_service_manager
+from models.case import Case
+from models.evidence import Evidence
+from utils.ai_services import AIServiceManager
 
 logger = logging.getLogger(__name__)
 
