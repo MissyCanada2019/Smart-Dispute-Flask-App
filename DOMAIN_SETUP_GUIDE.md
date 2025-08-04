@@ -4,7 +4,7 @@
 
 ### 📋 **Prerequisites Checklist**
 - [ ] Smart Dispute app deployed (Railway/Google Cloud Run)
-- [ ] Domain justice-bot.com registered and accessible
+- [ ] Domain smartdisputecanada.me registered and accessible
 - [ ] DNS management access
 - [ ] SSL certificate requirements
 
@@ -26,8 +26,8 @@ git push origin main
 ### Step 2: Add Custom Domain in Railway
 1. **Go to Railway Dashboard** → Your Project → Settings
 2. **Click "Domains"** tab
-3. **Add Custom Domain**: `justice-bot.com`
-4. **Add Subdomain**: `www.justice-bot.com`
+3. **Add Custom Domain**: `smartdisputecanada.me`
+4. **Add Subdomain**: `www.smartdisputecanada.me`
 5. **Railway will provide DNS records**
 
 ### Step 3: Configure DNS Records
@@ -71,15 +71,15 @@ chmod +x deploy.sh
 
 ### Step 2: Map Custom Domain
 ```bash
-# Map justice-bot.com to your Cloud Run service
+# Map smartdisputecanada.me to your Cloud Run service
 gcloud run domain-mappings create \
     --service smartdispute-app \
-    --domain justice-bot.com \
+    --domain smartdisputecanada.me \
     --region us-central1
 
 # Get DNS records to configure
 gcloud run domain-mappings describe \
-    --domain justice-bot.com \
+    --domain smartdisputecanada.me \
     --region us-central1
 ```
 
@@ -125,7 +125,7 @@ TTL: 300
 
 ### Step 1: Add Domain to Cloudflare
 1. **Sign up at cloudflare.com**
-2. **Add justice-bot.com** as a site
+2. **Add smartdisputecanada.me** as a site
 3. **Update nameservers** at your domain registrar:
    ```
    kane.ns.cloudflare.com
@@ -143,7 +143,7 @@ Proxied: ✅ (Orange Cloud)
 # CNAME Record  
 Type: CNAME
 Name: www
-Value: justice-bot.com
+Value: smartdisputecanada.me
 Proxied: ✅ (Orange Cloud)
 ```
 
@@ -171,7 +171,7 @@ Proxied: ✅ (Orange Cloud)
 ```bash
 # 1. Deploy to Railway via GitHub
 echo "1. Push to GitHub, deploy via Railway dashboard"
-echo "2. Add custom domain: justice-bot.com"
+echo "2. Add custom domain: smartdisputecanada.me"
 echo "3. Configure DNS with provided records"
 echo "4. SSL auto-enabled by Railway"
 ```
@@ -184,7 +184,7 @@ echo "4. SSL auto-enabled by Railway"
 # 2. Map domain
 gcloud run domain-mappings create \
     --service smartdispute-app \
-    --domain justice-bot.com \
+    --domain smartdisputecanada.me \
     --region us-central1
 
 # 3. Verify domain mapping
@@ -197,22 +197,22 @@ gcloud run domain-mappings list
 
 ```bash
 # Check DNS propagation
-dig justice-bot.com
-dig www.justice-bot.com
+dig smartdisputecanada.me
+dig www.smartdisputecanada.me
 
 # Check SSL certificate
-curl -I https://justice-bot.com
-openssl s_client -connect justice-bot.com:443 -servername justice-bot.com
+curl -I https://smartdisputecanada.me
+openssl s_client -connect smartdisputecanada.me:443 -servername smartdisputecanada.me
 
 # Test application
-curl -L https://justice-bot.com/health
+curl -L https://smartdisputecanada.me/health
 ```
 
 ---
 
 ## 📧 **Email Configuration (Optional)**
 
-### Setup admin@justice-bot.com for e-transfers:
+### Setup admin@smartdisputecanada.me for e-transfers:
 ```dns
 # MX Records for email
 Type: MX
@@ -228,7 +228,7 @@ Priority: 20
 
 ### Email Forwarding Setup:
 1. **Use ForwardEmail.net** (free)
-2. **Forward admin@justice-bot.com** → your-email@gmail.com
+2. **Forward admin@smartdisputecanada.me** → your-email@gmail.com
 3. **Add TXT record for verification**:
    ```dns
    Type: TXT
@@ -240,12 +240,12 @@ Priority: 20
 
 ## ✅ **Final Verification Checklist**
 
-- [ ] **https://justice-bot.com** loads successfully
-- [ ] **https://www.justice-bot.com** redirects to main domain
+- [ ] **https://smartdisputecanada.me** loads successfully
+- [ ] **https://www.smartdisputecanada.me** redirects to main domain
 - [ ] **SSL certificate** shows valid and secure
-- [ ] **Health check** responds: https://justice-bot.com/health
-- [ ] **Admin dashboard** accessible: https://justice-bot.com/admin
-- [ ] **Email forwarding** working: admin@justice-bot.command
+- [ ] **Health check** responds: https://smartdisputecanada.me/health
+- [ ] **Admin dashboard** accessible: https://smartdisputecanada.me/admin
+- [ ] **Email forwarding** working: admin@smartdisputecanada.memand
 
 ---
 
@@ -254,7 +254,7 @@ Priority: 20
 ### DNS Not Propagating:
 ```bash
 # Check DNS propagation globally
-curl -s "https://dns.google/resolve?name=justice-bot.com&type=A" | jq
+curl -s "https://dns.google/resolve?name=smartdisputecanada.me&type=A" | jq
 ```
 
 ### SSL Certificate Issues:
@@ -273,7 +273,7 @@ curl -s "https://dns.google/resolve?name=justice-bot.com&type=A" | jq
 # GCloud: gcloud run services list
 
 # Verify health endpoint
-curl -v https://justice-bot.com/health
+curl -v https://smartdisputecanada.me/health
 ```
 
 ---
@@ -282,10 +282,10 @@ curl -v https://justice-bot.com/health
 
 After completion, your Smart Dispute Canada application will be live at:
 
-- **Primary**: https://justice-bot.com
-- **WWW**: https://www.justice-bot.com (redirects to primary)
-- **Health**: https://justice-bot.com/health
-- **Admin**: https://justice-bot.com/admin
-- **Email**: admin@justice-bot.command (forwarding to your email)
+- **Primary**: https://smartdisputecanada.me
+- **WWW**: https://www.smartdisputecanada.me (redirects to primary)
+- **Health**: https://smartdisputecanada.me/health
+- **Admin**: https://smartdisputecanada.me/admin
+- **Email**: admin@smartdisputecanada.memand (forwarding to your email)
 
 **Professional SSL certificate**, **Canadian Charter theme**, and **full legal platform** accessible globally! 🍁⚖️

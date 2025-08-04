@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🍁 Setting up justice-bot.com for Smart Dispute Canada"
+echo "🍁 Setting up smartdisputecanada.me for Smart Dispute Canada"
 echo "=================================================="
 
 # Colors for output
@@ -16,7 +16,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-DOMAIN="justice-bot.com"
+DOMAIN="smartdisputecanada.me"
 PROJECT_NAME="smartdispute-canada"
 REGION="us-central1"
 

@@ -88,7 +88,7 @@ The current environment is a development sandbox without Google Cloud credential
 Your Smart Dispute app will be live with:
 - ✅ Canadian legal self-advocacy platform
 - ✅ AI-powered case analysis  
-- ✅ E-transfer payments (admin@justice-bot.command)
+- ✅ E-transfer payments (admin@smartdisputecanada.me)
 - ✅ All provincial court forms
 - ✅ Secure file storage
 - ✅ Professional PDF export

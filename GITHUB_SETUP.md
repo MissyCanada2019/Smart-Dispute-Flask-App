@@ -50,7 +50,7 @@ git push -u origin main
 
 ### ✅ Complete Canadian Legal Platform:
 - **AI Case Analysis** (GPT-4 + Claude)
-- **E-Transfer Payments** (admin@justice-bot.command)
+- **E-Transfer Payments** (admin@smartdisputecanada.me)
 - **All Provincial Court Forms** (ON, BC, AB, QC, etc.)
 - **Secure File Storage** (Encrypted)
 - **Professional PDF Export**

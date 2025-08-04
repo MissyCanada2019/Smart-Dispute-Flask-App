@@ -1,6 +1,6 @@
-# 🚀 Quick Setup: justice-bot.com
+# 🚀 Quick Setup: smartdisputecanada.me
 
-## Get Smart Dispute Canada Live on justice-bot.com in 10 Minutes
+## Get Smart Dispute Canada Live on smartdisputecanada.me in 10 Minutes
 
 ### ⚡ **Fastest Path (Railway - Recommended)**r
 
@@ -8,7 +8,7 @@
 ```bash
 # 1. Push your code to GitHub
 git add .
-git commit -m "Deploy Smart Dispute Canada to justice-bot.com"
+git commit -m "Deploy Smart Dispute Canada to smartdisputecanada.me"
 git push origin main
 
 # 2. Go to https://railway.app
@@ -23,7 +23,7 @@ git push origin main
 # In Railway Dashboard:
 # 1. Go to your project → Settings → Domains
 # 2. Click "Custom Domain"
-# 3. Enter: justice-bot.com
+# 3. Enter: smartdisputecanada.me
 # 4. Click "Add Domain"
 # Railway will show you DNS records to configure
 ```
@@ -54,9 +54,9 @@ TTL: 300
 ### 🔍 **Verification**
 ```bash
 # Test these URLs (wait 10-15 minutes for DNS):
-curl -L https://justice-bot.com
-curl -L https://www.justice-bot.com
-curl -L https://justice-bot.com/health
+curl -L https://smartdisputecanada.me
+curl -L https://www.smartdisputecanada.me
+curl -L https://smartdisputecanada.me/health
 
 # Expected: Canadian-themed Smart Dispute app loads
 ```
@@ -79,8 +79,8 @@ curl -L https://justice-bot.com/health
 #### ForwardEmail.net Setup:
 ```bash
 # 1. Go to https://forwardemail.net
-# 2. Add domain: justice-bot.com
-# 3. Set forwarding: admin@justice-bot.com → your-email@gmail.com
+# 2. Add domain: smartdisputecanada.me
+# 3. Set forwarding: admin@smartdisputecanada.me → your-email@gmail.com
 ```
 
 #### DNS Records for Email:
@@ -105,11 +105,11 @@ Value: forward-email=your-email@gmail.com
 ### ✅ **Final Result**
 
 Your Smart Dispute Canada will be live at:
-- **🏠 Main Site**: https://justice-bot.com
-- **🌐 WWW**: https://www.justice-bot.com  
-- **💚 Health Check**: https://justice-bot.com/health
-- **👑 Admin Panel**: https://justice-bot.com/admin
-- **📧 E-Transfer Email**: admin@justice-bot.com
+- **🏠 Main Site**: https://smartdisputecanada.me
+- **🌐 WWW**: https://www.smartdisputecanada.me  
+- **💚 Health Check**: https://smartdisputecanada.me/health
+- **👑 Admin Panel**: https://smartdisputecanada.me/admin
+- **📧 E-Transfer Email**: admin@smartdisputecanada.me
 
 **Features Active:**
 - 🍁 Canadian Charter theme
@@ -126,11 +126,11 @@ Your Smart Dispute Canada will be live at:
 #### Domain Not Loading:
 ```bash
 # Check DNS propagation
-dig justice-bot.com
+dig smartdisputecanada.me
 # Should show Railway IP address
 
 # Check globally
-curl -s "https://dns.google/resolve?name=justice-bot.com&type=A"
+curl -s "https://dns.google/resolve?name=smartdisputecanada.me&type=A"
 ```
 
 #### SSL Issues:
@@ -155,6 +155,6 @@ curl -s "https://dns.google/resolve?name=justice-bot.com&type=A"
 - **Minute 3-8**: Configure DNS records
 - **Minute 8-15**: Wait for DNS propagation
 - **Minute 15-30**: SSL certificate provision
-- **Minute 30+**: **justice-bot.com live!** 🍁⚖️
+- **Minute 30+**: **smartdisputecanada.me live!** 🍁⚖️
 
 **Your professional Canadian legal platform will be serving Charter rights defenders within 30 minutes!**

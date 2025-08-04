@@ -54,7 +54,7 @@ A comprehensive AI-powered platform helping Canadians navigate family court, tri
 
 ## 💰 Payment Integration
 
-**E-Transfer Address:** `admin@justice-bot.command`
+**E-Transfer Address:** `admin@smartdisputecanada.me`
 
 **Service Pricing (CAD):**
 - Case Analysis: $49.99

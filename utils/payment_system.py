@@ -1,4 +1,4 @@
-faggikj"""
+"""
 Payment System
 E-transfer integration for Canadian legal services
 """
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class PaymentManager:
     """Manages e-transfer payments for legal services"""
     
-    ETRANSFER_EMAIL = "admin@justice-bot.command"
+    ETRANSFER_EMAIL = "admin@smartdisputecanada.me"
     
     # Service pricing in CAD
     SERVICE_PRICES = {

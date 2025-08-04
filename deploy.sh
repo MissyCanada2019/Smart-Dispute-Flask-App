@@ -60,6 +60,6 @@ echo "1. Set up your OpenAI API key: gcloud run services update $SERVICE_NAME --
 echo "2. Set up your Anthropic API key: gcloud run services update $SERVICE_NAME --region $REGION --set-env-vars ANTHROPIC_API_KEY=your_key"
 echo "3. Configure custom domain (optional): https://cloud.google.com/run/docs/mapping-custom-domains"
 echo ""
-echo "💰 E-transfer payments configured for: admin@justice-bot.command"
+echo "💰 E-transfer payments configured for: admin@smartdisputecanada.me"
 echo "🔐 Health check available at: $SERVICE_URL/health"
 echo "👑 Admin dashboard at: $SERVICE_URL/admin"
