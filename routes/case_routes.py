@@ -9,13 +9,11 @@ case_bp = Blueprint('case', __name__)
 @login_required
 def create_case():
     if request.method == 'POST':
-        # Extract form data
         title = request.form.get('title', '').strip()
         description = request.form.get('description', '').strip()
         case_type = request.form.get('case_type', '').strip()
         province = request.form.get('province', '').strip()
         
-        # Create a new case instance
         new_case = Case(
             title=title,
             description=description,
@@ -24,7 +22,6 @@ def create_case():
             user_id=current_user.id
         )
         
-        # Insert into database
         try:
             db.session.add(new_case)
             db.session.commit()

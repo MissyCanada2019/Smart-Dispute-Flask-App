@@ -5,7 +5,7 @@ Manages notifications, reminders, deadlines, and user alerts
 
 from typing import Dict, List, Any, Optional
 from flask import current_app
-from models.notification import Notification  # Using the helper class
+from models.notification import Notification
 from utils.db import db
 from datetime import datetime, timedelta
 
@@ -27,7 +27,6 @@ class NotificationManager:
                            scheduled_for: datetime = None, metadata: Dict = None) -> Notification:
         """Create a new notification using string-based types"""
         try:
-            # Create notification object
             notification = Notification(
                 user_id=user_id,
                 title=title,
@@ -40,7 +39,6 @@ class NotificationManager:
                 context_data=metadata or {}
             )
             
-            # Save to database
             self.session.add(notification)
             self.session.commit()
             return notification
@@ -73,8 +71,5 @@ class NotificationManager:
             case_id=case_id,
             action_url=f"/cases/{case_id}"
         )
-    
-    # Other notification methods would be implemented similarly
-    # using string-based types instead of enums
 
 notification_manager = NotificationManager()

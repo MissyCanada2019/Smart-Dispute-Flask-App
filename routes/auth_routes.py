@@ -13,7 +13,6 @@ def login():
         password = request.form.get('password')
         remember = True if request.form.get('remember') else False
         
-        # Get a new session instance
         user = db.session.query(User).filter_by(email=email).first()
 
         if not user or not user.check_password(password):
@@ -31,17 +30,14 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        # Check if user already exists
         user = db.session.query(User).filter_by(email=email).first()
         if user:
             flash('Email address already exists')
             return redirect(url_for('auth.register'))
         
-        # Create new user
         new_user = User(email=email)
         new_user.set_password(password)
         
-        # Add and commit
         db.session.add(new_user)
         db.session.commit()
         
