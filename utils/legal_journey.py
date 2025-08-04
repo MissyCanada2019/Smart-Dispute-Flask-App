@@ -1,4 +1,4 @@
-***
+"""
 Legal Journey Guidance System
 Provides step-by-step workflows and guidance for Canadian legal processes
 """
@@ -377,4 +377,4 @@ class LegalJourneyManager:
         
         # Fall back to Ontario workflow if available (as it's most comprehensive)
         if case_type in LEGAL_WORKFLOWS and 'ON' in LEGAL_WORKFLOWS[case_type]:
-            workflow
+            return LEGAL_WORKFLOWS[case_type]['ON']
