@@ -1,16 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_login import LoginManager
-from routes.auth_routes import auth_bp
-from routes.admin_routes import admin_bp
-from routes.case_routes import case_bp
-from routes.form_routes import form_bp
-from routes.journey_routes import journey_bp
-from routes.dashboard_routes import dashboard_bp
-from routes.secure_file_routes import secure_file_bp
-from routes.evidence_routes import evidence_bp
-from routes.tracking_routes import tracking_bp
-from routes.notification_routes import notification_bp
-from routes.payment_routes import payment_bp
 import os
 from dotenv import load_dotenv
 from utils.error_handling import register_error_handlers, HealthCheck
@@ -59,6 +48,18 @@ def create_app():
         return db.session.query(User).get(int(user_id))
 
     # Register blueprints
+    from routes.auth_routes import auth_bp
+    from routes.admin_routes import admin_bp
+    from routes.case_routes import case_bp
+    from routes.form_routes import form_bp
+    from routes.journey_routes import journey_bp
+    from routes.dashboard_routes import dashboard_bp
+    from routes.secure_file_routes import secure_file_bp
+    from routes.evidence_routes import evidence_bp
+    from routes.tracking_routes import tracking_bp
+    from routes.notification_routes import notification_bp
+    from routes.payment_routes import payment_bp
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(case_bp)
@@ -70,8 +71,9 @@ def create_app():
     app.register_blueprint(tracking_bp)
     app.register_blueprint(notification_bp)
     app.register_blueprint(payment_bp)
-    
+
     # Root route - Welcome/onboarding page
+    from flask import render_template
     @app.route('/')
     def index():
         return render_template('onboarding/welcome.html')
