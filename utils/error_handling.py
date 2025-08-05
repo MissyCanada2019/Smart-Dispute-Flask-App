@@ -266,6 +266,45 @@ class HealthCheck:
         except Exception as e:
             return False, f"AI services error: {str(e)}"
     
+    @staticmethod
+    def check_network():
+        """Comprehensive network diagnostics with fail-safes"""
+        try:
+            import socket
+            import requests
+            
+            # Check DNS resolution
+            try:
+                socket.gethostbyname("google.com")
+            except socket.gaierror:
+                return False, "DNS resolution failed"
+                
+            # Check ICMP connectivity (ping equivalent)
+            try:
+                socket.create_connection(("8.8.8.8", 53), timeout=5)
+            except Exception as e:
+                return False, f"ICMP blocked: {str(e)}"
+                
+            # Check HTTP connectivity
+            try:
+                response = requests.head("http://example.com", timeout=5)
+                if response.status_code != 200:
+                    return False, f"HTTP test failed: Status {response.status_code}"
+            except Exception as e:
+                return False, f"HTTP error: {str(e)}"
+                
+            # Check HTTPS connectivity
+            try:
+                response = requests.head("https://example.com", timeout=5)
+                if response.status_code != 200:
+                    return False, f"HTTPS test failed: Status {response.status_code}"
+            except Exception as e:
+                return False, f"HTTPS error: {str(e)}"
+                
+            return True, "Network fully operational"
+        except Exception as e:
+            return False, f"Network diagnostics failed: {str(e)}"
+    
     @classmethod
     def get_health_status(cls):
         """Get comprehensive health status"""
@@ -286,17 +325,6 @@ class HealthCheck:
                 for name, (status, message) in checks.items()
             }
         }
-
-    @staticmethod
-    def check_network():
-        """Check external network connectivity"""
-        try:
-            import socket
-            # Test connectivity to a reliable external service
-            socket.create_connection(("8.8.8.8", 53), timeout=5)
-            return True, "Network OK"
-        except Exception as e:
-            return False, f"Network error: {str(e)}"
 
 # Initialize logging when module is imported
 setup_logging()
