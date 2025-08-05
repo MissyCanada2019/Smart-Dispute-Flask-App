@@ -6,3 +6,6 @@ instance/
 logs/
 uploads/
 
+
+# Railway deployment secrets
+railway.env

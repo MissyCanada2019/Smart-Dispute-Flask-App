@@ -27,11 +27,18 @@
 - Replace placeholder values with your actual keys
 - Database should use PostgreSQL in production (Railway provides this)
 - File uploads are temporary - use cloud storage for persistence
-- After adding variables, Railway will automatically redeploy
+- After adding variables, 
+Railway will automatically redeploy
+
+## Security Warning
+**DO NOT COMMIT SECRETS TO GITHUB**
+The `railway.env` file contains sensitive credentials. Add it to your `.gitignore` file to prevent accidental exposure.
+
+```bash
+echo "railway.env" >> .gitignore
+```
 
 ## Step 5: Verify Deployment Integrity
-
-To ensure files haven't been corrupted during deployment, run the verification script:
 
 ```bash
 bash scripts/verify_deployment.sh
