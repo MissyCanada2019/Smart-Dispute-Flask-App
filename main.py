@@ -99,11 +99,16 @@ def create_app():
     app.register_blueprint(notification_bp)
     app.register_blueprint(payment_bp)
 
-    # Root route - Welcome/onboarding page
-    from flask import render_template
+    # Serve Next.js frontend
+    from flask import send_from_directory
     @app.route('/')
     def index():
-        return render_template('onboarding/welcome.html')
+        return send_from_directory('static/frontend', 'index.html')
+    
+    # Serve Next.js static files
+    @app.route('/<path:path>')
+    def serve_frontend_assets(path):
+        return send_from_directory('static/frontend', path)
     
     # Register error handlers
     register_error_handlers(app)
