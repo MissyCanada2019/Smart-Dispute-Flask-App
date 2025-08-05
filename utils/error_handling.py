@@ -93,7 +93,7 @@ class ErrorHandler:
                 'user_id': user_id,
                 'request_path': getattr(request, 'path', 'N/A'),
                 'request_method': getattr(request, 'method', 'N/A'),
-                'user_agent': getattr(request, 'user_agent', {}).get('string', 'N/A')
+                'user_agent': str(getattr(request, 'user_agent', 'N/A'))
             }
             
             self.logger.error(f"Application Error: {error_info}")
@@ -222,7 +222,8 @@ class HealthCheck:
             from flask import current_app
             with current_app.app_context():
                 db = current_app.extensions['sqlalchemy'].db
-                db.session.execute('SELECT 1')
+                from sqlalchemy import text
+                db.session.execute(text('SELECT 1'))
             return True, "Database OK"
         except Exception as e:
             logging.getLogger('ai_processing').error(f"Database health check failed: {str(e)}")

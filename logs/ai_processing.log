@@ -1,0 +1,1 @@
+2025-08-05 04:24:48,307 - AI - ERROR - Database health check failed: Textual SQL expression 'SELECT 1' should be explicitly declared as text('SELECT 1')
