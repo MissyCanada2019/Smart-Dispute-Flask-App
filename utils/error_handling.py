@@ -217,14 +217,30 @@ class HealthCheck:
     
     @classmethod
     def check_database(cls):
-        """Check database connectivity using current app context"""
+        """Check database connectivity with timeout and meaningful query"""
         try:
             from flask import current_app
+            import sqlalchemy
+            from sqlalchemy import text
+            from sqlalchemy.exc import OperationalError, TimeoutError
+            
             with current_app.app_context():
                 db = current_app.extensions['sqlalchemy'].db
-                from sqlalchemy import text
-                db.session.execute(text('SELECT 1'))
-            return True, "Database OK"
+                
+                # Set timeout for database operations
+                try:
+                    # Try a simple query with timeout
+                    result = db.session.execute(text('SELECT COUNT(*) FROM user'), execution_options={"timeout": 5}) \
+                                        .scalar()
+                    user_count = result or 0
+                    
+                    # Check connection pool status
+                    pool = db.engine.pool
+                    pool_status = f"Connections: {pool.status()}, Size: {pool.size()}"
+                    
+                    return True, f"Database OK ({user_count} users, {pool_status})"
+                except (OperationalError, TimeoutError) as e:
+                    return False, f"Database timeout: {str(e)}"
         except Exception as e:
             logging.getLogger('ai_processing').error(f"Database health check failed: {str(e)}")
             return False, f"Database error: {str(e)}"
@@ -256,7 +272,8 @@ class HealthCheck:
         checks = {
             'database': cls.check_database(),
             'file_system': cls.check_file_system(),
-            'ai_services': cls.check_ai_services()
+            'ai_services': cls.check_ai_services(),
+            'network': cls.check_network()
         }
         
         all_healthy = all(status for status, _ in checks.values())
@@ -269,6 +286,17 @@ class HealthCheck:
                 for name, (status, message) in checks.items()
             }
         }
+
+    @staticmethod
+    def check_network():
+        """Check external network connectivity"""
+        try:
+            import socket
+            # Test connectivity to a reliable external service
+            socket.create_connection(("8.8.8.8", 53), timeout=5)
+            return True, "Network OK"
+        except Exception as e:
+            return False, f"Network error: {str(e)}"
 
 # Initialize logging when module is imported
 setup_logging()

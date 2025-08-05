@@ -8,25 +8,44 @@ from utils.error_handling import register_error_handlers, HealthCheck
 from utils.db import db
 
 def create_app():
-    # Load environment variables based on deployment environment
-    if os.getenv('RAILWAY_ENVIRONMENT') == 'production':
-        load_dotenv('.env.production')
-    else:
-        load_dotenv('.env.development')
+    # Load environment variables from .env file
+    load_dotenv('.env')
 
     app = Flask(__name__)
     
     # Use environment variable for secret key, with fallback
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     
-    # Database configuration with Railway support
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url:
-        # Railway PostgreSQL
-        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    else:
-        # Local SQLite fallback
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    # Database configuration with robust placeholder detection and validation
+    database_url = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+    
+    # Handle placeholder values with case-insensitive check
+    placeholder_patterns = [
+        '<your_railway_postgres_url>',
+        'your-database-url-here',
+        'placeholder',
+        'example.com'
+    ]
+    
+    if any(pattern.lower() in database_url.lower() for pattern in placeholder_patterns):
+        app.logger.error(f"Critical error: Database URL placeholder detected!")
+        app.logger.error("Please set a valid DATABASE_URL environment variable")
+        app.logger.warning("Using SQLite fallback database for local development")
+        database_url = 'sqlite:///app.db'
+    
+    # Validate URL format with detailed error reporting
+    try:
+        from sqlalchemy.engine import make_url
+        parsed_url = make_url(database_url)
+        app.logger.info(f"Using database: {parsed_url}")
+    except Exception as e:
+        app.logger.error(f"Invalid database URL format: {str(e)}")
+        app.logger.error(f"Offending URL: {database_url}")
+        app.logger.warning("Using SQLite fallback database")
+        database_url = 'sqlite:///app.db'
+        parsed_url = make_url(database_url)
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     
     # File upload configuration
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
@@ -95,14 +114,37 @@ def create_app():
     # Register error handlers
     register_error_handlers(app)
     
-    # Health check route
+    # Health check route with detailed logging
     @app.route('/health')
     def health_check():
-        return HealthCheck.get_health_status()
+        import time
+        from flask import current_app
+        
+        start_time = time.time()
+        health_status = HealthCheck.get_health_status()
+        duration = round((time.time() - start_time) * 1000, 2)
+        
+        # Log health check results
+        if health_status['status'] == 'healthy':
+            current_app.logger.info(f"Health check passed in {duration}ms")
+        else:
+            error_details = {k: v for k,v in health_status['checks'].items() if v['status'] == 'error'}
+            current_app.logger.error(
+                f"Health check FAILED in {duration}ms. Errors: {error_details}"
+            )
+        
+        return health_status
 
     return app
 
 if __name__ == '__main__':
     app = create_app()
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    # Explicitly bind to all interfaces and handle port binding
+    try:
+        from werkzeug.serving import run_simple
+        run_simple('0.0.0.0', port, app, use_reloader=False)
+    except OSError as e:
+        print(f"Error binding to port {port}: {str(e)}")
+        print("Trying alternative port 8080")
+        run_simple('0.0.0.0', 8080, app, use_reloader=False)
