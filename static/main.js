@@ -1,5 +1,6 @@
 // Enhanced notification functions with error handling (global access)
-function markAsRead(notificationId, event) {
+function markAsRead(notificationId) {
+    const event = window.event;
     if (event) {
         event.stopPropagation();
         event.preventDefault();
