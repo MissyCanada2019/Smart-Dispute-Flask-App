@@ -16,7 +16,7 @@ def create_app():
     # Use environment variable for secret key, with fallback
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     
-    # Database configuration with robust placeholder detection and validation
+    # Database configuration with production-grade validation
     database_url = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
     
     # Handle placeholder values with case-insensitive check
@@ -27,16 +27,30 @@ def create_app():
         'example.com'
     ]
     
+    # PostgreSQL-specific validation
+    is_postgres = 'postgres' in database_url.lower()
+    
     if any(pattern.lower() in database_url.lower() for pattern in placeholder_patterns):
         app.logger.error(f"Critical error: Database URL placeholder detected!")
         app.logger.error("Please set a valid DATABASE_URL environment variable")
         app.logger.warning("Using SQLite fallback database for local development")
         database_url = 'sqlite:///app.db'
+    elif is_postgres and not database_url.startswith('postgresql://'):
+        app.logger.warning("PostgreSQL URL should use 'postgresql://' prefix. Attempting to fix...")
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
     
     # Validate URL format with detailed error reporting
     try:
         from sqlalchemy.engine import make_url
         parsed_url = make_url(database_url)
+        
+        # Additional PostgreSQL checks
+        if is_postgres:
+            if not parsed_url.drivername.startswith('postgresql'):
+                raise ValueError("Invalid PostgreSQL URL format")
+            if not parsed_url.host or not parsed_url.port:
+                raise ValueError("PostgreSQL URL requires host and port")
+                
         app.logger.info(f"Using database: {parsed_url}")
     except Exception as e:
         app.logger.error(f"Invalid database URL format: {str(e)}")
@@ -141,10 +155,16 @@ if __name__ == '__main__':
     app = create_app()
     port = int(os.environ.get('PORT', 5000))
     # Explicitly bind to all interfaces and handle port binding
+    # Explicitly bind to port 8080 with fallback to 5000
     try:
         from werkzeug.serving import run_simple
-        run_simple('0.0.0.0', port, app, use_reloader=False)
-    except OSError as e:
-        print(f"Error binding to port {port}: {str(e)}")
-        print("Trying alternative port 8080")
+        app.logger.info("Starting web server on port 8080")
         run_simple('0.0.0.0', 8080, app, use_reloader=False)
+    except OSError as e:
+        app.logger.error(f"Error binding to port 8080: {str(e)}")
+        app.logger.warning("Trying alternative port 5000")
+        try:
+            run_simple('0.0.0.0', 5000, app, use_reloader=False)
+        except OSError as e2:
+            app.logger.critical(f"Failed to bind to port 5000: {str(e2)}")
+            app.logger.error("Application failed to start")
