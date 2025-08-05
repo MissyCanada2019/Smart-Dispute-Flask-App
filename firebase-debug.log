@@ -1,16 +1,13 @@
-[debug] [2025-08-04T12:31:25.453Z] ----------------------------------------------------------------------
-[debug] [2025-08-04T12:31:25.455Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/fsdlxfaxdgx27856x49qycgdsyx5jxd3-firebase-tools-14.11.2/lib/node_modules/firebase-tools/lib/bin/firebase.js init hosting
-[debug] [2025-08-04T12:31:25.456Z] CLI Version:   14.11.2
-[debug] [2025-08-04T12:31:25.456Z] Platform:      linux
-[debug] [2025-08-04T12:31:25.456Z] Node Version:  v20.19.1
-[debug] [2025-08-04T12:31:25.456Z] Time:          Mon Aug 04 2025 12:31:25 GMT+0000 (Coordinated Universal Time)
-[debug] [2025-08-04T12:31:25.456Z] ----------------------------------------------------------------------
+[debug] [2025-08-05T03:39:29.577Z] ----------------------------------------------------------------------
+[debug] [2025-08-05T03:39:29.579Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/fsdlxfaxdgx27856x49qycgdsyx5jxd3-firebase-tools-14.11.2/lib/node_modules/firebase-tools/lib/bin/firebase.js init hosting
+[debug] [2025-08-05T03:39:29.580Z] CLI Version:   14.11.2
+[debug] [2025-08-05T03:39:29.580Z] Platform:      linux
+[debug] [2025-08-05T03:39:29.580Z] Node Version:  v20.19.1
+[debug] [2025-08-05T03:39:29.580Z] Time:          Tue Aug 05 2025 03:39:29 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-08-05T03:39:29.580Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2025-08-04T12:31:25.458Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
-[debug] [2025-08-04T12:31:25.495Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2025-08-04T12:31:25.572Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
-[debug] [2025-08-04T12:31:25.572Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
-[debug] [2025-08-04T12:32:05.121Z] Running auto auth
+[debug] [2025-08-05T03:39:29.585Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-05T03:39:52.034Z] Running auto auth
 [info] 
      ######## #### ########  ######## ########     ###     ######  ########
      ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
@@ -29,7 +26,51 @@ You're about to initialize a Firebase project in this directory:
 [info] You can create multiple project aliases by running firebase use --add, 
 [info] but for now we'll just set up a default project.
 [info] 
-[debug] [2025-08-04T12:32:05.164Z] No OAuth tokens found
-[debug] [2025-08-04T12:32:05.165Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/availableProjects pageSize=100
-[debug] [2025-08-04T12:32:05.718Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/availableProjects 200
-[debug] [2025-08-04T12:32:05.718Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/availableProjects [omitted]
+[debug] [2025-08-05T03:39:52.099Z] No OAuth tokens found
+[debug] [2025-08-05T03:39:52.102Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/availableProjects pageSize=100
+[debug] [2025-08-05T03:39:52.619Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/availableProjects 200
+[debug] [2025-08-05T03:39:52.619Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/availableProjects [omitted]
+[debug] [2025-08-05T03:40:51.847Z] No OAuth tokens found
+[debug] [2025-08-05T03:40:51.847Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1beta1/projects/adultconnections:addFirebase [none]
+[debug] [2025-08-05T03:40:52.579Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1beta1/projects/adultconnections:addFirebase 200
+[debug] [2025-08-05T03:40:52.580Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1beta1/projects/adultconnections:addFirebase {"name":"operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm"}
+[debug] [2025-08-05T03:40:52.581Z] No OAuth tokens found
+[debug] [2025-08-05T03:40:52.581Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm [none]
+[debug] [2025-08-05T03:40:54.811Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm 200
+[debug] [2025-08-05T03:40:54.811Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm {"name":"operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm"}
+[debug] [2025-08-05T03:40:55.312Z] [Add Firebase Poller] Retrying task index 0
+[debug] [2025-08-05T03:40:55.313Z] No OAuth tokens found
+[debug] [2025-08-05T03:40:55.313Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm [none]
+[debug] [2025-08-05T03:40:55.501Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm 200
+[debug] [2025-08-05T03:40:55.501Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm {"name":"operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm"}
+[debug] [2025-08-05T03:40:56.503Z] [Add Firebase Poller] Retrying task index 0
+[debug] [2025-08-05T03:40:56.503Z] No OAuth tokens found
+[debug] [2025-08-05T03:40:56.504Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm [none]
+[debug] [2025-08-05T03:40:56.763Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm 200
+[debug] [2025-08-05T03:40:56.763Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm {"name":"operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm"}
+[debug] [2025-08-05T03:40:58.765Z] [Add Firebase Poller] Retrying task index 0
+[debug] [2025-08-05T03:40:58.766Z] No OAuth tokens found
+[debug] [2025-08-05T03:40:58.766Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm [none]
+[debug] [2025-08-05T03:40:58.885Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm 200
+[debug] [2025-08-05T03:40:58.886Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm {"name":"operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm"}
+[debug] [2025-08-05T03:41:02.886Z] [Add Firebase Poller] Retrying task index 0
+[debug] [2025-08-05T03:41:02.887Z] No OAuth tokens found
+[debug] [2025-08-05T03:41:02.887Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm [none]
+[debug] [2025-08-05T03:41:03.084Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm 200
+[debug] [2025-08-05T03:41:03.085Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm {"name":"operations/workflows/OGU3NGQzN2ItNzBhMC00YjZiLTkyODEtMjI2ZDEzYWQwMDlm","done":true,"response":{"@type":"type.googleapis.com/google.firebase.service.v1beta1.FirebaseProject","projectId":"adultconnections","projectNumber":"472416322784","displayName":"AdultConnections","name":"projects/adultconnections","resources":{"hostingSite":"adultconnections"}}}
+[info] 
+[info] 🎉🎉🎉 Your Firebase project is ready! 🎉🎉🎉
+[info] 
+[info] Project information:
+[info]    - Project ID: adultconnections
+[info]    - Project Name: AdultConnections
+[info] 
+[info] Firebase console is available at
+[info] https://console.firebase.google.com/project/adultconnections/overview
+[info] i  Using project adultconnections (AdultConnections) 
+[info] 
+=== Hosting Setup
+[debug] [2025-08-05T03:41:03.094Z] No OAuth tokens found
+[debug] [2025-08-05T03:41:03.094Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/adultconnections [none]
+[debug] [2025-08-05T03:41:03.355Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/adultconnections 200
+[debug] [2025-08-05T03:41:03.355Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/adultconnections {"projectId":"adultconnections","projectNumber":"472416322784","displayName":"AdultConnections","name":"projects/adultconnections","resources":{"hostingSite":"adultconnections"},"state":"ACTIVE","etag":"1_f652aeaf-6ef6-4d92-9170-0bc93eb62b57"}

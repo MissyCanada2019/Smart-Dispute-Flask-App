@@ -1,75 +1,54 @@
-"""
-Notification System for Smart Dispute Flask App
-Manages notifications, reminders, deadlines, and user alerts
-"""
-
-from typing import Dict, List, Any, Optional
-from flask import current_app
-from models.notification import Notification
 from utils.db import db
+from models.notification import Notification, NotificationType, NotificationPriority
 from datetime import datetime, timedelta
+from enum import Enum as PyEnum
+
+class DeadlineType(PyEnum):  # Added enum
+    """Types of deadlines for notifications"""
+    FORM_SUBMISSION = "form_submission"
+    HEARING = "hearing"
+    PAYMENT = "payment"
+    EVIDENCE_SUBMISSION = "evidence_submission"
+    CASE_MILESTONE = "case_milestone"
 
 class NotificationManager:
-    """Main notification management system"""
+    """Manages notification creation and delivery"""
     
-    def __init__(self):
-        self.session = db.session
-        self.reminder_intervals = {
-            'urgent': [1, 3, 7],  # Days before deadline
-            'high': [3, 7, 14],
-            'medium': [7, 14, 30],
-            'low': [14, 30]
-        }
+    def create_notification(self, user_id, title, message, notif_type, priority=NotificationPriority.MEDIUM, case_id=None):
+        """Create and save a notification"""
+        notification = Notification(
+            user_id=user_id,
+            title=title,
+            message=message,
+            notification_type=notif_type,
+            priority=priority,
+            related_case_id=case_id
+        )
+        db.session.add(notification)
+        db.session.commit()
+        return notification
     
-    def create_notification(self, user_id: int, title: str, message: str, 
-                           notification_type: str, priority: str = 'medium',
-                           case_id: int = None, action_url: str = None, 
-                           scheduled_for: datetime = None, metadata: Dict = None) -> Notification:
-        """Create a new notification using string-based types"""
-        try:
-            notification = Notification(
-                user_id=user_id,
-                title=title,
-                message=message,
-                notification_type=notification_type,
-                priority=priority,
-                case_id=case_id,
-                action_url=action_url,
-                scheduled_for=scheduled_for,
-                context_data=metadata or {}
-            )
-            
-            self.session.add(notification)
-            self.session.commit()
-            return notification
-        except Exception as e:
-            current_app.logger.error(f"Error creating notification: {str(e)}")
-            self.session.rollback()
-            raise
-    
-    def get_user_notifications(self, user_id: int, unread_only: bool = False) -> List[Notification]:
-        """Get notifications for a user"""
-        try:
-            query = self.session.query(Notification).filter_by(user_id=user_id)
-            if unread_only:
-                query = query.filter_by(status='unread')
-            return query.order_by(Notification.created_at.desc()).all()
-        except Exception as e:
-            current_app.logger.error(f"Error fetching notifications: {str(e)}")
-            return []
-    
-    def send_deadline_reminder(self, user_id: int, deadline_type: str, deadline_date: datetime, case_id: int):
-        """Send a deadline reminder notification"""
-        title = f"Deadline Reminder: {deadline_type}"
-        message = f"Your deadline for {deadline_type} is approaching on {deadline_date.strftime('%Y-%m-%d')}"
+    def send_reminder(self, user_id, deadline_type, deadline_date, case_id=None):
+        """Send deadline reminder notification"""
+        title = f"Reminder: {deadline_type.value.replace('_', ' ').title()}"
+        message = f"Upcoming deadline on {deadline_date.strftime('%Y-%m-%d')}"
         return self.create_notification(
             user_id=user_id,
             title=title,
             message=message,
-            notification_type='deadline_reminder',
-            priority='high',
-            case_id=case_id,
-            action_url=f"/cases/{case_id}"
+            notif_type=NotificationType.HEARING_REMINDER,
+            priority=NotificationPriority.HIGH,
+            case_id=case_id
         )
+    
+    def mark_as_read(self, notification_id):
+        """Mark notification as read"""
+        notification = Notification.query.get(notification_id)
+        if notification:
+            notification.is_read = True
+            db.session.commit()
+            return True
+        return False
 
+# Global notification manager instance
 notification_manager = NotificationManager()

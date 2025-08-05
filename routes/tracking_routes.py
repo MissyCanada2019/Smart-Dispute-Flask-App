@@ -6,7 +6,7 @@ Handles case progress monitoring, milestone tracking, and statistics
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models.case import Case
-from models import db
+from utils.db import db
 from utils.case_tracking import CaseTracker, MilestoneType
 from datetime import datetime, timedelta
 import json

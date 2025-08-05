@@ -100,9 +100,6 @@ def create_app():
     def health_check():
         return HealthCheck.get_health_status()
 
-    with app.app_context():
-        db.create_all()
-
     return app
 
 if __name__ == '__main__':

@@ -246,7 +246,14 @@ class FileUploadHandler:
 
 
 # Global instance for easy access
-file_upload_handler = FileUploadHandler()
+_file_upload_handler = None
+
+def get_file_upload_handler():
+    global _file_upload_handler
+    if _file_upload_handler is None:
+        with current_app.app_context():
+            _file_upload_handler = FileUploadHandler()
+    return _file_upload_handler
 
 
 def save_evidence_file(file: FileStorage) -> Tuple[str, Dict[str, Any]]:

@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify, render_template, redirect, url_fo
 from flask_login import login_required, current_user
 from models.notification import Notification, NotificationType, NotificationPriority
 from models.case import Case
-from models import db
+from utils.db import db
 from utils.notification_system import NotificationManager, DeadlineType, notification_manager
 from datetime import datetime, timedelta
 import json
