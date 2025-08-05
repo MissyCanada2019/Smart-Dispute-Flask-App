@@ -12,211 +12,404 @@
                 <span class="maple-leaf" style="font-size: 3rem;">🍁</span>
             </div>
             <h1 class="display-4 fw-bold mb-4">
-                <span class="canada-flag-gradient">Smart Dispute Canada</span>
+                <span class="canada-flag-gradient">Get Legal Help, Fast. No Lawyer Needed. Free for First 1000 Canadians.</span>
             </h1>
             <p class="lead mb-4">
-                Navigate the Canadian legal system with <strong>Charter-informed confidence</strong>. 
-                Our AI-powered platform defends your constitutional rights with evidence analysis, 
-                automated court forms, and step-by-step legal guidance.
+                Smart Dispute Canada empowers you to fight for your rights in housing, family, and human rights cases. Plain-English guidance and AI-powered tools for legal underdogs.
             </p>
-            <div class="charter-quote mb-4">
-                "Everyone whose rights or freedoms, as guaranteed by this Charter, have been infringed or denied may apply to a court of competent jurisdiction to obtain such remedy as the court considers appropriate and just in the circumstances."
-                <cite>— Section 24(1), Canadian Charter of Rights and Freedoms</cite>
-            </div>
-            
-            {% if current_user.is_authenticated %}
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <a href="{{ url_for('cases.list_cases') }}" class="btn btn-primary btn-lg me-md-2 hover-lift">
-                        <i class="fas fa-folder me-2"></i>View My Cases
-                    </a>
-                    <a href="{{ url_for('cases.create_case') }}" class="btn btn-outline-primary btn-lg hover-lift">
-                        <i class="fas fa-plus me-2"></i>Defend New Rights
-                    </a>
-                </div>
-            {% else %}
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                     <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-md-2 hover-lift">
                         <i class="fas fa-sign-in-alt me-2"></i>Start Defending Your Rights
                     </a>
-                    <a href="#features" class="btn btn-outline-primary btn-lg hover-lift">
-                        <i class="fas fa-maple-leaf me-2"></i>Learn About Your Charter Rights
+                     <a href="#how-it-works" class="btn btn-outline-primary btn-lg hover-lift">
+                        <i class="fas fa-question-circle me-2"></i>How It Works
                     </a>
                 </div>
-            {% endif %}
         </div>
     </div>
 </div>
 
-{% if not current_user.is_authenticated %}
-<section id="features" class="py-5">
-    <div class="row">
-        <div class="col-12 text-center mb-5">
-            <h2 class="text-danger">
-                <span class="maple-leaf">🍁</span>
-                How We Help Defend Your Charter Rights
-                <span class="maple-leaf">🍁</span>
-            </h2>
-            <p class="lead text-muted">
-                Every Canadian deserves equal protection under the law - We make it accessible
-            </p>
-        </div>
-    </div>
-    
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-cloud-upload-alt fa-4x text-danger"></i>
-                    </div>
-                    <h5 class="card-title">Charter-Informed Evidence Analysis</h5>
-                    <p class="card-text">
-                        Upload documents and our AI analyzes them through the lens of your Charter rights,
-                        extracting key information and providing constitutional merit scoring.
-                    </p>
-                    <div class="mt-auto">
-                        <small class="text-muted">
-                            <i class="fas fa-balance-scale me-1"></i>
-                            Constitutional Law Trained
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-file-alt fa-4x text-success"></i>
-                    </div>
-                    <h5 class="card-title">Canadian Court Forms</h5>
-                    <p class="card-text">
-                        AI-powered completion of official court forms for all Canadian provinces and territories.
-                        Pre-filled based on your evidence and Charter rights analysis.
-                    </p>
-                    <div class="mt-auto">
-                        <small class="text-muted">
-                            <span class="maple-leaf">🍁</span>
-                            All Provinces & Territories
-                            <span class="maple-leaf">🍁</span>
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-route fa-4x text-warning"></i>
-                    </div>
-                    <h5 class="card-title">Legal Journey Guidance</h5>
-                    <p class="card-text">
-                        Step-by-step navigation through Canadian court procedures with Charter-based
-                        deadlines, reminders, and personalized constitutional recommendations.
-                    </p>
-                    <div class="mt-auto">
-                        <small class="text-muted">
-                            <i class="fas fa-gavel me-1"></i>
-                            Professional Legal Guidance
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="canada-pride py-5">
-    <div class="row">
-        <div class="col-md-10 mx-auto text-center">
-            <h3 class="mb-4 text-danger">
-                <span class="maple-leaf">🍁</span>
-                Specialized Support for Canadian Legal Matters
-                <span class="maple-leaf">🍁</span>
-            </h3>
-            <div class="charter-quote mb-4">
-                "Everyone is equal before and under the law and has the right to the equal protection and equal benefit of the law without discrimination"
-                <cite>— Section 15(1), Canadian Charter of Rights and Freedoms</cite>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="d-flex align-items-center justify-content-center mb-3">
-                        <i class="fas fa-child text-danger fa-2x me-3"></i>
-                        <div>
-                            <strong>Child Protection Cases</strong>
-                            <br><small class="text-muted">Charter Section 7 Rights</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="d-flex align-items-center justify-content-center mb-3">
-                        <i class="fas fa-home text-success fa-2x me-3"></i>
-                        <div>
-                            <strong>Family Court Matters</strong>
-                            <br><small class="text-muted">Security of Person</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="d-flex align-items-center justify-content-center mb-3">
-                        <i class="fas fa-users text-info fa-2x me-3"></i>
-                        <div>
-                            <strong>Parental Rights</strong>
-                            <br><small class="text-muted">Fundamental Justice</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="d-flex align-items-center justify-content-center mb-3">
-                        <i class="fas fa-gavel text-warning fa-2x me-3"></i>
-                        <div>
-                            <strong>Tribunal Proceedings</strong>
-                            <br><small class="text-muted">Equal Protection</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <section class="py-5">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h4 class="mb-0">
-                        <i class="fas fa-quote-left text-warning me-2"></i>
-                        Your Constitutional Foundation
-                        <i class="fas fa-quote-right text-warning ms-2"></i>
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="charter-quote">
-                        "Everyone has the right to life, liberty and security of the person and the right not to be deprived thereof except in accordance with the principles of fundamental justice."
-                        <cite>— Section 7, Canadian Charter of Rights and Freedoms</cite>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="text-danger">Leveling the Legal Playing Field</h2>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-center text-danger mb-4">The Challenge: The Deck is Stacked Against You</h5>
+                        <ul>
+                            <li><strong>The Cost of Justice:</strong> Lawyers are expensive. If you don't have money, you fear your voice won't be heard in court.</li>
+                            <li><strong>Lost in the Labyrinth of Law:</strong> Legal forms, deadlines, and complex jargon feel like an impossible maze designed to keep you out.</li>
+                            <li><strong>Feeling Powerless and Alone:</strong> You're facing a legal issue that threatens your home, your family, or your rights, and you don't know where to turn.</li>
+                            <li><strong>Drowning in Paperwork:</strong> The sheer volume and complexity of legal forms are overwhelming, making it easy to make mistakes that could cost you everything.</li>
+                            <li><strong>Technology as a Barrier:</strong> You need help, but accessing it feels difficult or impossible with complicated online systems.</li>
+                        </ul>
                     </div>
-                    <div class="text-center mt-4">
-                        <p class="mb-3">
-                            <strong class="text-success">These rights are yours by birthright as a Canadian.</strong>
-                        </p>
-                        <p class="text-muted">
-                            Smart Dispute Canada exists to help you understand, assert, and defend these fundamental freedoms
-                            with the dignity and respect every Canadian deserves.
-                        </p>
-                        <div class="mt-4">
-                            <span class="maple-leaf" style="font-size: 2rem;">🍁</span>
-                            <span class="legal-symbol">⚖️</span>
-                            <span class="maple-leaf" style="font-size: 2rem;">🍁</span>
-                        </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-center text-success mb-4">The Smart Dispute Canada Solution: Your Champion in the Fight for Justice</h5>
+                        <ul>
+                            <li><strong>Justice is Not Just for the Rich:</strong> Smart Dispute Canada provides affordable, accessible legal guidance. <strong>Free for the first 1000 Canadians!</strong> Because your rights shouldn't depend on your bank account.</li>
+                            <li><strong>Your Plain-English Legal Guide:</strong> We cut through the confusion. Our AI assistant speaks your language, guiding you step-by-step through the legal process.</li>
+                            <li><strong>Empowering You to Fight Back:</strong> We give you the tools and knowledge to stand up for yourself. Our guided timelines and reminders ensure you never miss a crucial step.</li>
+                            <li><strong>Paperwork, Simplified:</strong> Our system autofills the correct forms for your case, taking the stress out of legal documentation. Focus on your fight, not the forms.</li>
+                            <li><strong>Legal Help in Your Pocket:</strong> Our mobile-friendly platform puts the power of legal support in your hands, accessible whenever and wherever you need it.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-{% endif %}
+
+
+<section id="how-it-works" class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="text-danger">Your Path to Justice: How Smart Dispute Canada Works</h2>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-user-plus fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Step 1: Get Started in Minutes</h5>
+                        <p class="card-text">Land on our site, sign up quickly and easily on your mobile or desktop.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-comments fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Step 2: Tell Us Your Story</h5>
+                        <p class="card-text">Chat with our AI assistant about your legal issue, location, and any deadlines.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-bar fa-4x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Step 3: Get Your Case Profile & Merit Score</h5>
+                        <p class="card-text">We'll analyze your situation and provide a case profile, identify the legal issue, suggest documents, match you with the right court or tribunal, and give you an initial merit score.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-cloud-upload-alt fa-4x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Step 4: Upload Your Evidence</h5>
+                        <p class="card-text">Easily upload photos, documents, and other proof. Our AI analyzes your evidence, tagging it and updating your merit score.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-file-alt fa-4x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Step 5: Generate Your Legal Documents</h5>
+                        <p class="card-text">We'll autofill the correct legal forms based on your case details and evidence. Review and edit before downloading.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-gavel fa-4x text-secondary"></i>
+                        </div>
+                        <h5 class="card-title">Step 6: File with Confidence</h5>
+                        <p class="card-text">Get clear, step-by-step instructions on where and how to file your documents, who to serve, and what to expect.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-calendar-alt fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Step 7: Stay on Track</h5>
+                        <p class="card-text">Follow your personalized timeline and receive reminders so you never miss a deadline.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-reply fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Step 8: Get Ongoing Support (Optional)</h5>
+                        <p class="card-text">Upload responses from the other side and our AI can help you draft rebuttals and update your merit score.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-star fa-4x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Step 9: Share Your Success</h5>
+                        <p class="card-text">Tell us how Smart Dispute Canada helped you!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="text-danger">Powerful Features Built for <em>Your</em> Fight</h2>
+                 <p class="lead">
+                    The legal system can feel like a fortress, designed to protect the privileged. But at Smart Dispute Canada, we're building a bridge to justice. Our platform is packed with professional-grade tools, designed not for lawyers, but for you – the tenant, the parent, the newcomer, the individual fighting for their rights. We've leveled the playing field with features that empower you to take control of your legal journey.
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-comments fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Your AI Legal Guide</h5>
+                        <p class="card-text">Forget confusing legal jargon. Our plain-language AI assistant translates complex legal concepts into simple, actionable steps you can understand. It's like having a legal expert in your corner, anytime, anywhere.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-bar fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Evidence, Analyzed</h5>
+                        <p class="card-text">Don't guess what evidence matters. Upload your documents, photos, and messages, and our AI will analyze them, showing you what strengthens your case and where you might need more proof. See your case strength with a clear merit score.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-file-alt fa-4x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Effortless Form Generation</h5>
+                        <p class="card-text">Legal forms are intimidating. We take the pain out of paperwork by automatically filling the correct forms for your specific case, based on the information and evidence you provide. Review, edit, and download – it's that simple.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-calendar-alt fa-4x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Never Miss a Deadline</h5>
+                        <p class="card-text">Stay organized and on track with your personalized legal timeline. We provide clear next steps and send you reminders so you can focus on your case, not the calendar.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-map-marker-alt fa-4x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Local Justice, Simplified</h5>
+                        <p class="card-text">We match you with the correct court or tribunal based on your location, making the filing process less confusing.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-mobile-alt fa-4x text-secondary"></i>
+                        </div>
+                        <h5 class="card-title">Pocket-Sized Power</h5>
+                        <p class="card-text">Access all features and manage your case directly from your smartphone, tablet, or computer. Legal support that fits seamlessly into your life.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-dollar-sign fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Justice You Can Afford</h5>
+                        <p class="card-text">We believe everyone deserves access to justice. Our accessible pricing options, including a free tier for the first 1000 Canadians, ensure that cost is never a barrier to fighting for your rights.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-lock fa-4x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Secure & Private</h5>
+                        <p class="card-text">Your sensitive information is protected with secure file uploads and storage. Your fight is your business, and we keep it that way.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-reply fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Fight Back with Confidence</h5>
+                        <p class="card-text">If you receive a response from the other side, our AI can help you understand it and draft a strong rebuttal, giving you the confidence to stand your ground.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="text-danger">Real People, Real Results</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-quote-left fa-2x text-warning"></i>
+                        </div>
+                        <p class="lead text-center">
+                            "Regardless of income and status, this app is built for the people, by the people. It's the change Canada needs, using only the law to ensure everyone gets a fair shot in the courtroom."
+                        </p>
+                        <p class="text-muted text-center">- [Your Name/Title]</p>
+                         <div class="text-center mt-4">
+                            <i class="fas fa-quote-right fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                 <h4 class="mb-4">What our users are saying:</h4>
+            </div>
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center">
+                        <p class="card-text">[Placeholder for User Testimonial 1]</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center">
+                        <p class="card-text">[Placeholder for User Testimonial 2]</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center">
+                        <p class="card-text">[Placeholder for User Testimonial 3]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h2 class="text-danger mb-4">Ready to Fight for Your Rights?</h2>
+                <p class="lead mb-4">
+                    Don't let the system win. Access the legal help you need today.
+                </p>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg hover-lift">
+                    <i class="fas fa-sign-in-alt me-2"></i>Get Started Now - FREE for the First 1000 Canadians!
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h2 class="text-danger text-center mb-4">Our Story: Built from the Trenches, For Your Fight</h2>
+                <p>
+                    I didn’t build this app because I’m a developer or a lawyer. I built it because I had to.
+                </p>
+                <p>
+                    I’ve lived through what too many Canadians are still living through right now:
+                    <ul>
+                        <li>Mold, infestations, and unsafe housing with no real help.</li>
+                        <li>Landlords who ignore your basic rights because they think you won’t fight back.</li>
+                        <li>Eviction threats while trying to raise a family on low income or ODSP.</li>
+                        <li>Children with disabilities being denied proper accommodations.</li>
+                        <li>Hours spent trying to understand legal forms written in language meant to confuse.</li>
+                        <li>Doors slammed shut because you don’t have a lawyer or a few hundred dollars.</li>
+                    </ul>
+                </p>
+                <p>
+                    I’ve filed T2 and T6 applications, navigated the Landlord and Tenant Board system on my own, and stood up to housing providers who expected me to stay silent. I’ve written my own submissions, organized my own evidence, and stayed up nights building rebuttals — not just for me, but for others who had no one else.
+                </p>
+                <p>
+                    I learned to read legal rules, tear apart false claims, and turn pain into action. But I never forgot how it felt to be alone in that fight.
+                </p>
+                <p>
+                    That’s why I created Smart Dispute Canada — so no one has to go through that fight alone again.
+                </p>
+                <p>
+                    This app isn’t about theory. It’s built from the trenches. It’s built for single moms, tenants, newcomers, people with disabilities, and anyone who’s ever been told “you have no chance.”
+                </p>
+                <p>
+                    Smart Dispute Canada gives people real tools to fight back — in plain language, with real-time support, guided timelines, and legal documents you can actually understand and use.
+                </p>
+                <p>
+                    Because justice shouldn’t depend on your income.<br>
+                    Because the system shouldn’t be a maze.<br>
+                    Because we all deserve a fair shot.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

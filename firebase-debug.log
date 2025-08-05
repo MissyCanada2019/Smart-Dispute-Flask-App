@@ -74,3 +74,17 @@ You're about to initialize a Firebase project in this directory:
 [debug] [2025-08-05T03:41:03.094Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/adultconnections [none]
 [debug] [2025-08-05T03:41:03.355Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/adultconnections 200
 [debug] [2025-08-05T03:41:03.355Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/adultconnections {"projectId":"adultconnections","projectNumber":"472416322784","displayName":"AdultConnections","name":"projects/adultconnections","resources":{"hostingSite":"adultconnections"},"state":"ACTIVE","etag":"1_f652aeaf-6ef6-4d92-9170-0bc93eb62b57"}
+[debug] [2025-08-05T13:08:04.618Z] ----------------------------------------------------------------------
+[debug] [2025-08-05T13:08:04.620Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/fsdlxfaxdgx27856x49qycgdsyx5jxd3-firebase-tools-14.11.2/lib/node_modules/firebase-tools/lib/bin/firebase.js login
+[debug] [2025-08-05T13:08:04.620Z] CLI Version:   14.11.2
+[debug] [2025-08-05T13:08:04.620Z] Platform:      linux
+[debug] [2025-08-05T13:08:04.621Z] Node Version:  v20.19.1
+[debug] [2025-08-05T13:08:04.621Z] Time:          Tue Aug 05 2025 13:08:04 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-08-05T13:08:04.621Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-05T13:08:04.623Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[info] i  The Firebase CLI’s MCP server feature can optionally make use of Gemini in Firebase. Learn more about Gemini in Firebase and how it uses your data: https://firebase.google.com/docs/gemini-in-firebase#how-gemini-in-firebase-uses-your-data 
+[info] 
+[info] i  Firebase optionally collects CLI and Emulator Suite usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you. 
+[debug] [2025-08-05T13:08:04.781Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-08-05T13:08:04.781Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
