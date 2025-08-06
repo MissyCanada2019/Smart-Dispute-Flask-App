@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_login import LoginManager
 import os
 import logging
@@ -80,21 +80,10 @@ def create_app():
     app.register_blueprint(notification_bp)
     app.register_blueprint(payment_bp)
 
-    # Serve Next.js frontend for all non-API routes
-    from flask import send_from_directory, request
-    @app.route('/', defaults={'path': ''})
-    @app.route('/<path:path>')
-    def serve_frontend(path):
-        # If the path starts with API routes, return 404 to let blueprint routes handle it
-        if path.startswith(('auth/', 'admin/', 'cases/', 'forms/', 'journey/', 'dashboard/', 'files/', 'evidence/', 'tracking/', 'notifications/', 'payment/', 'health')):
-            # This will let the blueprint routes handle the request
-            return "Route not found", 404
-        
-        # For all other routes, serve the Next.js frontend
-        if path != "" and os.path.exists(os.path.join('static/frontend', path)):
-            return send_from_directory('static/frontend', path)
-        else:
-            return send_from_directory('static/frontend', 'index.html')
+    # Serve the main index page
+    @app.route('/')
+    def index():
+        return render_template('index.html')
     
     # Register error handlers
     register_error_handlers(app)
