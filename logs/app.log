@@ -10,3 +10,5 @@
 2025-08-05 11:52:18,069 - main - INFO - Starting web server on port 8080
 2025-08-05 11:52:56,739 - main - ERROR - Health check FAILED in 4.35ms. Errors: {'database': {'status': 'error', 'message': 'Database timeout: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)'}}
 2025-08-05 11:52:56,739 - main - ERROR - Health check FAILED in 4.35ms. Errors: {'database': {'status': 'error', 'message': 'Database timeout: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)'}}
+2025-08-06 00:07:09,343 - main - INFO - Using database: postgresql://user:***@localhost:5432/mydb
+2025-08-06 00:08:45,446 - main - INFO - Using database: sqlite:///app.db

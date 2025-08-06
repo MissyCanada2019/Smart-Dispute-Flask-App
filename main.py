@@ -16,28 +16,9 @@ def create_app():
     # Use environment variable for secret key, with fallback
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     
-    # Production-grade database configuration
-    database_url = os.environ.get('DATABASE_URL', '')
-    
-    # Fail fast in production if URL is missing
-    if not database_url:
-        if os.environ.get('FLASK_ENV') == 'production':
-            raise ValueError("CRITICAL: DATABASE_URL is required in production")
-        app.logger.warning("Using SQLite fallback for development")
-        database_url = 'sqlite:///app.db'
-    
-    # Validate URL format
-    try:
-        from sqlalchemy.engine import make_url
-        parsed_url = make_url(database_url)
-        app.logger.info(f"Using database: {parsed_url}")
-    except Exception as e:
-        error_msg = f"Invalid database URL: {str(e)}"
-        if os.environ.get('FLASK_ENV') == 'production':
-            raise ValueError(f"PRODUCTION ERROR: {error_msg}")
-        app.logger.error(error_msg)
-        app.logger.warning("Using SQLite fallback")
-        database_url = 'sqlite:///app.db'
+    # Use SQLite for development/testing
+    database_url = 'sqlite:///app.db'
+    app.logger.info(f"Using database: {database_url}")
     
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     
