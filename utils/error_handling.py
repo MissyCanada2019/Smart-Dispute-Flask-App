@@ -230,7 +230,7 @@ class HealthCheck:
                 # Set timeout for database operations
                 try:
                     # Try a simple query with timeout
-                    result = db.session.execute(text('SELECT COUNT(*) FROM user'), execution_options={"timeout": 5}) \
+                    result = db.session.execute(text('SELECT 1'), execution_options={"timeout": 5}) \
                                         .scalar()
                     user_count = result or 0
                     
@@ -238,7 +238,7 @@ class HealthCheck:
                     pool = db.engine.pool
                     pool_status = f"Connections: {pool.status()}, Size: {pool.size()}"
                     
-                    return True, f"Database OK ({user_count} users, {pool_status})"
+                    return True, f"Database OK (Connection test: {user_count}, {pool_status})"
                 except (OperationalError, TimeoutError) as e:
                     return False, f"Database timeout: {str(e)}"
         except Exception as e:

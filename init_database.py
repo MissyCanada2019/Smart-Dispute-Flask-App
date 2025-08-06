@@ -5,9 +5,9 @@ Run this to fix the client-side error after deployment
 """
 
 from main import create_app
-from models import db
+from utils.db import db
 from models.user import User
-from models.court_form import FormTemplate
+from models.court_form import CourtForm
 from utils.form_templates import FormTemplateManager
 import os
 

@@ -16,8 +16,8 @@ def create_app():
     # Use environment variable for secret key, with fallback
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     
-    # Use SQLite for development/testing
-    database_url = 'sqlite:///app.db'
+    # Use DATABASE_URL from environment if available, otherwise use SQLite for development/testing
+    database_url = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
     app.logger.info(f"Using database: {database_url}")
     
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
@@ -53,7 +53,11 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         from models.user import User
-        return db.session.query(User).get(int(user_id))
+        try:
+            return db.session.query(User).get(int(user_id))
+        except Exception as e:
+            app.logger.error(f"Error loading user {user_id}: {str(e)}")
+            return None
 
     # Register blueprints
     from routes.auth_routes import auth_bp

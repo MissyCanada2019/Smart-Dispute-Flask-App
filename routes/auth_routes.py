@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from utils.db import db
 from models.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,18 +9,23 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        remember = True if request.form.get('remember') else False
-        
-        user = db.session.query(User).filter_by(email=email).first()
+        try:
+            email = request.form.get('email')
+            password = request.form.get('password')
+            remember = True if request.form.get('remember') else False
+            
+            user = db.session.query(User).filter_by(email=email).first()
 
-        if not user or not user.check_password(password):
-            flash('Please check your login details and try again.')
+            if not user or not user.check_password(password):
+                flash('Please check your login details and try again.')
+                return redirect(url_for('auth.login'))
+            
+            login_user(user, remember=remember)
+            return redirect(url_for('dashboard.main'))
+        except Exception as e:
+            current_app.logger.error(f"Login error: {str(e)}")
+            flash('An error occurred during login. Please try again.')
             return redirect(url_for('auth.login'))
-        
-        login_user(user, remember=remember)
-        return redirect(url_for('dashboard.main'))
     
     return render_template('auth/login.html')
 

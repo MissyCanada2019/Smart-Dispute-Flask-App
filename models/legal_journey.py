@@ -123,7 +123,7 @@ class JourneyStep(db.Model):
     started_at = db.Column(db.DateTime)
     completed_at = db.Column(db.DateTime)
     
-    form_template_id = db.Column(db.Integer, db.ForeignKey('form_templates.id'))
+    form_template_id = db.Column(db.Integer, db.ForeignKey('court_forms.id'))
     evidence_requirements = db.Column(db.JSON)
     external_links = db.Column(db.JSON)
     

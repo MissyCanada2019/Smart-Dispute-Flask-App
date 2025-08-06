@@ -4,7 +4,7 @@ app = create_app()
 with app.app_context():
     from utils.db import db
     # Import all models to ensure they're registered with SQLAlchemy
-    from models.court_form import CourtForm
+    from models.court_form import CourtForm, FormField, FormSubmission
     from models.legal_journey import LegalJourney, JourneyStep
     from models.case import Case
     from models.evidence import Evidence
