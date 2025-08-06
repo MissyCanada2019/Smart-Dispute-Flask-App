@@ -114,11 +114,12 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     port = int(os.environ.get('PORT', 5000))
-    # Explicitly bind to port 8080 with fallback to 5000
+    # Bind to all available interfaces (IPv4 and IPv6)
     try:
         from werkzeug.serving import run_simple
-        run_simple('0.0.0.0', 8080, app, use_reloader=False)
+        # Try to bind to all interfaces (supports both IPv4 and IPv6)
+        run_simple('::', 8080, app, use_reloader=False, use_debugger=False)
     except OSError as e:
         print(f"Error binding to port 8080: {str(e)}")
         print("Trying alternative port 5000")
-        run_simple('0.0.0.0', 5000, app, use_reloader=False)
+        run_simple('::', 5000, app, use_reloader=False, use_debugger=False)

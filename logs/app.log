@@ -12,3 +12,11 @@
 2025-08-05 11:52:56,739 - main - ERROR - Health check FAILED in 4.35ms. Errors: {'database': {'status': 'error', 'message': 'Database timeout: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)'}}
 2025-08-06 00:07:09,343 - main - INFO - Using database: postgresql://user:***@localhost:5432/mydb
 2025-08-06 00:08:45,446 - main - INFO - Using database: sqlite:///app.db
+2025-08-06 02:31:01,106 - main - INFO - Using database: sqlite:///app.db
+2025-08-06 02:31:03,180 - ai_processing - ERROR - Database health check failed: db
+2025-08-06 02:31:03,529 - main - ERROR - Health check FAILED in 349.03ms. Errors: {'database': {'status': 'error', 'message': 'Database error: db'}}
+2025-08-06 02:31:03,529 - main - ERROR - Health check FAILED in 349.03ms. Errors: {'database': {'status': 'error', 'message': 'Database error: db'}}
+2025-08-06 02:32:45,989 - main - INFO - Using database: sqlite:///app.db
+2025-08-06 02:32:48,068 - ai_processing - ERROR - Database health check failed: db
+2025-08-06 02:32:48,404 - main - ERROR - Health check FAILED in 335.74ms. Errors: {'database': {'status': 'error', 'message': 'Database error: db'}}
+2025-08-06 02:32:48,404 - main - ERROR - Health check FAILED in 335.74ms. Errors: {'database': {'status': 'error', 'message': 'Database error: db'}}
