@@ -33,3 +33,7 @@
 2025-08-07 04:06:15,515 - main - INFO - Using database: sqlite:///app.db
 2025-08-07 04:14:23,646 - main - INFO - Using database: sqlite:///app.db
 2025-08-07 04:16:36,319 - main - INFO - Using database: sqlite:///app.db
+2025-08-07 10:41:39,179 - main - INFO - Using database: postgresql://appuser:password@localhost:5432/mydb
+2025-08-07 11:24:00,326 - main - INFO - Using database: postgresql://appuser:password@localhost:5432/mydb
+2025-08-07 11:24:48,762 - main - INFO - Using database: postgresql://appuser:password@localhost:5432/mydb
+2025-08-07 11:25:04,373 - main - INFO - Using database: postgresql://appuser:password@localhost:5432/mydb

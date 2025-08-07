@@ -1,0 +1,49 @@
+2025-08-07 10:36:12.601 UTC [646] LOG:  starting PostgreSQL 15.10 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.0, 64-bit
+2025-08-07 10:36:12.601 UTC [646] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-08-07 10:36:12.604 UTC [646] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2025-08-07 10:36:12.605 UTC [646] LOG:  database system is shut down
+2025-08-07 10:37:36.659 UTC [936] LOG:  starting PostgreSQL 15.10 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.0, 64-bit
+2025-08-07 10:37:36.659 UTC [936] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-08-07 10:37:36.662 UTC [936] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2025-08-07 10:37:36.668 UTC [939] LOG:  database system was shut down at 2025-08-07 10:37:36 UTC
+2025-08-07 10:37:36.673 UTC [936] LOG:  database system is ready to accept connections
+2025-08-07 10:37:39.787 UTC [960] LOG:  invalid length of startup packet
+2025-08-07 10:37:39.789 UTC [961] LOG:  invalid length of startup packet
+2025-08-07 10:37:41.827 UTC [970] ERROR:  syntax error at or near "user" at character 13
+2025-08-07 10:37:41.827 UTC [970] STATEMENT:  CREATE USER user WITH PASSWORD 'password';
+2025-08-07 10:40:53.788 UTC [936] LOG:  received fast shutdown request
+2025-08-07 10:40:53.792 UTC [936] LOG:  aborting any active transactions
+2025-08-07 10:40:53.793 UTC [936] LOG:  background worker "logical replication launcher" (PID 942) exited with exit code 1
+2025-08-07 10:40:53.793 UTC [937] LOG:  shutting down
+2025-08-07 10:40:53.796 UTC [937] LOG:  checkpoint starting: shutdown immediate
+2025-08-07 10:40:53.911 UTC [937] LOG:  checkpoint complete: wrote 990 buffers (6.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.094 s, sync=0.012 s, total=0.118 s; sync files=310, longest=0.003 s, average=0.001 s; distance=4701 kB, estimate=4701 kB
+2025-08-07 10:40:53.916 UTC [936] LOG:  database system is shut down
+2025-08-07 10:40:56.721 UTC [1610] LOG:  starting PostgreSQL 15.10 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.0, 64-bit
+2025-08-07 10:40:56.721 UTC [1610] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-08-07 10:40:56.724 UTC [1610] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2025-08-07 10:40:56.730 UTC [1613] LOG:  database system was shut down at 2025-08-07 10:40:56 UTC
+2025-08-07 10:40:56.735 UTC [1610] LOG:  database system is ready to accept connections
+2025-08-07 10:41:40.439 UTC [1824] ERROR:  syntax error at or near "AUTOINCREMENT" at character 58
+2025-08-07 10:41:40.439 UTC [1824] STATEMENT:  
+	    CREATE TABLE users (
+	        id INTEGER PRIMARY KEY AUTOINCREMENT,
+	        username TEXT UNIQUE NOT NULL,
+	        email TEXT UNIQUE NOT NULL,
+	        password_hash TEXT NOT NULL,
+	        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	    )
+	    
+2025-08-07 10:45:56.806 UTC [1611] LOG:  checkpoint starting: time
+2025-08-07 10:47:36.371 UTC [1611] LOG:  checkpoint complete: wrote 999 buffers (6.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=99.545 s, sync=0.010 s, total=99.566 s; sync files=317, longest=0.003 s, average=0.001 s; distance=4705 kB, estimate=4705 kB
+2025-08-07 11:24:00.420 UTC [9607] ERROR:  permission denied for schema public at character 19
+2025-08-07 11:24:00.420 UTC [9607] STATEMENT:  
+	    CREATE TABLE users (
+	        id SERIAL PRIMARY KEY,
+	        username TEXT UNIQUE NOT NULL,
+	        email TEXT UNIQUE NOT NULL,
+	        password_hash TEXT NOT NULL,
+	        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	    )
+	    
+2025-08-07 11:25:56.811 UTC [1611] LOG:  checkpoint starting: time
+2025-08-07 11:26:04.856 UTC [1611] LOG:  checkpoint complete: wrote 81 buffers (0.5%); 0 WAL file(s) added, 0 removed, 0 recycled; write=8.030 s, sync=0.006 s, total=8.046 s; sync files=73, longest=0.003 s, average=0.001 s; distance=308 kB, estimate=4265 kB
