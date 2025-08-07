@@ -20,8 +20,6 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
 fi
 
 echo "🚀 Deploying to Railway..."
-railway login
-railway link
 railway variables set -f railway.env
 railway up
 
