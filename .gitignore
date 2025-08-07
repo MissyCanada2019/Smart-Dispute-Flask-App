@@ -8,4 +8,5 @@ uploads/
 
 
 # Railway deployment secrets
-railway.envrailway.env.bak
+railway.env
+railway.env.bak
