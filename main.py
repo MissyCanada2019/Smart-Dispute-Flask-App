@@ -11,7 +11,9 @@ def create_app():
     # Load environment variables from .env file
     load_dotenv('.env')
 
-    app = Flask(__name__)
+    # Explicitly set the template folder to ensure it's found correctly
+    template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+    app = Flask(__name__, template_folder=template_dir)
     
     # Use environment variable for secret key, with fallback
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
