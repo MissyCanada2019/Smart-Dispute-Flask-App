@@ -59,6 +59,11 @@ def create_app():
             app.logger.error(f"Error loading user {user_id}: {str(e)}")
             return None
 
+    # Initialize CSRF protection
+    from flask_wtf.csrf import CSRFProtect
+    csrf = CSRFProtect()
+    csrf.init_app(app)
+
     # Register blueprints
     from routes.auth_routes import auth_bp
     from routes.admin_routes import admin_bp

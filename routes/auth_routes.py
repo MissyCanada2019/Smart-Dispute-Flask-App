@@ -14,17 +14,39 @@ def login():
             password = request.form.get('password')
             remember = True if request.form.get('remember') else False
             
+            # Validate input
+            if not email or not password:
+                flash('Email and password are required')
+                return redirect(url_for('auth.login'))
+                
+            if '@' not in email or '.' not in email:
+                flash('Please enter a valid email address')
+                return redirect(url_for('auth.login'))
+                
+            if len(password) < 8:
+                flash('Password must be at least 8 characters')
+                return redirect(url_for('auth.login'))
+            
+            current_app.logger.debug(f"Attempting login for: {email}")
+            
             user = db.session.query(User).filter_by(email=email).first()
 
-            if not user or not user.check_password(password):
+            if not user:
+                current_app.logger.warning(f"User not found: {email}")
+                flash('Please check your login details and try again.')
+                return redirect(url_for('auth.login'))
+                
+            if not user.check_password(password):
+                current_app.logger.warning(f"Invalid password for: {email}")
                 flash('Please check your login details and try again.')
                 return redirect(url_for('auth.login'))
             
             login_user(user, remember=remember)
+            current_app.logger.info(f"User logged in: {email}")
             return redirect(url_for('dashboard.main'))
         except Exception as e:
-            current_app.logger.error(f"Login error: {str(e)}")
-            flash('An error occurred during login. Please try again.')
+            current_app.logger.exception(f"Login error for {email}: {str(e)}")  # Log full traceback
+            flash(f'An error occurred during login: {str(e)}')
             return redirect(url_for('auth.login'))
     
     return render_template('auth/login.html')

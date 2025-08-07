@@ -197,6 +197,13 @@ def register_error_handlers(app):
         error_handler.log_error(error, context={'status_code': 500})
         if request.is_json:
             return jsonify({'success': False, 'error': 'Internal server error'}), 500
+        # In development, show detailed error
+        if current_app.config.get('ENV') == 'development':
+            return f"""
+            <h1>Internal Server Error</h1>
+            <h2>{error}</h2>
+            <pre>{traceback.format_exc()}</pre>
+            """, 500
         return render_template('errors/500.html'), 500
     
     @app.errorhandler(Exception)

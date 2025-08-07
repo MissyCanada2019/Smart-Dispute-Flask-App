@@ -20,3 +20,13 @@
 2025-08-06 02:32:48,068 - ai_processing - ERROR - Database health check failed: db
 2025-08-06 02:32:48,404 - main - ERROR - Health check FAILED in 335.74ms. Errors: {'database': {'status': 'error', 'message': 'Database error: db'}}
 2025-08-06 02:32:48,404 - main - ERROR - Health check FAILED in 335.74ms. Errors: {'database': {'status': 'error', 'message': 'Database error: db'}}
+2025-08-06 03:29:36,208 - main - INFO - Using database: postgresql://user:password@localhost:5432/mydb
+2025-08-06 03:30:58,876 - main - ERROR - Health check FAILED in 486.9ms. Errors: {'database': {'status': 'error', 'message': 'Database timeout: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)'}}
+2025-08-06 03:30:58,876 - main - ERROR - Health check FAILED in 486.9ms. Errors: {'database': {'status': 'error', 'message': 'Database timeout: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)'}}
+2025-08-06 03:33:01,840 - main - INFO - Using database: sqlite:///app.db
+2025-08-06 03:34:17,283 - main - INFO - Using database: sqlite:///app.db
+2025-08-06 03:34:38,195 - main - ERROR - Health check FAILED in 351.93ms. Errors: {'database': {'status': 'error', 'message': 'Database timeout: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)'}}
+2025-08-06 03:34:38,195 - main - ERROR - Health check FAILED in 351.93ms. Errors: {'database': {'status': 'error', 'message': 'Database timeout: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)'}}
+2025-08-06 03:35:54,931 - main - INFO - Using database: sqlite:///app.db
+2025-08-06 03:37:08,330 - main - INFO - Health check passed in 438.05ms
+2025-08-06 03:37:08,330 - main - INFO - Health check passed in 438.05ms

@@ -43,10 +43,12 @@ class SecurityConfig:
     DOWNLOAD_TOKEN_EXPIRY = timedelta(hours=1)  # 1 hour default
     SHARE_TOKEN_EXPIRY = timedelta(days=7)      # 7 days for sharing
     
-    # Justice-bot.com integration
-    JUSTICE_BOT_DOMAIN = os.getenv("APP_DOMAIN", "justice-bot.com")
-    AUTH_ENDPOINT = f"https://auth.{JUSTICE_BOT_DOMAIN}/oauth2"
-    API_ENDPOINT = f"https://api.{JUSTICE_BOT_DOMAIN}/v1"
+    # Domain configuration
+    APP_DOMAINS = os.getenv("APP_DOMAINS", "justice-bot.com").split(',')
+    PRIMARY_DOMAIN = APP_DOMAINS[0].strip()
+    AUTH_ENDPOINT = f"https://auth.{PRIMARY_DOMAIN}/oauth2"
+    API_ENDPOINT = f"https://api.{PRIMARY_DOMAIN}/v1"
+    MULTI_DOMAIN_MODE = len(APP_DOMAINS) > 1
     
     # Alert destinations
     SECURITY_ALERT_EMAIL = os.getenv('SECURITY_ALERT_EMAIL')
