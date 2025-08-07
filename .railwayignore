@@ -1,0 +1,14 @@
+# Ignore development files
+.venv/
+.env*
+*.pyc
+__pycache__/
+instance/
+logs/
+
+# Railway deployment secrets
+railway.env
+
+# Explicitly include templates directory
+!templates/
+!templates/**
