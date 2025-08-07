@@ -9,6 +9,8 @@ logs/
 # Railway deployment secrets
 railway.env
 
-# Explicitly include templates directory
+# Explicitly include templates and static directories
 !templates/
 !templates/**
+!static/
+!static/**
