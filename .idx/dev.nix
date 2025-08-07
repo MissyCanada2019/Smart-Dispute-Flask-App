@@ -8,6 +8,15 @@
   packages = [
     pkgs.python311
     pkgs.python311Packages.pip
+    pkgs.python311Packages.flask
+    pkgs.python311Packages.flask-login
+    pkgs.python311Packages.flask-sqlalchemy
+    pkgs.python311Packages.sqlalchemy
+    pkgs.python311Packages.cryptography
+    pkgs.python311Packages.flask-wtf
+    pkgs.python311Packages.gunicorn
+    pkgs.python311Packages.python-dotenv
+    pkgs.python311Packages.reportlab
     pkgs.nodejs_20
     pkgs.postgresql
   ];
