@@ -13,7 +13,9 @@
 
   # Sets environment variables in the workspace
   env = {
-    PATH = "${pkgs.python311}/bin:${pkgs.python311Packages.pip}/bin:$PATH";
+    # Extend PATH to include Python and pip without overriding system PATH
+    PYTHON_PATH = "${pkgs.python311}/bin";
+    PIP_PATH = "${pkgs.python311Packages.pip}/bin";
   };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
@@ -43,7 +45,6 @@
         pip-install = "pip install -r ../requirements.txt";
       };
       onStart = {
-        activate-python = "source .venv/bin/activate";
         start-app = "python ../main.py";
       };
     };
