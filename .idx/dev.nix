@@ -38,10 +38,10 @@
       enable = true;
       previews = {
         web = {
-          command = ["python" "../main.py"];
+          command = ["python" "./main.py"];
           manager = "web";
           env = {
-            FLASK_APP = "../main.py";
+            FLASK_APP = "./main.py";
             FLASK_ENV = "development";
             PORT = "$PORT";
           };
@@ -52,10 +52,10 @@
     # Workspace lifecycle hooks
     workspace = {
       onCreate = {
-        pip-install = "pip install -r ../requirements.txt";
+        pip-install = "pip install -r ./requirements.txt";
       };
       onStart = {
-        start-app = "python ../main.py";
+        start-app = "python ./main.py";
       };
     };
   };

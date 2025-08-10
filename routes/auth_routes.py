@@ -43,7 +43,13 @@ def login():
             
             login_user(user, remember=remember)
             current_app.logger.info(f"User logged in: {email}")
-            return redirect(url_for('dashboard.main'))
+            
+            # Check if user is authenticated before redirecting
+            if current_user.is_authenticated:
+                return redirect(url_for('dashboard.main'))
+            else:
+                flash('Authentication failed. Please try again.')
+                return redirect(url_for('auth.login'))
         except Exception as e:
             current_app.logger.exception(f"Login error for {email}: {str(e)}")  # Log full traceback
             flash(f'An error occurred during login: {str(e)}')

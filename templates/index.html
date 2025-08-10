@@ -7,16 +7,24 @@
     <div class="col-lg-12 mx-auto text-center">
         <div class="hero-section py-5">
             <div class="mb-4">
-                <span class="maple-leaf" style="font-size: 3rem;">🍁</span>
+                <img src="{{ url_for('static', filename='images/maple-leaf.png') }}" alt="Canadian Maple Leaf" style="height: 80px;">
                 <i class="fas fa-balance-scale fa-3x text-danger mx-3"></i>
-                <span class="maple-leaf" style="font-size: 3rem;">🍁</span>
+                <img src="{{ url_for('static', filename='images/maple-leaf.png') }}" alt="Canadian Maple Leaf" style="height: 80px;">
             </div>
             <h1 class="display-4 fw-bold mb-4">
                 <span class="canada-flag-gradient">Get Legal Help, Fast. No Lawyer Needed. Free for First 1000 Canadians.</span>
             </h1>
             <p class="lead mb-4">
-                Smart Dispute Canada empowers you to fight for your rights in housing, family, and human rights cases. Plain-English guidance and AI-powered tools for legal underdogs.
+                Smart Dispute Canada empowers you to fight for your rights under Canadian law in housing, family, and human rights cases. Plain-English guidance and AI-powered tools designed for Canadian legal underdogs.
             </p>
+            <div class="canadian-legal-frameworks mt-4">
+                <p class="fw-bold">Specializing in Canadian legal frameworks:</p>
+                <ul class="list-inline">
+                    <li class="list-inline-item">Canadian Human Rights Act</li>
+                    <li class="list-inline-item">Provincial Small Claims Courts</li>
+                    <li class="list-inline-item">Canadian Consumer Protection</li>
+                </ul>
+            </div>
              <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                     <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-md-2 hover-lift">
                         <i class="fas fa-sign-in-alt me-2"></i>Start Defending Your Rights
