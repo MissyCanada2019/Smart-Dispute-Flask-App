@@ -3,7 +3,7 @@
     "nixpacks": true
   },
   "deploy": {
-    "startCommand": "python main.py",
+    "startCommand": "python init_db_production.py && python main.py",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 30
   }
