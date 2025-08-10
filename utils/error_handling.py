@@ -10,6 +10,11 @@ from datetime import datetime
 from functools import wraps
 from flask import jsonify, render_template, request, current_app
 import os
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
 
 # Configure logging
 def setup_logging():
@@ -241,11 +246,20 @@ class HealthCheck:
                                         .scalar()
                     user_count = result or 0
                     
+                    # Get database statistics
+                    try:
+                        # Try to get table count statistics
+                        table_count_result = db.session.execute(text("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'")).scalar()
+                        table_info = f"Tables: {table_count_result}" if table_count_result else "Tables: Unknown"
+                    except:
+                        # Fallback for SQLite or if the above query fails
+                        table_info = "Tables: Count unavailable"
+                    
                     # Check connection pool status
                     pool = db.engine.pool
                     pool_status = f"Connections: {pool.status()}, Size: {pool.size()}"
                     
-                    return True, f"Database OK (Connection test: {user_count}, {pool_status})"
+                    return True, f"Database OK (Connection test: {user_count}, {table_info}, {pool_status})"
                 except (OperationalError, TimeoutError) as e:
                     return False, f"Database timeout: {str(e)}"
         except Exception as e:
@@ -312,6 +326,193 @@ class HealthCheck:
         except Exception as e:
             return False, f"Network diagnostics failed: {str(e)}"
     
+    @staticmethod
+    def check_memory_usage():
+        """Check system memory usage"""
+        if not PSUTIL_AVAILABLE:
+            return False, "psutil not available"
+        
+        try:
+            # Get memory information
+            memory = psutil.virtual_memory()
+            
+            # Calculate percentages
+            memory_percent = memory.percent
+            swap_percent = psutil.swap_memory().percent if hasattr(psutil, 'swap_memory') else 0
+            
+            # Format memory information
+            memory_info = (
+                f"Memory: {memory_percent:.1f}% used "
+                f"({memory.used // (1024*1024)}MB/{memory.total // (1024*1024)}MB), "
+                f"Available: {memory.available // (1024*1024)}MB"
+            )
+            
+            # Check if memory usage is within acceptable limits (less than 90%)
+            if memory_percent > 90:
+                return False, f"Memory usage critical: {memory_info}"
+            elif memory_percent > 75:
+                return True, f"Memory usage high: {memory_info}"
+            else:
+                return True, f"Memory usage normal: {memory_info}"
+        except Exception as e:
+            return False, f"Memory check failed: {str(e)}"
+    
+    @staticmethod
+    def check_cpu_usage():
+        """Check system CPU usage"""
+        if not PSUTIL_AVAILABLE:
+            return False, "psutil not available"
+        
+        try:
+            # Get CPU information
+            cpu_percent = psutil.cpu_percent(interval=1)
+            
+            # Format CPU information
+            cpu_info = f"CPU: {cpu_percent:.1f}%"
+            
+            # Check if CPU usage is within acceptable limits (less than 90%)
+            if cpu_percent > 90:
+                return False, f"CPU usage critical: {cpu_info}"
+            elif cpu_percent > 75:
+                return True, f"CPU usage high: {cpu_info}"
+            else:
+                return True, f"CPU usage normal: {cpu_info}"
+        except Exception as e:
+            return False, f"CPU check failed: {str(e)}"
+    
+    @staticmethod
+    def check_disk_usage():
+        """Check disk space usage"""
+        if not PSUTIL_AVAILABLE:
+            return False, "psutil not available"
+        
+        try:
+            # Get disk information for the root partition
+            disk = psutil.disk_usage('/')
+            
+            # Calculate percentages
+            disk_percent = (disk.used / disk.total) * 100
+            
+            # Format disk information
+            disk_info = (
+                f"Disk: {disk_percent:.1f}% used "
+                f"({disk.used // (1024*1024*1024)}GB/{disk.total // (1024*1024*1024)}GB), "
+                f"Free: {disk.free // (1024*1024*1024)}GB"
+            )
+            
+            # Check if disk usage is within acceptable limits (less than 90%)
+            if disk_percent > 90:
+                return False, f"Disk usage critical: {disk_info}"
+            elif disk_percent > 75:
+                return True, f"Disk usage high: {disk_info}"
+            else:
+                return True, f"Disk usage normal: {disk_info}"
+        except Exception as e:
+            return False, f"Disk check failed: {str(e)}"
+    
+    @staticmethod
+    def check_environment_variables():
+        """Check critical environment variables"""
+        try:
+            # List of critical environment variables that should be set
+            critical_vars = [
+                'SECRET_KEY',
+                'DATABASE_URL',
+                'FLASK_ENV'
+            ]
+            
+            # Check which variables are missing
+            missing_vars = [var for var in critical_vars if not os.environ.get(var)]
+            
+            if missing_vars:
+                return False, f"Missing critical environment variables: {', '.join(missing_vars)}"
+            else:
+                return True, f"All critical environment variables present ({len(critical_vars)} checked)"
+        except Exception as e:
+            return False, f"Environment variable check failed: {str(e)}"
+    
+    @staticmethod
+    def check_ssl_certificates():
+        """Check SSL certificate validity for main domain"""
+        try:
+            import ssl
+            import socket
+            
+            domain = "smartdisputecanada.me"
+            
+            # Create SSL context
+            context = ssl.create_default_context()
+            
+            # Connect to the domain and get certificate
+            with socket.create_connection((domain, 443), timeout=5) as sock:
+                with context.wrap_socket(sock, server_hostname=domain) as ssock:
+                    cert = ssock.getpeercert()
+                    
+            # Check certificate expiration
+            not_after = cert['notAfter']
+            # Parse the date string
+            import datetime
+            exp_date = datetime.datetime.strptime(not_after, "%b %d %H:%M:%S %Y %Z")
+            days_until_expiry = (exp_date - datetime.datetime.utcnow()).days
+            
+            if days_until_expiry < 0:
+                return False, f"SSL certificate for {domain} expired {abs(days_until_expiry)} days ago"
+            elif days_until_expiry < 14:
+                return False, f"SSL certificate for {domain} expires in {days_until_expiry} days"
+            else:
+                return True, f"SSL certificate for {domain} valid for {days_until_expiry} more days"
+        except Exception as e:
+            return False, f"SSL certificate check failed for {domain}: {str(e)}"
+    
+    @staticmethod
+    def check_cache_service():
+        """Check cache service connectivity (Redis/Memcached)"""
+        # Check if cache service is configured
+        cache_url = os.environ.get('REDIS_URL') or os.environ.get('MEMCACHED_URL')
+        
+        if not cache_url:
+            return True, "No cache service configured"
+        
+        try:
+            # Try to import redis client
+            import redis
+            
+            # Try to connect to Redis
+            r = redis.Redis.from_url(cache_url, socket_timeout=5)
+            r.ping()
+            return True, "Cache service connected successfully"
+        except ImportError:
+            return False, "Redis client not installed"
+        except Exception as e:
+            return False, f"Cache service connection failed: {str(e)}"
+    
+    @staticmethod
+    def check_email_service():
+        """Check email service connectivity"""
+        # Check if email service is configured
+        mail_server = os.environ.get('MAIL_SERVER')
+        mail_port = os.environ.get('MAIL_PORT')
+        mail_username = os.environ.get('MAIL_USERNAME')
+        mail_password = os.environ.get('MAIL_PASSWORD')
+        
+        if not all([mail_server, mail_port, mail_username, mail_password]):
+            return True, "Email service not fully configured"
+        
+        try:
+            # Try to import smtplib
+            import smtplib
+            
+            # Try to connect to the email server
+            server = smtplib.SMTP(mail_server, int(mail_port))
+            server.starttls()
+            server.login(mail_username, mail_password)
+            server.quit()
+            return True, "Email service connected successfully"
+        except ImportError:
+            return False, "smtplib not available"
+        except Exception as e:
+            return False, f"Email service connection failed: {str(e)}"
+    
     @classmethod
     def get_health_status(cls):
         """Get comprehensive health status"""
@@ -319,7 +520,14 @@ class HealthCheck:
             'database': cls.check_database(),
             'file_system': cls.check_file_system(),
             'ai_services': cls.check_ai_services(),
-            'network': cls.check_network()
+            'network': cls.check_network(),
+            'memory': cls.check_memory_usage(),
+            'cpu': cls.check_cpu_usage(),
+            'disk': cls.check_disk_usage(),
+            'environment': cls.check_environment_variables(),
+            'ssl': cls.check_ssl_certificates(),
+            'cache': cls.check_cache_service(),
+            'email': cls.check_email_service()
         }
         
         all_healthy = all(status for status, _ in checks.values())
