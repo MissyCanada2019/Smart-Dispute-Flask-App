@@ -1,6 +1,6 @@
 import os
 import requests
-from .error_handling import handle_exception
+import logging
 
 def get_ssl_certificate_packs():
     """Retrieve SSL certificate packs from Cloudflare"""
@@ -22,5 +22,5 @@ def get_ssl_certificate_packs():
         return response.json()
         
     except Exception as e:
-        handle_exception(e, "Cloudflare API Error")
+        logging.error(f"Cloudflare API Error: {str(e)}")
         return None

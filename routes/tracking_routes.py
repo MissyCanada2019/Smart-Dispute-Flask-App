@@ -180,6 +180,8 @@ def api_case_timeline(case_id):
     from models.evidence import Evidence
     evidence_list = Evidence.query.filter_by(case_id=case_id).order_by(Evidence.uploaded_at).all()
     for evidence in evidence_list:
+        # Check if AI fields exist before accessing them
+        relevance_score = getattr(evidence, 'ai_relevance_score', None)
         timeline_events.append({
             'type': 'evidence_uploaded',
             'title': 'Evidence Uploaded',
@@ -190,21 +192,24 @@ def api_case_timeline(case_id):
             'details': {
                 'evidence_id': evidence.id,
                 'filename': evidence.original_filename,
-                'relevance_score': evidence.ai_relevance_score
+                'relevance_score': relevance_score
             }
         })
         
-        if evidence.analyzed_at:
+        # Check if AI fields exist before accessing them
+        analyzed_at = getattr(evidence, 'analyzed_at', None)
+        if analyzed_at:
+            relevance_score = getattr(evidence, 'ai_relevance_score', None)
             timeline_events.append({
                 'type': 'evidence_analyzed',
                 'title': 'Evidence Analyzed',
                 'description': f'AI analysis completed for "{evidence.title}"',
-                'date': evidence.analyzed_at.isoformat(),
+                'date': analyzed_at.isoformat(),
                 'icon': 'fas fa-brain',
                 'color': 'purple',
                 'details': {
                     'evidence_id': evidence.id,
-                    'relevance_score': evidence.ai_relevance_score
+                    'relevance_score': relevance_score
                 }
             })
     

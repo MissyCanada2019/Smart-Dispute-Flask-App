@@ -30,6 +30,10 @@ class Evidence(db.Model):
     case_id = db.Column(db.Integer, db.ForeignKey('cases.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
+    # AI Analysis fields (optional, for future use)
+    ai_relevance_score = db.Column(db.Float, nullable=True)
+    analyzed_at = db.Column(db.DateTime, nullable=True)
+
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
