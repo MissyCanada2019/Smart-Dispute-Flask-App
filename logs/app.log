@@ -57,3 +57,16 @@
 2025-08-11 00:34:49,413 - werkzeug - WARNING -  * Debugger is active!
 2025-08-11 00:35:01,814 - ai_processing - ERROR - Database health check failed: 'NullPool' object has no attribute 'size'
 2025-08-11 00:35:03,791 - main - ERROR - Health check FAILED in 1991.99ms. Errors: {'database': {'status': 'error', 'message': "Database error: 'NullPool' object has no attribute 'size'"}, 'disk': {'status': 'error', 'message': 'Disk check failed: argument 1 (impossible<bad format char>)'}, 'ssl': {'status': 'error', 'message': 'SSL certificate check failed for smartdisputecanada.me: [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1035)'}}
+2025-08-11 13:53:00,976 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:02,419 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:03,737 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:05,273 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:07,155 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:09,812 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:14,076 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:21,522 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:53:35,321 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:54:01,855 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:54:54,087 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:55:55,165 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:56:56,139 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
