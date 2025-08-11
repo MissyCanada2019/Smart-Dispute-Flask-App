@@ -1,9 +1,11 @@
 # Deployment Guide - Enhanced Health Check Functionality
 
 ## Overview
+
 This guide provides step-by-step instructions for deploying the enhanced health check functionality for the Smart Dispute Canada Flask application.
 
 ## Prerequisites
+
 1. Access to the Railway account where the application is deployed
 2. Git repository access
 3. Railway CLI installed and configured
@@ -12,58 +14,72 @@ This guide provides step-by-step instructions for deploying the enhanced health 
 ## Deployment Steps
 
 ### 1. Verify Code Changes
+
 Ensure all code changes have been committed to the repository:
+
 - `utils/error_handling.py` - Contains all enhanced health check methods
 - `requirements.txt` - Includes `psutil==5.9.5` dependency
 - All debugging documentation files
 
 ### 2. Check Git Branch
+
 The deployment script (`deploy.sh`) checks if you're on the `main` branch. If not, you'll be prompted to confirm deployment.
 
 ### 3. Prepare Environment Variables
+
 Ensure you have a `railway.env` file with all required environment variables:
+
 - `FLASK_ENV=production`
 - `SECRET_KEY=your-secure-key-here`
 - `DATABASE_URL=postgresql://user:pass@host/dbname`
 - Any other required variables (OpenAI API key, etc.)
 
 ### 4. Run Deployment Script
+
 Execute the deployment script:
+
 ```bash
 ./deploy.sh
 ```
 
 This script will:
+
 1. Check for the `railway.env` file
 2. Verify you're on the correct Git branch
 3. Set Railway variables from the `railway.env` file
 4. Deploy the application to Railway
 
 ### 5. Alternative Deployment Method
+
 If you prefer to deploy manually:
 
 1. Commit and push changes to the repository:
+
 ```bash
 git add .
 git commit -m "Add enhanced health check functionality"
 git push origin main
 ```
 
-2. Set environment variables in Railway:
+1. Set environment variables in Railway:
+
 ```bash
 railway variables set -f railway.env
 ```
 
 3. Deploy the application:
+
 ```bash
 railway up
 ```
 
 ### 6. Verify Deployment
+
 After deployment, verify that the enhanced health check functionality is working:
 
 1. Check the application logs for any errors
 2. Access the health check endpoint:
+
 ```
 curl https://smartdisputecanada.me/health
 ```
@@ -79,7 +95,9 @@ curl https://smartdisputecanada.me/health
    - Enhanced database statistics
 
 ### 7. Run Verification Script
+
 After deployment, run the verification script to ensure file integrity:
+
 ```bash
 bash scripts/verify_deployment.sh
 ```
