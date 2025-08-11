@@ -37,9 +37,8 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">{% if current_user.is_authenticated %}
-
-
+                <ul class="navbar-nav me-auto">
+                    {% if current_user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link hover-lift" href="{{ url_for('dashboard.main_dashboard') }}">
                                 <i class="fas fa-tachometer-alt me-1"></i>Dashboard
@@ -73,9 +72,8 @@
                     {% endif %}
                 </ul>
                 
-                <ul class="navbar-nav">{% if current_user.is_authenticated %}
-
-
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link hover-lift" href="{{ url_for('notifications.list_reminders') }}">
                                 <i class="fas fa-clock me-1"></i>Reminders
@@ -86,7 +84,6 @@
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-
                                 <i class="fas fa-user me-1"></i>{{ current_user.email }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark">
