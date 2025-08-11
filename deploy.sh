@@ -23,4 +23,17 @@ echo "🚀 Deploying to Railway..."
 railway variables set -f railway.env
 railway up
 
-echo "✅ Deployment complete! Monitor at https://railway.app/project/<your-project-id>"
+echo "🔧 Initializing production database..."
+railway run python init_db_production.py
+
+echo "✅ Deployment complete!"
+echo "📋 Next steps:"
+echo "   1. Visit your application at the Railway-provided URL"
+echo "   2. Log in with admin credentials:"
+echo "      Email: admin@smartdispute.ca"
+echo "      Password: ChangeMeImmediately2024!"
+echo "   3. Change the admin password immediately after first login"
+echo "   4. Configure any additional settings in the admin panel"
+echo ""
+echo "📝 For detailed deployment instructions, see RAILWAY_DEPLOYMENT_GUIDE.md"
+echo "🌐 Monitor at https://railway.app/project/<your-project-id>"

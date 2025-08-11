@@ -1,3 +1,5 @@
 2025-08-05 04:24:48,307 - AI - ERROR - Database health check failed: Textual SQL expression 'SELECT 1' should be explicitly declared as text('SELECT 1')
 2025-08-06 02:31:03,180 - AI - ERROR - Database health check failed: db
 2025-08-06 02:32:48,068 - AI - ERROR - Database health check failed: db
+2025-08-11 00:32:59,804 - AI - ERROR - Database health check failed: 'NullPool' object has no attribute 'size'
+2025-08-11 00:35:01,814 - AI - ERROR - Database health check failed: 'NullPool' object has no attribute 'size'

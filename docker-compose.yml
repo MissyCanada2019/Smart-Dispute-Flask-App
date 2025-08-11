@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=your-secure-key-here-change-this
+      - DATABASE_URL=postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+      - OPENAI_API_KEY=your-openai-api-key-here
+      - ANTHROPIC_API_KEY=your-anthropic-api-key-here
+      - SSL_CERT_PATH=/app/config/certificates/smartdispute-canada.me.pem
+      - SSL_KEY_PATH=/app/config/certificates/smartdispute-canada.me.key
+    volumes:
+      - ./config/certificates:/app/config/certificates
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=smartdispute_db
+      - POSTGRES_USER=smartdispute_user
+      - POSTGRES_PASSWORD=smartdispute_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

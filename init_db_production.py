@@ -21,17 +21,17 @@ def init_production_database():
     app = create_app()
     
     with app.app_context():
-        print("🔧 Initializing Smart Dispute Canada production database...")
+        print("Initializing Smart Dispute Canada production database...")
         
         # Create all tables based on models
-        print("📋 Creating database tables...")
+        print("Creating database tables...")
         db.create_all()
-        print("✅ Database tables created successfully")
+        print("Database tables created successfully")
         
         # Check if admin user already exists
         admin_user = User.query.filter_by(email='admin@smartdispute.ca').first()
         if not admin_user:
-            print("👤 Creating admin user...")
+            print("Creating admin user...")
             admin_user = User(
                 email='admin@smartdispute.ca',
                 is_admin=True,
@@ -40,14 +40,14 @@ def init_production_database():
             # In production, you should change this password immediately after first login
             admin_user.set_password('ChangeMeImmediately2024!')
             db.session.add(admin_user)
-            print("✅ Admin user created successfully")
+            print("Admin user created successfully")
         else:
-            print("ℹ️  Admin user already exists")
+            print("Admin user already exists")
         
         # Commit changes
         db.session.commit()
         
-        print("\n🎉 Production database initialization complete!")
+        print("\nProduction database initialization complete!")
         print("\n📋 Login Credentials:")
         print("   👑 Admin: admin@smartdispute.ca / ChangeMeImmediately2024!")
         print("\n🚨 IMPORTANT: Change the admin password immediately after first login!")

@@ -96,6 +96,14 @@ def create_app():
     def index():
         return render_template('index.html')
     
+    @app.route('/privacy_policy')
+    def privacy_policy():
+        return render_template('privacy_policy.html')
+    
+    @app.route('/terms_of_service')
+    def terms_of_service():
+        return render_template('terms_of_service.html')
+    
     # Register error handlers
     register_error_handlers(app)
     
