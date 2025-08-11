@@ -1,98 +1,131 @@
-# 🚀 Smart Dispute - Complete Deployment Guide
+# Deployment Guide - Enhanced Health Check Functionality
 
-## 🌟 Get Your App Live Today - Multiple Options
+## Overview
+This guide provides step-by-step instructions for deploying the enhanced health check functionality for the Smart Dispute Canada Flask application.
 
-### Option 1: Railway (Fastest - 2 Minutes) ⭐ RECOMMENDED
+## Prerequisites
+1. Access to the Railway account where the application is deployed
+2. Git repository access
+3. Railway CLI installed and configured
+4. Required environment variables (see RAILWAY_ENV_SETUP_GUIDE.md)
+
+## Deployment Steps
+
+### 1. Verify Code Changes
+Ensure all code changes have been committed to the repository:
+- `utils/error_handling.py` - Contains all enhanced health check methods
+- `requirements.txt` - Includes `psutil==5.9.5` dependency
+- All debugging documentation files
+
+### 2. Check Git Branch
+The deployment script (`deploy.sh`) checks if you're on the `main` branch. If not, you'll be prompted to confirm deployment.
+
+### 3. Prepare Environment Variables
+Ensure you have a `railway.env` file with all required environment variables:
+- `FLASK_ENV=production`
+- `SECRET_KEY=your-secure-key-here`
+- `DATABASE_URL=postgresql://user:pass@host/dbname`
+- Any other required variables (OpenAI API key, etc.)
+
+### 4. Run Deployment Script
+Execute the deployment script:
 ```bash
-# 1. Go to railway.app and sign up
-# 2. Connect your GitHub repository
-# 3. Railway will auto-detect the Dockerfile and deploy
-# 4. Get instant live URL
+./deploy.sh
 ```
 
-### Option 2: Render (Free Tier Available)
+This script will:
+1. Check for the `railway.env` file
+2. Verify you're on the correct Git branch
+3. Set Railway variables from the `railway.env` file
+4. Deploy the application to Railway
+
+### 5. Alternative Deployment Method
+If you prefer to deploy manually:
+
+1. Commit and push changes to the repository:
 ```bash
-# 1. Go to render.com and sign up
-# 2. Create new "Web Service" from Git repository  
-# 3. Runtime: Docker
-# 4. Build Command: (auto-detected from Dockerfile)
-# 5. Start Command: gunicorn --bind 0.0.0.0:$PORT --workers 2 main:create_app()
+git add .
+git commit -m "Add enhanced health check functionality"
+git push origin main
 ```
 
-### Option 3: Google Cloud Run (Professional)
-**Fix Authentication Issue:**
+2. Set environment variables in Railway:
 ```bash
-# Step 1: Create new Google Cloud project at console.cloud.google.com
-# Step 2: Enable Cloud Run API
-# Step 3: Install Google Cloud CLI on your local machine
-# Step 4: Run authentication locally:
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-
-# Step 5: Deploy from your local machine:
-gcloud run deploy smartdispute-app \
-  --source . \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated \
-  --memory 2Gi \
-  --port 8080
+railway variables set -f railway.env
 ```
 
-### Option 4: DigitalOcean App Platform
+3. Deploy the application:
 ```bash
-# 1. Go to cloud.digitalocean.com
-# 2. Create App → From GitHub
-# 3. Select repository 
-# 4. Docker deployment auto-detected
-# 5. Live in 5 minutes
+railway up
 ```
 
-### Option 5: Fly.io
-```bash
-# Install flyctl locally
-curl -L https://fly.io/install.sh | sh
+### 6. Verify Deployment
+After deployment, verify that the enhanced health check functionality is working:
 
-# Deploy
-fly launch
-fly deploy
+1. Check the application logs for any errors
+2. Access the health check endpoint:
+```
+curl https://smartdisputecanada.me/health
 ```
 
-## 🔧 Environment Variables to Set (Any Platform):
+3. Verify that the response includes all enhanced health check information:
+   - Memory usage
+   - CPU usage
+   - Disk space usage
+   - Environment variable validation
+   - SSL certificate validation
+   - Cache service connectivity
+   - Email service connectivity
+   - Enhanced database statistics
 
+### 7. Run Verification Script
+After deployment, run the verification script to ensure file integrity:
 ```bash
-OPENAI_API_KEY=your_openai_api_key_here
-ANTHROPIC_API_KEY=your_anthropic_api_key_here  
-FLASK_ENV=production
-PYTHONPATH=/app
+bash scripts/verify_deployment.sh
 ```
 
-## 💡 Why Authentication Failed Here:
+## Enhanced Health Check Features
 
-The current environment is a development sandbox without Google Cloud credentials. To deploy to Google Cloud Run, you need to:
+The enhanced health check now includes:
 
-1. **Use your own Google Cloud account** with billing enabled
-2. **Run gcloud auth login from your local machine** (not this environment)
-3. **Or use Railway/Render for instant deployment** without authentication hassles
+1. **Memory Usage Monitoring** - Reports system memory usage with warnings for high usage
+2. **CPU Usage Monitoring** - Reports CPU usage with warnings for high usage
+3. **Disk Space Monitoring** - Reports disk space usage with warnings for high usage
+4. **Environment Variable Validation** - Validates critical environment variables are set
+5. **SSL Certificate Validation** - Checks SSL certificate validity for the main domain
+6. **Cache Service Connectivity** - Tests cache service connectivity (Redis/Memcached)
+7. **Email Service Connectivity** - Tests email service connectivity (SMTP)
+8. **Enhanced Database Statistics** - Provides more detailed database statistics
 
-## 🌟 FASTEST DEPLOYMENT (Railway):
+## Troubleshooting
 
-1. **Go to**: https://railway.app
-2. **Sign up** with GitHub
-3. **Create new project** → Deploy from GitHub repo
-4. **Railway auto-detects** Dockerfile and deploys
-5. **Get live URL** in 2 minutes
+### Common Issues
 
-## 📱 After Deployment:
+1. **Missing psutil dependency**:
+   - Ensure `psutil==5.9.5` is in `requirements.txt`
+   - Check Railway build logs for installation errors
 
-Your Smart Dispute app will be live with:
-- ✅ Canadian legal self-advocacy platform
-- ✅ AI-powered case analysis  
-- ✅ E-transfer payments (admin@smartdisputecanada.me)
-- ✅ All provincial court forms
-- ✅ Secure file storage
-- ✅ Professional PDF export
+2. **SSL Certificate Validation Failures**:
+   - Verify network connectivity to the domain
+   - Check firewall or proxy settings
 
-## 🆘 Need Help?
+3. **Environment Variable Issues**:
+   - Verify all required environment variables are set in Railway
+   - Check Railway variables tab for correct values
 
-The app is 100% production-ready. Choose Railway for fastest deployment, or Google Cloud Run for enterprise-grade hosting.
+4. **Service Connectivity Issues**:
+   - Verify cache and email services are properly configured
+   - Check service credentials and connection parameters
+
+## Rollback Plan
+
+If issues are encountered after deployment:
+
+1. Revert to the previous deployment in Railway
+2. Check application logs for error messages
+3. Verify environment variables are correctly set
+4. Contact support if issues persist
+
+## Conclusion
+
+The enhanced health check functionality provides comprehensive monitoring of the application's health, including system resources, environment configuration, and service connectivity. This will help identify potential issues before they affect users and provide valuable diagnostic information for troubleshooting.
