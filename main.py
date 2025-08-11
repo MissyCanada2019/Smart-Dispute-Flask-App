@@ -24,6 +24,9 @@ def create_app():
     
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     
+    # Suppress the FSADeprecationWarning by explicitly setting it.
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
     # File upload configuration
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -47,10 +50,10 @@ def create_app():
 
 
     login_manager = LoginManager()
+    login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
     login_manager.login_message_category = 'info'
-    login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -145,8 +148,8 @@ if __name__ == '__main__':
         print(f"Using SSL private key: {ssl_key}")
     
     # Bind to all available interfaces (IPv4 and IPv6)
+    from werkzeug.serving import run_simple
     try:
-        from werkzeug.serving import run_simple
         # Try to bind to all interfaces (supports both IPv4 and IPv6)
         run_simple('0.0.0.0', port, app, use_reloader=False, use_debugger=False, ssl_context=ssl_context)
     except OSError as e:

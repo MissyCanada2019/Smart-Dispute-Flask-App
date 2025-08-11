@@ -203,3 +203,17 @@
 2025-08-11 19:52:25,393 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
 2025-08-11 19:53:26,228 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
 2025-08-11 19:54:27,040 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 19:55:28,328 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 19:56:29,608 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 19:57:30,849 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 19:58:31,657 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 15:58:59,034 - main - INFO - Using database: sqlite:///app.db
+2025-08-11 19:59:32,453 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 20:00:33,274 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 20:01:34,070 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 20:02:34,942 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 20:03:35,953 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 16:03:38,514 - main - INFO - Using database: sqlite:///app.db
+2025-08-11 20:04:36,904 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 20:05:38,094 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 20:06:39,304 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db

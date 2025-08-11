@@ -16,6 +16,14 @@ from models.court_form import CourtForm, FormField, FormSubmission
 from models.legal_journey import LegalJourney, JourneyStep
 from models.notification import Notification
 
+import secrets
+import string
+
+def generate_secure_password(length=16):
+    """Generates a secure, random password."""
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(secrets.choice(alphabet) for i in range(length))
+
 def init_production_database():
     """Initialize production database with tables and default data"""
     app = create_app()
@@ -37,20 +45,23 @@ def init_production_database():
                 is_admin=True,
                 is_active=True
             )
-            # In production, you should change this password immediately after first login
-            admin_user.set_password('ChangeMeImmediately2024!')
+            # Generate a secure, random password for the admin user
+            admin_password = generate_secure_password()
+            admin_user.set_password(admin_password)
             db.session.add(admin_user)
-            print("Admin user created successfully")
+            db.session.commit()
+            print("✅ Admin user created successfully.")
+            print("\n" + "="*50)
+            print("🚨 IMPORTANT: SECURE ADMIN PASSWORD GENERATED 🚨")
+            print("="*50)
+            print("Please save the following admin credentials in a secure location.")
+            print("This password will only be displayed once.")
+            print(f"  => Email:    admin@smartdispute.ca")
+            print(f"  => Password: {admin_password}")
+            print("="*50 + "\n")
         else:
-            print("Admin user already exists")
-        
-        # Commit changes
-        db.session.commit()
-        
+            print("ℹ️ Admin user already exists. Password not changed.")
         print("\nProduction database initialization complete!")
-        print("\n📋 Login Credentials:")
-        print("   👑 Admin: admin@smartdispute.ca / ChangeMeImmediately2024!")
-        print("\n🚨 IMPORTANT: Change the admin password immediately after first login!")
         print("\n📝 Next steps:")
         print("   1. Log in as admin@smartdispute.ca with the password above")
         print("   2. Go to the admin panel to change your password")
