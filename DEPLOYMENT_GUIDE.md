@@ -144,6 +144,12 @@ If issues are encountered after deployment:
 3. Verify environment variables are correctly set
 4. Contact support if issues persist
 
+## SSL Configuration
+
+The application now supports SSL/TLS encryption using the provided Cloudflare Origin Certificate. The SSL configuration is handled automatically when the certificate files are present in the expected location.
+
+For more detailed information about SSL configuration, see `SSL_CONFIGURATION_GUIDE.md`.
+
 ## Conclusion
 
 The enhanced health check functionality provides comprehensive monitoring of the application's health, including system resources, environment configuration, and service connectivity. This will help identify potential issues before they affect users and provide valuable diagnostic information for troubleshooting.

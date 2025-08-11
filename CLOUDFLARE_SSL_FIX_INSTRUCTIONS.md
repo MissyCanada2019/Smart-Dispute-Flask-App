@@ -5,6 +5,7 @@ The website smartdisputecanada.me is experiencing an SSL certificate issue with 
 
 ## Root Cause
 The SSL certificate is not properly configured for the domain, likely due to:
+
 1. Missing certificate for one or both domains
 2. SSL/TLS version or cipher mismatch between client and server
 3. Improper SSL settings in Cloudflare
@@ -29,6 +30,7 @@ The SSL certificate is not properly configured for the domain, likely due to:
 
 ### Step 4: Enable Additional Security Features
 1. In the "Edge Certificates" section, ensure these settings are enabled:
+
    - Always Use HTTPS: On
    - Opportunistic Encryption: On
    - TLS 1.3: On
@@ -43,6 +45,7 @@ The SSL certificate is not properly configured for the domain, likely due to:
 1. In the "Origin Server" section, click "Reissue Certificate"
 2. Select a validity period (15 years recommended)
 3. Ensure both domains are included:
+
    - smartdisputecanada.me
    - *.smartdisputecanada.me
 4. Click "Reissue" and confirm
@@ -61,6 +64,7 @@ The SSL certificate is not properly configured for the domain, likely due to:
 ### Step 9: Verify DNS Records
 1. Click on "DNS" in the left sidebar
 2. Verify that you have the correct records:
+
    - A CNAME record for "@" (root domain) pointing to your Railway app
    - A CNAME record for "www" pointing to "smartdisputecanada.me" or your Railway app
 3. Ensure both records have the orange cloud (proxied) enabled
@@ -79,16 +83,19 @@ The SSL certificate is not properly configured for the domain, likely due to:
 ## Troubleshooting
 
 ### If Issues Persist After 30 Minutes
+
 1. Check Cloudflare's SSL/TLS analyzer tool
 2. Review Cloudflare's documentation on SSL errors
 3. Check if there are any firewall or security rules blocking SSL traffic
 
 ### Certificate Specific Issues
+
 1. If the certificate doesn't include both domains:
    - Contact Cloudflare support to issue a new certificate
    - Or remove and re-add the domains in Railway
 
 ### Mixed Content Issues
+
 1. Ensure all resources are loaded over HTTPS
 2. Check your application code for any hardcoded HTTP URLs
 

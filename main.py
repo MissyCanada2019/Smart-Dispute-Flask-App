@@ -125,12 +125,23 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     port = int(os.environ.get('PORT', 8080))
+    # Check if SSL certificates are available for HTTPS
+    ssl_cert = os.environ.get('SSL_CERT_PATH') or 'config/certificates/smartdispute-canada.me.pem'
+    ssl_key = os.environ.get('SSL_KEY_PATH') or 'config/certificates/smartdispute-canada.me.key'
+    
+    # Check if certificate files exist
+    ssl_context = None
+    if os.path.exists(ssl_cert) and os.path.exists(ssl_key):
+        ssl_context = (ssl_cert, ssl_key)
+        print(f"Using SSL certificate: {ssl_cert}")
+        print(f"Using SSL private key: {ssl_key}")
+    
     # Bind to all available interfaces (IPv4 and IPv6)
     try:
         from werkzeug.serving import run_simple
         # Try to bind to all interfaces (supports both IPv4 and IPv6)
-        run_simple('0.0.0.0', port, app, use_reloader=False, use_debugger=False)
+        run_simple('0.0.0.0', port, app, use_reloader=False, use_debugger=False, ssl_context=ssl_context)
     except OSError as e:
         print(f"Error binding to port {port}: {str(e)}")
         print("Trying alternative port 5000")
-        run_simple('0.0.0.0', 5000, app, use_reloader=False, use_debugger=False)
+        run_simple('0.0.0.0', 5000, app, use_reloader=False, use_debugger=False, ssl_context=ssl_context)
