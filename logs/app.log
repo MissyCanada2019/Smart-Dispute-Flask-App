@@ -70,3 +70,4 @@
 2025-08-11 13:54:54,087 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
 2025-08-11 13:55:55,165 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
 2025-08-11 13:56:56,139 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
+2025-08-11 13:57:57,214 - main - INFO - Using database: postgresql://smartdispute_user:smartdispute_password@db:5432/smartdispute_db
