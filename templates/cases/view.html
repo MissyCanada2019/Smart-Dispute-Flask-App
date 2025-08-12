@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ case.title }} - Smart Dispute Canada{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ case.title }}</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Description:</strong> {{ case.description }}</p>
+                <p><strong>Case Type:</strong> {{ case.case_type }}</p>
+                <p><strong>Province:</strong> {{ case.province }}</p>
+                <p><strong>Status:</strong> {{ case.status }}</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('cases.list_cases') }}" class="btn btn-secondary">Back to Cases</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Case Details</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Case Number:</strong> {{ case.case_number }}</p>
+                <p><strong>Created At:</strong> {{ case.created_at.strftime('%Y-%m-%d') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
