@@ -56,7 +56,37 @@ railway up
 The `startCommand` in `railway.json` handles this automatically. If you need to run it manually for any reason, use:
 
 ```bash
-railway run python manage.py init-db --env=production
+rai
+### What to Do Now
+
+1.  Apply the code change to `manage.py`.
+2.  Run the command with the **correct syntax**:
+    ```bash
+    python manage.py init-db --env=production
+    ```
+
+The script should now run
+
+### What to Do Now
+
+1.  Apply the code change to `manage.py`.
+2.  Run the command with the **correct syntax**:
+    ```bash
+    python manage.py init-db --env=production
+    ```
+
+The script should now run
+
+### What to Do Now
+
+1.  Apply the code change to `manage.py`.
+2.  Run the command with the **correct syntax**:
+    ```bash
+    python manage.py init-db --env=production
+    ```
+
+The script should now run
+lway run python manage.py init-db --env=production
 ```
 
 ### 7. Configure custom domain (optional)
