@@ -41,7 +41,7 @@ def init_production_database():
         if not admin_user:
             print("Creating admin user...")
             admin_user = User(
-                email='admin@smartdispute.ca',
+                username='admin@smartdispute.ca',
                 is_admin=True,
                 is_active=True
             )

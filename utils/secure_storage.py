@@ -16,7 +16,10 @@ class SecureFileManager:
         self.encryption_key = current_app.config.get('ENCRYPTION_KEY')
         if not self.encryption_key:
             raise ValueError("Encryption key not configured")
-        self.cipher = Fernet(self.encryption_key)
+        
+        # Fernet key must be 32 url-safe base64-encoded bytes.
+        # Environment variables are strings, so we need to encode it back to bytes.
+        self.cipher = Fernet(self.encryption_key.encode('utf-8'))
     
     def encrypt_file(self, file_path):
         """Encrypt a file and store it securely"""

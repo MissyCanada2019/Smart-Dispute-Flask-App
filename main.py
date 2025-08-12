@@ -27,6 +27,16 @@ def create_app():
     # Suppress the FSADeprecationWarning by explicitly setting it.
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
+    # Encryption key configuration
+    app.config['ENCRYPTION_KEY'] = os.environ.get('ENCRYPTION_KEY')
+    if not app.config['ENCRYPTION_KEY'] and app.config.get('ENV') == 'production':
+        app.logger.critical("CRITICAL: ENCRYPTION_KEY is not set in the production environment. Application cannot start securely.")
+        raise ValueError("ENCRYPTION_KEY is not set for production.")
+    elif not app.config['ENCRYPTION_KEY']:
+        app.logger.warning("Warning: ENCRYPTION_KEY is not set. Using a temporary key for development. DO NOT use in production.")
+        from cryptography.fernet import Fernet
+        app.config['ENCRYPTION_KEY'] = Fernet.generate_key().decode()
+
     # File upload configuration
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -51,7 +61,9 @@ def create_app():
 
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = None  # Set to None if you do not want to specify a login view
+    # If you want to specify a login view, ensure 'auth.login' is a valid endpoint and type checker is satisfied:
+    # login_manager.login_view = str('auth.login')
     login_manager.login_message = 'Please log in to access this page.'
     login_manager.login_message_category = 'info'
 
