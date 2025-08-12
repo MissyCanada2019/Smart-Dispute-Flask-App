@@ -3,7 +3,7 @@
     "nixpacks": true
   },
   "deploy": {
-    "startCommand": "python init_db_production.py && gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --certfile $SSL_CERT_PATH --keyfile $SSL_KEY_PATH --ca-certs $SSL_CERT_PATH wsgi:app",
+    "startCommand": "python manage.py init-db --env=production && gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 wsgi:app",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 30
   }

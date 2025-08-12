@@ -60,7 +60,7 @@ The application is configured to automatically initialize the database on startu
 
 1. The `railway.json` file is configured with:
    ```json
-   "startCommand": "python init_db_production.py && python main.py"
+   "startCommand": "python manage.py init-db --env=production && gunicorn --bind 0.0.0.0:$PORT wsgi:app"
    ```
    
 2. This command will:

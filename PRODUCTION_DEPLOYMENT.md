@@ -25,7 +25,7 @@ Ensure your repository contains the following key files:
 - `railway.json` - Railway deployment configuration
 - `requirements.txt` - Python dependencies
 - `Dockerfile` - Docker configuration
-- `init_db_production.py` - Production database initialization script
+- `manage.py` - Application management script (including DB initialization)
 - `env.production` - Production environment variables template
 
 ### 2. Railway Project Setup
@@ -62,7 +62,7 @@ WTF_CSRF_ENABLED=True
 The application is configured to automatically initialize the database on startup through the `railway.json` configuration:
 
 ```json
-"startCommand": "python init_db_production.py && python main.py"
+"startCommand": "python manage.py init-db --env=production && gunicorn --bind 0.0.0.0:$PORT wsgi:app"
 ```
 
 This command will:

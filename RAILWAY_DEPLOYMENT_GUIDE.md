@@ -53,10 +53,10 @@ railway up
 
 ### 6. Initialize the database
 
-After deployment, initialize the database:
+The `startCommand` in `railway.json` handles this automatically. If you need to run it manually for any reason, use:
 
 ```bash
-railway run python init_db_production.py
+railway run python manage.py init-db --env=production
 ```
 
 ### 7. Configure custom domain (optional)
